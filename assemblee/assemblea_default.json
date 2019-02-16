@@ -1,0 +1,49 @@
+{
+    "info": {
+        "date": "2019-02-16",
+        "startSub": {
+            "date": "2019-02-10",
+            "time": "14:00"
+        },
+        "endSub": {
+            "date": "2019-02-10",
+            "time": "19:00"
+        },
+        "display": {
+            "date": "16/02/2019",
+            "startSub": "10/02/2019 - 14:00",
+            "endSub": "10/02/2019 - 19:00"
+        }
+    },
+    "labs": {
+        "labsList": [{
+            "labID": 1,
+            "labName": "Lab1",
+            "labAula": "AM1",
+            "labDesc": "Laboratorio 1 di 2",
+            "labPostiOra1": 50,
+            "labPostiOra2": 50,
+            "labPostiOra3": 50,
+            "labPostiOra4": 50,
+            "labClassiOra1": ["1IA", "1IB"],
+            "labClassiOra2": ["1IA", "1IB"],
+            "labClassiOra3": ["1IC", "1ID"],
+            "labClassiOra4": ["1IC", "1ID"],
+            "lastsTwoH": 1
+        }, {
+            "labID": 2,
+            "labName": "Lab2",
+            "labAula": "AM2",
+            "labDesc": "Laboratorio 2 di 2",
+            "labPostiOra1": 40,
+            "labPostiOra2": 50,
+            "labPostiOra3": 60,
+            "labPostiOra4": 70,
+            "labClassiOra1": ["1IA", "1IB", "2IA", "2IB"],
+            "labClassiOra2": ["1IA", "1IB", "2IC", "2ID"],
+            "labClassiOra3": ["1IC", "1ID", "2SA", "2SB"],
+            "labClassiOra4": ["1IC", "1ID", "2PA", "2PB"],
+            "lastsTwoH": 0
+        }]
+    }
+}
