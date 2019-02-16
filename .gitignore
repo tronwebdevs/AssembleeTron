@@ -1,0 +1,5 @@
+node_modules/
+assemblee/
+pdf/
+credentials.js
+mysql_credentials.js
