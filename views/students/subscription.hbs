@@ -20,9 +20,14 @@
                                 <h3 class="card-title display-4">Laboratori</h3>
                             </div>
                         </div>
-                        <div class="row mb-2" >
-                            <div class="col-sm">
-                                <div class="table-responsive">
+                        <div class="row mb-2">
+                                {{#each labList}}
+                                    <div class="col-sm-6 mb-3 border-bottom">
+                                        <span class="font-weight-bold">{{this.labName}}</span>
+                                        <p class="text-left mb-2">{{this.labDesc}}</p>
+                                    </div>
+                                {{/each}}
+                                {{!-- <div class="table-responsive">
                                     <table class="table table-bordered" id="labsList">
                                         <thead>
                                             <tr>
@@ -30,15 +35,16 @@
                                                 <th scope="col">Descrizione</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <tr class="lab-row">
-                                                <td>1</td>
-                                                <td>1</td>
-                                            </tr>
+                                        <tbody class="text-left">
+                                            {{#each labList}}
+                                                <tr class="lab-row-student">
+                                                    <td class="p-2 font-weight-bold">{{this.labName}}</td>
+                                                    <td class="p-2">{{this.labDesc}}</td>
+                                                </tr>
+                                            {{/each}}
                                         </tbody>
                                     </table>
-                                </div>
-                            </div>
+                                </div> --}}
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm text-uppercase">
@@ -51,40 +57,40 @@
                                 <form action="/iscriviti" method="POST" class="row">
                                     <div class="col-sm-6 my-md-1">
                                         <div class="form-group mb-2">
-                                            <select class="form-control">
+                                            <select class="custom-select" name="ora1" required>
                                                 <option selected disabled>Prima ora</option>
-                                                {{#each labsOra1}}
-                                                    <option value="this.labID">this.labName</option>
+                                                {{#each labs.ora1}}
+                                                    <option value="{{this.labID}}">{{this.labName}} - {{this.labPostiOra1}} posti rimanenti</option>
                                                 {{/each}}
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 my-md-1">
                                         <div class="form-group mb-2">
-                                            <select class="form-control">
+                                            <select class="custom-select" name="ora2" required>
                                                 <option selected disabled>Seconda ora</option>
-                                                {{#each labsOra2}}
-                                                    <option value="this.labID">this.labName</option>
+                                                {{#each labs.ora2}}
+                                                    <option value="{{this.labID}}">{{this.labName}} - {{this.labPostiOra2}} posti rimanenti</option>
                                                 {{/each}}
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 my-md-1">
                                         <div class="form-group mb-2">
-                                            <select class="form-control">
+                                            <select class="custom-select" name="ora3" required>
                                                 <option selected disabled>Terza ora</option>
-                                                {{#each labsOra3}}
-                                                    <option value="this.labID">this.labName</option>
+                                                {{#each labs.ora3}}
+                                                    <option value="{{this.labID}}">{{this.labName}} - {{this.labPostiOra3}} posti rimanenti</option>
                                                 {{/each}}
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 my-md-1">
                                         <div class="form-group mb-2">
-                                            <select class="form-control">
+                                            <select class="custom-select" name="ora4" required>
                                                 <option selected disabled>Quarta ora</option>
-                                                {{#each labsOra4}}
-                                                    <option value="this.labID">this.labName</option>
+                                                {{#each labs.ora4}}
+                                                    <option value="{{this.labID}}">{{this.labName}} - {{this.labPostiOra4}} posti rimanenti</option>
                                                 {{/each}}
                                             </select>
                                         </div>

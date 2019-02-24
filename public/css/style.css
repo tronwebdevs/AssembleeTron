@@ -17,3 +17,21 @@ body {
     line-height: 60px;
     /* Vertically center the text there */
 }
+
+/* Bootstrap sm breakpoint */
+@media only screen and (max-width: 767.98px) {
+    tr.lab-row-student, tr.lab-row-student > td {
+        font-size: 0.8em;
+    }
+    tr.lab-row-confirm, tr.lab-row-confirm > td {
+        font-size: 0.9em;
+    }
+    .footer {
+        font-size: 0.65em;
+        height: 30px;
+        line-height: 30px;
+    }
+    body {
+        margin-bottom: 40px;
+    }
+}

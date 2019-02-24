@@ -31,10 +31,10 @@
                                                 <th scope="col">Aula</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody class="text-left">
                                             {{#each student.labs}}
-                                            <tr class="lab-row">
-                                                <td>{{this.labID}}</td>
+                                            <tr class="lab-row-confirm">
+                                                <td>{{this.index}}</td>
                                                 <td>{{this.labName}}</td>
                                                 <td>{{this.labAula}}</td>
                                             </tr>
@@ -45,11 +45,11 @@
                             </div>
                         </div>
                         <div class="row mb-1">
-                            <div class="col-sm text-uppercase">
+                            <div class="col">
                                 <small>
-                                    <b class="text-danger text-small">
-                                        Conserva questa tabella! Ti consigliamo di salvare uno screenshot di questa schermata prima di uscire. Potrai visualizzarla nuovamente inserendo la tua matricola nella
-                                        <a href="/"> pagina di login </a>
+                                    <b class="text-small">
+                                        <p>Conserva questa tabella! Ti consigliamo di salvare uno screenshot di questa schermata prima di uscire. </p><p>Potrai visualizzarla nuovamente inserendo la tua matricola nella
+                                        <a href="/"> pagina di login </a></p>
                                     </b>
                                 </small>
                             </div>

@@ -126,12 +126,16 @@ router.post('/login', (req, res) => {
                 }
             } else {
                 // Studente gia' iscritto all'assemblea
-                connection.end();
-                req.session.authError = {
-                    code: 503,
-                    message: 'La matricola inserita è già iscritta'
-                }
-                res.redirect('/');
+                student.labs = [ rows[0].Ora1, rows[0].Ora2, rows[0].Ora3, rows[0].Ora4 ];
+                req.session.student = student;
+                res.redirect('/conferma');
+
+                // connection.end();
+                // req.session.authError = {
+                //     code: 503,
+                //     message: 'La matricola inserita è già iscritta'
+                // }
+                // res.redirect('/');
             }
         }).catch((error) => {
             // Errore nel processo di autenticaione
@@ -157,39 +161,67 @@ router.all('*', isAuthenticated);
 
 router.get('/iscrizione', (req, res) => {
     let connection;
-    
+    let classi;
+    let labs = { ora1: [], ora2: [], ora3: [], ora4: [] };
+    let labList = [];
+
     mysql.createConnection(mysqlCredentials).then((conn) => {
         connection = conn;
         return connection.query({
-            sql: 'SELECT * FROM `Partecipano` WHERE SiglaClasse=?',
+            sql: 'SELECT * FROM `Partecipano` WHERE SiglaClasse=? ORDER BY `IDProgetto` ASC',
             values: [ req.session.student.classe ]
         }).then((rows) => {
-            let labs = [[], [], [], []];
-
-            for (let row of rows) {
-                if (row.Ora1 == 1) {
-                    labs[0].push(row.IDProgetto);
+            classi = rows;
+            return connection.query('SELECT `ID` AS `labID`, `Nome` AS `labName`, `Descrizione` AS `labDesc`, `Ora1` AS `labPostiOra1`, `Ora2` AS `labPostiOra2`, `Ora3` AS `labPostiOra3`, `Ora4` AS `labPostiOra4`, `DueOre` AS `lastsTwoH` FROM `Progetti` ORDER BY `ID` ASC');
+        }).then((rows) => {
+            let promiseArray = [];
+            let classe;
+            rows.forEach((lab, index) => {
+                classe = classi.find((cl) => {
+                    return cl.IDProgetto == lab.labID;
+                });
+                if (classe) {
+                    labList.push(lab);
+                    promiseArray.push(connection.query({
+                        sql: 'SELECT COUNT(*) AS `subs` FROM `Iscritti` WHERE `Ora1`=?',
+                        values: [ lab.labID ]
+                    }));
+                    promiseArray.push(connection.query({
+                        sql: 'SELECT COUNT(*) AS `subs` FROM `Iscritti` WHERE `Ora2`=?',
+                        values: [ lab.labID ]
+                    }));
+                    promiseArray.push(connection.query({
+                        sql: 'SELECT COUNT(*) AS `subs` FROM `Iscritti` WHERE `Ora3`=?',
+                        values: [ lab.labID ]
+                    }));
+                    promiseArray.push(connection.query({
+                        sql: 'SELECT COUNT(*) AS `subs` FROM `Iscritti` WHERE `Ora4`=?',
+                        values: [ lab.labID ]
+                    }));
                 }
-                if (row.Ora2 == 1) {
-                    labs[1].push(row.IDProgetto);
+            });
+            return Promise.all(promiseArray);
+        }).then((results) => {
+            labList.forEach((lab, index) => {
+                if ( (lab.labPostiOra1 - results[index * 4][0].subs) > 0 && classi[index].Ora1 == 1) {
+                    lab.labPostiOra1 -= results[index * 4][0].subs;
+                    labs.ora1.push(lab);
                 }
-                if (row.Ora3 == 1) {
-                    labs[2].push(row.IDProgetto);
+                if ( (lab.labPostiOra2 - results[index * 4 + 1][0].subs) > 0 && classi[index].Ora2 == 1) {
+                    lab.labPostiOra2 -= results[index * 4 + 1][0].subs;
+                    labs.ora2.push(lab);
                 }
-                if (row.Ora4 == 1) {
-                    labs[3].push(row.IDProgetto);
+                if ( (lab.labPostiOra3 - results[index * 4 + 2][0].subs) > 0 && classi[index].Ora3 == 1) {
+                    lab.labPostiOra3 -= results[index * 4 + 2][0].subs;
+                    labs.ora3.push(lab);
                 }
-            }
-
-            let labList = uniqueArray(labs[0].concat(labs[1], labs[2], labs[3]));
-
-            for (let lab of labList) {
-
-            }
-
+                if ( (lab.labPostiOra4 - results[index * 4 + 3][0].subs) > 0 && classi[index].Ora4 == 1) {
+                    lab.labPostiOra4 -= results[index * 4 + 3][0].subs;
+                    labs.ora4.push(lab);
+                }
+            });
             connection.end();
-            console.log(rows);
-            res.render('students/subscription', { student: req.session.student });
+            res.render('students/subscription', { student: req.session.student, labList, labs });
         }).catch((error) => {
             req.session.authError = {
                 code: 509,
@@ -200,33 +232,93 @@ router.get('/iscrizione', (req, res) => {
     });
 });
 router.post('/iscriviti', isAuthenticated, (req, res) => {
-    mysql.createConnection(mysqlCredentials).then((conn) => {
-        let result = conn.query({
-            sql: 'INSERT INTO `Iscritti` (`MatricolaStudente`, `Ora1`, `Ora2`, `Ora3`, `Ora4`) VALUES (?,?,?,?,?)',
-            values: [
-                req.session.student.matricola,
-                req.session.student.labs[0].labID,
-                req.session.student.labs[1].labID,
-                req.session.student.labs[2].labID,
-                req.session.student.labs[3].labID
-            ]
+    if (req.body.ora1 && req.body.ora2 && req.body.ora3 && req.body.ora4) {
+        mysql.createConnection(mysqlCredentials).then((conn) => {
+            let result = conn.query({
+                sql: 'INSERT INTO `Iscritti` (`MatricolaStudente`, `Ora1`, `Ora2`, `Ora3`, `Ora4`) VALUES (?,?,?,?,?)',
+                values: [
+                    req.session.student.matricola,
+                    req.body.ora1,
+                    req.body.ora2,
+                    req.body.ora3,
+                    req.body.ora4
+                ]
+            });
+    
+            req.session.student.labs = [
+                req.body.ora1,
+                req.body.ora2,
+                req.body.ora3,
+                req.body.ora4
+            ];
+            conn.end();
+            return result;
+        }).then(() => {
+            res.redirect('/conferma');
+        }).catch((error) => {
+            req.session.authError = {
+                code: 509,
+                message: error.toString()
+            }
+            res.redirect('/');
         });
-        conn.end();
-        return result;
-    }).then(() => {
-        res.redirect('/conferma');
-    }).catch((error) => {
+    } else {
         req.session.authError = {
-            code: 509,
-            message: error.toString()
+            code: 503,
+            message: 'Devi riempire tutti i campi!'
         }
         res.redirect('/');
-    });
+    }
 });
 
 // Conferma iscrizione
 router.get('/conferma', (req, res) => {
-    res.render('students/confirmSub', { student: req.session.student });
+    let connection;
+    if (req.session.student.labs) {
+        // Laboratori salvati in memoria
+        if (typeof req.session.student.labs[0] == 'string' || typeof req.session.student.labs[0] == 'number') {
+            mysql.createConnection(mysqlCredentials).then((conn) => {
+                connection = conn;
+                let promiseArray = [];
+                req.session.student.labs.forEach((labID) => {
+                    promiseArray.push(connection.query({
+                        sql: 'SELECT `Nome` AS `labName`, `Aula` AS `labAula` FROM `Progetti` WHERE ID=?',
+                        values: [ labID ]
+                    }));
+                });
+                return Promise.all(promiseArray);
+            }).then((results) => {
+                req.session.student.labs = [];
+                results.forEach((result, index) => {
+                    req.session.student.labs.push({
+                        index: index + 1,
+                        labName: result[0].labName,
+                        labAula: result[0].labAula
+                    });
+                });
+                res.render('students/confirmSub', { student: req.session.student });
+            }).catch((error) => {
+                console.log(error);
+                req.session.authError = {
+                    code: 509,
+                    message: error.toString()
+                }
+                res.redirect('/');
+            });
+        } else {
+            res.render('students/confirmSub', { student: req.session.student });
+        }
+    } else {
+        // Laboratori non salvati in memoria
+        res.render('students/confirmSub', { student: [{index: 0, labName: 'req.session.labs vuota', labAula: 'WIP'}] });
+    }
+});
+
+router.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) console.log(err);
+        res.status(200).send('Logout effettuato con successo');
+    });
 });
 
 // Errore del server

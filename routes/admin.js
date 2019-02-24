@@ -237,9 +237,9 @@ router.post('/dashboard/assemblea/crea', isAuthenticated, (req, res) => {
                 sql: 'INSERT INTO `Progetti` (`ID`, `Nome`, `Descrizione`, `Aula`, `Ora1`, `Ora2`, `Ora3`, `Ora4`, `DueOre`) VALUES (?,?,?,?,?,?,?,?,?)',
                 values: [
                     lab.labID,
-                    lab.labName.replace(/'/g, "''"),
-                    lab.labDesc.replace(/'/g, "''"),
-                    lab.labAula.replace(/'/g, "''"),
+                    lab.labName,
+                    lab.labDesc,
+                    lab.labAula,
                     lab.labPostiOra1,
                     lab.labPostiOra2,
                     lab.labPostiOra3,
