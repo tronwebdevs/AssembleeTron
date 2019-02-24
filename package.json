@@ -4,7 +4,9 @@
   "description": "Sito assemblee liceo Tron",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "debug": "nodemon --inspect app.js"
   },
   "author": "Davide Testolin - Tronweb",
   "license": "ISC",

@@ -1,5 +1,7 @@
 node_modules/
 assemblee/
 pdf/
+config/
+.vscode/
 credentials.js
 mysql_credentials.js

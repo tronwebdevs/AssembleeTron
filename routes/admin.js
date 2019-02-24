@@ -1,8 +1,7 @@
 const express = require('express');
 const app = express();
 const router = express.Router();
-const mysql = require('mysql');
-const mysqlp = require('promise-mysql');
+const mysql = require('promise-mysql');
 const path = require('path');
 const handlebars = require('express-handlebars').create({defaultLayout: 'main'});
 const session = require('express-session');
@@ -11,8 +10,9 @@ moment.locale('it');
 const fs = require('fs');
 const fsPromise = fs.promises;
 const PdfPrinter = require('pdfmake');
-const credentials = require('../credentials.js');
-const mysqlCredentials = require('../mysql_credentials.js');
+const credentials = require('../config/credentials.js');
+const mysqlCredentials = require('../config/mysql_credentials.js');
+
 
 // Home page
 router.get('/', (req, res) => {
@@ -21,11 +21,11 @@ router.get('/', (req, res) => {
     } else {
         res.render('admin/home', {
             title: 'Gestore Assemblea - Login',
-            loginPage: true,
             error: req.session.authError
         });
     }
 });
+
 
 // Handle login
 router.post('/login/', (req, res) => {
@@ -38,21 +38,17 @@ router.post('/login/', (req, res) => {
     }
 });
 
+// Check if authenticated
+router.all('*', isAuthenticated);
+
 // DASHBOARD
 // Authentication
-router.get('/dashboard/*', (req, res, next) => {
-    if (req.session.authenticated === true) {
-        next();
-    } else {
-        res.redirect('/gestore/');
-    }
-});
 router.get('/dashboard', (req, res) => {
     // Auth
     if (req.session.authenticated !== true) {
         res.redirect('/gestore/');
     } else {
-        mysqlp.createConnection(mysqlCredentials).then((conn) => {
+        mysql.createConnection(mysqlCredentials).then((conn) => {
             let result = conn.query('SELECT * FROM `Info`');
             conn.end();
             return result;
@@ -77,7 +73,6 @@ router.get('/dashboard', (req, res) => {
                         endSub: moment(rows[0].ChiusuraIscrizioni).format('DD/MM/YYYY - HH:mm'),
                     }
                 };
-
                 req.session.assemblea.info.display.subsClosed = ( moment().diff(moment(req.session.assemblea.info.endSub.date + 'T' + req.session.assemblea.info.endSub.time)) > 0 );
 
                 let error = req.session.showErrorToDashboard;
@@ -101,9 +96,7 @@ router.get('/dashboard', (req, res) => {
         });
     }
 });
-router.get('/dashboard/assemblea', (req, res) => {
-    res.redirect('/gestore/dashboard');
-});
+router.get('/dashboard/assemblea', (req, res) => res.redirect('/gestore/dashboard'));
 
 // Create new assemblea
 router.get('/dashboard/assemblea/crea', (req, res) => {
@@ -150,7 +143,7 @@ router.get('/dashboard/assemblea/crea', (req, res) => {
         res.redirect('/gestore/dashboard');
     }
 });
-router.post('/dashboard/assemblea/crea/carica', (req, res) => {
+router.post('/dashboard/assemblea/crea/carica', isAuthenticated, (req, res) => {
     if (req.body.templateFile) {
         fs.readFile('assemblee/' + req.body.templateFile, (err, data) => {
             if (err) {
@@ -170,7 +163,7 @@ router.post('/dashboard/assemblea/crea/carica', (req, res) => {
         res.redirect('/gestore/dashboard/assemblea/crea');
     }
 });
-router.post('/dashboard/assemblea/crea', (req, res) => {
+router.post('/dashboard/assemblea/crea', isAuthenticated, (req, res) => {
     // DEBUG
     req.session.nuovaAssemblea = req.body;
 
@@ -180,7 +173,7 @@ router.post('/dashboard/assemblea/crea', (req, res) => {
     let newLabs = req.session.newLabs;
 
     // Crea connessione e inizia la catena query-then
-    mysqlp.createConnection(mysqlCredentials).then((conn) => {
+    mysql.createConnection(mysqlCredentials).then((conn) => {
         // Stabilita la connessione, assegna a variabile globale
         connection = conn;
         // Esegue la prima query, inserisce informazioni nella tabella corrispondente
@@ -350,15 +343,14 @@ router.get('/dashboard/assemblea/crea/fine/:finalResult', (req, res) => {
 });
 router.get('/dashboard/assemblea/elimina', (req, res) => {
     let connection;
-    mysqlp.createConnection(mysqlCredentials).then((conn) => {
+    mysql.createConnection(mysqlCredentials).then((conn) => {
         connection = conn;
-        return connection.query('TRUNCATE TABLE `Info`');
-    }).then(() => {
-        return connection.query('TRUNCATE TABLE `Progetti`');
-    }).then(() => {
-        return connection.query('TRUNCATE TABLE `Partecipano`');
-    }).then(() => {
-        return connection.query('TRUNCATE TABLE `Iscritti`');
+        let tables = [ 'Info', 'Progetti', 'Partecipano', 'Iscritti' ];
+        let promiseArray = [];
+        tables.forEach((table) => {
+            promiseArray.push(connection.query(`TRUNCATE TABLE ${table}`));
+        });
+        return Promise.all(promiseArray);
     }).then(() => {
         connection.end();
         delete req.session.assemblea;
@@ -368,9 +360,9 @@ router.get('/dashboard/assemblea/elimina', (req, res) => {
         if (connection && connection.end) connection.end();
     });
 });
-router.post('/dashboard/assemblea/pdf', (req, res) => {
+router.post('/dashboard/assemblea/pdf', isAuthenticated, (req, res) => {
     let connection;
-    mysqlp.createConnection(mysqlCredentials).then((conn) => {
+    mysql.createConnection(mysqlCredentials).then((conn) => {
         connection = conn;
         return connection.query('SELECT `ID` AS `labID`, `Nome` AS `labName` FROM `Progetti`');
     }).then((rows) => {
@@ -385,74 +377,71 @@ router.post('/dashboard/assemblea/pdf', (req, res) => {
             }
         }
 
-        Promise.all(promiseArray).then((results) => {
-            let fonts = {
-                Roboto: {
-                    normal: path.join(__dirname, '..', 'public', '/fonts/Roboto-Regular.ttf'),
-                    bold: path.join(__dirname, '..', 'public', '/fonts/Roboto-Medium.ttf'),
-                    italics: path.join(__dirname, '..', 'public', '/fonts/Roboto-Italic.ttf'),
-                    bolditalics: path.join(__dirname, '..', 'public', '/fonts/Roboto-MediumItalic.ttf')
+        return Promise.all(promiseArray);
+    }).then((results) => {
+        let fonts = {
+            Roboto: {
+                normal: path.join(__dirname, '..', 'public', '/fonts/Roboto-Regular.ttf'),
+                bold: path.join(__dirname, '..', 'public', '/fonts/Roboto-Medium.ttf'),
+                italics: path.join(__dirname, '..', 'public', '/fonts/Roboto-Italic.ttf'),
+                bolditalics: path.join(__dirname, '..', 'public', '/fonts/Roboto-MediumItalic.ttf')
+            }
+        };
+        let printer = new PdfPrinter(fonts);
+        let docDefinition = { content: [] };
+
+        for (let i = 0; i < ( results.length / 4 ); i++) {
+            for (let l = 0; l < 4; l++) {
+                if (i == 0 && l == 0) {
+                    docDefinition.content.push({
+                        text: labs[i].labName + ' - ora ' + (l + 1)
+                    });
+                } else {
+                    docDefinition.content.push({
+                        text: labs[i].labName + ' - ora ' + (l + 1),
+                        pageBreak: 'before'
+                    });
                 }
-            };
-            let printer = new PdfPrinter(fonts);
-            let docDefinition = { content: [] };
 
-            for (let i = 0; i < ( results.length / 4 ); i++) {
-                for (let l = 0; l < 4; l++) {
-                    if (i == 0 && l == 0) {
-                        docDefinition.content.push({
-                            text: labs[i].labName + ' - ora ' + (l + 1)
-                        });
-                    } else {
-                        docDefinition.content.push({
-                            text: labs[i].labName + ' - ora ' + (l + 1),
-                            pageBreak: 'before'
-                        });
+                if (results[(i * 4) + l].length == 0) {
+                    docDefinition.content.push({
+                        text: 'Nessuno studente iscritto a questo laboratorio',
+                        alignment: 'center'
+                    });
+                } else {
+                    let students = [];
+                    students.push([
+                        { text: 'Nome', alignment: 'center' },
+                        { text: 'Cognome', alignment: 'center' },
+                        { text: 'Classe', alignment: 'center' }
+                    ]);
+                    for (let student of results[(i * 4) + l]) {
+                        students.push([ student.Nome, student.Cognome, student.Classe ]);
                     }
-
-                    if (results[(i * 4) + l].length == 0) {
-                        docDefinition.content.push({
-                            text: 'Nessuno studente iscritto a questo laboratorio',
-                            alignment: 'center'
-                        });
-                    } else {
-                        let students = [];
-                        students.push([
-                            { text: 'Nome', alignment: 'center' },
-                            { text: 'Cognome', alignment: 'center' },
-                            { text: 'Classe', alignment: 'center' }
-                        ]);
-                        for (let student of results[(i * 4) + l]) {
-                            students.push([ student.Nome, student.Cognome, student.Classe ]);
+                    docDefinition.content.push({
+                        table: {
+                            widths: [ '*', '*', 40 ],
+                            body: students
                         }
-                        docDefinition.content.push({
-                            table: {
-                                widths: [ '*', '*', 40 ],
-                                body: students
-                            }
-                        });
-                    }
+                    });
                 }
             }
+        }
 
-            let pdfDoc = printer.createPdfKitDocument(docDefinition);
-            let file = 'assemblea_' + moment().format('DD-MM-YYYY') + '.pdf';
+        let pdfDoc = printer.createPdfKitDocument(docDefinition);
+        let file = 'assemblea_' + moment().format('DD-MM-YYYY') + '.pdf';
 
-            let stream = pdfDoc.pipe(fs.createWriteStream(path.join(__dirname, '..', '/pdf/' + file)));
-            stream.on('finish', () => {
-                req.session.showSuccessToDashboard = 'PDF generato con successo';
-                res.download(path.join(__dirname, '..', '/pdf/' + file), file, (err) => {
-                    if (err) {
-                        console.log(err);
-                        req.session.showErrorToDashboard = 'Si è verificato un errore nel tentare di scaricare il pdf';
-                    }
-                });
+        let stream = pdfDoc.pipe(fs.createWriteStream(path.join(__dirname, '..', '/pdf/' + file)));
+        stream.on('finish', () => {
+            req.session.showSuccessToDashboard = 'PDF generato con successo';
+            res.download(path.join(__dirname, '..', '/pdf/' + file), file, (err) => {
+                if (err) {
+                    console.log(err);
+                    req.session.showErrorToDashboard = 'Si è verificato un errore nel tentare di scaricare il pdf';
+                }
             });
-            pdfDoc.end();
-        }).catch((error) => {
-            req.session.showErrorToDashboard = error.toString();
-            res.redirect('/gestore/');
         });
+        pdfDoc.end();
     }).catch((error) => {
         req.session.showErrorToDashboard = error.toString();
         res.redirect('/gestore/');
@@ -460,7 +449,7 @@ router.post('/dashboard/assemblea/pdf', (req, res) => {
 });
 router.get('/dashboard/assemblea/salva', (req, res) => {
     let connection;
-    mysqlp.createConnection(mysqlCredentials).then((conn) => {
+    mysql.createConnection(mysqlCredentials).then((conn) => {
         connection = conn;
         return connection.query('SELECT `ID` AS `labID`, `Nome` AS `labName`, `Aula` AS `labAula`, `Descrizione` AS `labDesc`, `Ora1` AS `labPostiOra1`, `Ora2` AS `labPostiOra2`, `Ora3` AS `labPostiOra3`, `Ora4` AS `labPostiOra4`, `DueOre` AS `lastsTwoH` FROM `Progetti`');
     }).then((rows) => {
@@ -474,36 +463,33 @@ router.get('/dashboard/assemblea/salva', (req, res) => {
             }));
         }
 
-        Promise.all(promiseArray).then((results) => {
-            for (let i = 0; i < labs.length; i++) {
-                labs[i].labClassiOra1 = results[i].filter((el) => {
-                    return el.Ora1 === 1;
-                }).map((el) => { return el.SiglaClasse });
-                labs[i].labClassiOra2 = results[i].filter((el) => {
-                    return el.Ora1 === 1;
-                }).map((el) => { return el.SiglaClasse });
-                labs[i].labClassiOra3 = results[i].filter((el) => {
-                    return el.Ora1 === 1;
-                }).map((el) => { return el.SiglaClasse });
-                labs[i].labClassiOra4 = results[i].filter((el) => {
-                    return el.Ora1 === 1;
-                }).map((el) => { return el.SiglaClasse });
-            }
-            assemblea = req.session.assemblea;
-            delete assemblea.info.display.subsClosed;
-            assemblea.labs = labs;
+        return Promise.all(promiseArray);
+    }).then((results) => {
+        for (let i = 0; i < labs.length; i++) {
+            labs[i].labClassiOra1 = results[i].filter((el) => {
+                return el.Ora1 === 1;
+            }).map((el) => { return el.SiglaClasse });
+            labs[i].labClassiOra2 = results[i].filter((el) => {
+                return el.Ora1 === 1;
+            }).map((el) => { return el.SiglaClasse });
+            labs[i].labClassiOra3 = results[i].filter((el) => {
+                return el.Ora1 === 1;
+            }).map((el) => { return el.SiglaClasse });
+            labs[i].labClassiOra4 = results[i].filter((el) => {
+                return el.Ora1 === 1;
+            }).map((el) => { return el.SiglaClasse });
+        }
+        assemblea = req.session.assemblea;
+        delete assemblea.info.display.subsClosed;
+        assemblea.labs = labs;
 
-            let file = 'assemblee/assemblea_' + moment(assemblea.info.date).format('DD-MM-YYYY') + '.json';
-            fs.writeFile(file, JSON.stringify(assemblea, null, 4), 'utf8', (error) => {
-                if (error) {
-                    req.session.showErrorToDashboard = error.toString();
-                } else {
-                    req.session.showSuccessToDashboard = 'Assemblea salvata con successo';
-                }
-                res.redirect('/gestore/');
-            });
-        }).catch((error) => {
-            req.session.showErrorToDashboard = error.toString();
+        let file = 'assemblee/assemblea_' + moment(assemblea.info.date).format('DD-MM-YYYY') + '.json';
+        fs.writeFile(file, JSON.stringify(assemblea, null, 4), 'utf8', (error) => {
+            if (error) {
+                req.session.showErrorToDashboard = error.toString();
+            } else {
+                req.session.showSuccessToDashboard = 'Assemblea salvata con successo';
+            }
             res.redirect('/gestore/');
         });
     }).catch((error) => {
@@ -537,9 +523,9 @@ router.get('/dashboard/assemblea/informazioni/modifica', (req, res) => {
     }
     res.render('admin/info', infoAssemblea);
 });
-router.post('/dashboard/assemblea/informazioni/modifica', (req, res) => {
+router.post('/dashboard/assemblea/informazioni/modifica', isAuthenticated, (req, res) => {
     if (req.body) {
-        mysqlp.createConnection(mysqlCredentials).then((conn) => {
+        mysql.createConnection(mysqlCredentials).then((conn) => {
             let results = conn.query({
                 sql: 'UPDATE `Info` SET ProssimaData=?, AperturaIscrizioni=?, ChiusuraIscrizioni=? WHERE 1',
                 values: [
@@ -591,7 +577,7 @@ router.get('/dashboard/assemblea/laboratori', (req, res) => {
     let rowsProgetti;
     let labsIndex = 0;
 
-    mysqlp.createConnection(mysqlCredentials).then((conn) => {
+    mysql.createConnection(mysqlCredentials).then((conn) => {
         connection = conn;
         return connection.query('SELECT ID AS labID, ' +
                           'Nome AS labName, ' +
@@ -670,7 +656,7 @@ router.get('/dashboard/assemblea/laboratori', (req, res) => {
 });
 
 // Aggiungi laboratorio
-router.post('/dashboard/assemblea/laboratori/nuovolab', (req, res) => {
+router.post('/dashboard/assemblea/laboratori/nuovolab', isAuthenticated, (req, res) => {
     if (req.body.target == 'memory') {
         if (req.session.newLabs == null) {
             req.session.newLabs = [];
@@ -683,7 +669,7 @@ router.post('/dashboard/assemblea/laboratori/nuovolab', (req, res) => {
     } else {
         let connection;
         let lab = req.body.lab;
-        mysqlp.createConnection(mysqlCredentials).then((conn) => {
+        mysql.createConnection(mysqlCredentials).then((conn) => {
             connection = conn;
             return connection.query({
                 sql: 'INSERT INTO `Progetti` (`ID`, `Nome`, `Descrizione`, `Aula`, `Ora1`, `Ora2`, `Ora3`, `Ora4`, `DueOre`) VALUES (?,?,?,?,?,?,?,?,?)',
@@ -718,19 +704,19 @@ router.post('/dashboard/assemblea/laboratori/nuovolab', (req, res) => {
                 }));
             }
 
-            Promise.all(promiseArray).then(() => {
-                connection.end();
-                res.json({
-                    result: 200,
-                    message: 'Laboratorio ' + req.body.lab.labID + ' creato con successo'
-                });
-            }).catch((error) => {
-                if (connection && connection.end) connection.end();
-                console.log(error);
-                res.json({
-                    result: 500,
-                    message: error.toString()
-                });
+            return Promise.all(promiseArray);
+        }).then(() => {
+            connection.end();
+            res.json({
+                result: 200,
+                message: 'Laboratorio ' + req.body.lab.labID + ' creato con successo'
+            });
+        }).catch((error) => {
+            if (connection && connection.end) connection.end();
+            console.log(error);
+            res.json({
+                result: 500,
+                message: error.toString()
             });
         }).catch((error) => {
             if (connection && connection.end) connection.end();
@@ -743,7 +729,7 @@ router.post('/dashboard/assemblea/laboratori/nuovolab', (req, res) => {
     }
 });
 // Modifica laboratorio
-router.post('/dashboard/assemblea/laboratori/modificalab', (req, res) => {
+router.post('/dashboard/assemblea/laboratori/modificalab', isAuthenticated, (req, res) => {
     if (req.body.target == 'memory') {
         let targetLabIndex;
         req.session.newLabs.forEach((lab, index) => {
@@ -758,7 +744,7 @@ router.post('/dashboard/assemblea/laboratori/modificalab', (req, res) => {
         });
     } else {
         let connection;
-        mysqlp.createConnection(mysqlCredentials).then((conn) => {
+        mysql.createConnection(mysqlCredentials).then((conn) => {
             connection = conn;
             return connection.query({
                 sql: 'UPDATE `Progetti` SET Nome=?, Descrizione=?, Aula=?, Ora1=?, Ora2=?, Ora3=?, Ora4=?, DueOre=? WHERE ID=?',
@@ -794,7 +780,7 @@ router.post('/dashboard/assemblea/laboratori/modificalab', (req, res) => {
     }
 });
 // Elimina laboratorio
-router.post('/dashboard/assemblea/laboratori/eliminalab', (req, res) => {
+router.post('/dashboard/assemblea/laboratori/eliminalab', isAuthenticated, (req, res) => {
     let targetLabIndex;
     if (req.body.target == 'memory') {
         req.session.newLabs.forEach((lab, index) => {
@@ -809,7 +795,7 @@ router.post('/dashboard/assemblea/laboratori/eliminalab', (req, res) => {
         });
     } else {
         let connection;
-        mysqlp.createConnection(mysqlCredentials).then((conn) => {
+        mysql.createConnection(mysqlCredentials).then((conn) => {
             connection = conn;
             return connection.query({
                 sql: 'DELETE FROM `Progetti` WHERE ID=?',
@@ -843,7 +829,7 @@ router.get('/dashboard/assemblea/statistiche', async (req, res) => {
     let totalStds;
     let stdsSub;
 
-    mysqlp.createConnection(mysqlCredentials).then((conn) => {
+    mysql.createConnection(mysqlCredentials).then((conn) => {
         connection = conn;
         return connection.query('SELECT ID AS labID, Nome AS labName, `Ora1`+`Ora2`+`Ora3`+`Ora4` AS labPosti FROM `Progetti`');
     }).then((rows) => {
@@ -863,41 +849,37 @@ router.get('/dashboard/assemblea/statistiche', async (req, res) => {
         }
         let labsStats = [];
 
-        Promise.all(promiseList).then((results) => {
-            let labTotalSubs;
-            for (let i = 0; i < (results.length / 4); i++) {
-                labTotalSubs = 0;
-                for (let l = 0; l < 4; l++) {
-                    labTotalSubs += results[i + l][0].subs;
-                }
-
-                labsStats.push({
-                    labID: labList[i].labID,
-                    labName: labList[i].labName,
-                    labSubs: {
-                        total: labList[i].labPosti,
-                        now: labTotalSubs,
-                        perc: ( (results[i][0].subs * 100) / labList[i].labPosti )
-                    }
-                });
+        return Promise.all(promiseList);
+    }).then((results) => {
+        let labTotalSubs;
+        for (let i = 0; i < (results.length / 4); i++) {
+            labTotalSubs = 0;
+            for (let l = 0; l < 4; l++) {
+                labTotalSubs += results[i + l][0].subs;
             }
-        }).then(() => {
-            connection.query('SELECT * FROM `Studenti`').then((rows) => {
-                connection.end();
-                res.render('admin/stats', {
-                    subs: {
-                        total: totalStds,
-                        now: stdsSub,
-                        perc: ( (stdsSub * 100) / totalStds )
-                    },
-                    labsStats: labsStats,
-                    students: rows,
-                    title: 'Statistiche'
-                });
-            }).catch((error) => {
-                if (connection && connection.end) connection.end();
-                console.log(error);
-                res.render('admin/stats', { title: 'Statistiche', error });
+
+            labsStats.push({
+                labID: labList[i].labID,
+                labName: labList[i].labName,
+                labSubs: {
+                    total: labList[i].labPosti,
+                    now: labTotalSubs,
+                    perc: ( (results[i][0].subs * 100) / labList[i].labPosti )
+                }
+            });
+        }
+    }).then(() => {
+        connection.query('SELECT * FROM `Studenti`').then((rows) => {
+            connection.end();
+            res.render('admin/stats', {
+                subs: {
+                    total: totalStds,
+                    now: stdsSub,
+                    perc: ( (stdsSub * 100) / totalStds )
+                },
+                labsStats: labsStats,
+                students: rows,
+                title: 'Statistiche'
             });
         }).catch((error) => {
             if (connection && connection.end) connection.end();
@@ -912,8 +894,8 @@ router.get('/dashboard/assemblea/statistiche', async (req, res) => {
 
 
 // Get classi da lista studenti
-router.post('/dashboard/assemblea/classi/get', (req, res) => {
-    mysqlp.createConnection(mysqlCredentials).then((conn) => {
+router.post('/dashboard/assemblea/classi/get', isAuthenticated, (req, res) => {
+    mysql.createConnection(mysqlCredentials).then((conn) => {
         let result = conn.query('SELECT DISTINCT `Classe` FROM `Studenti` ORDER BY `Classe`');
         conn.end();
         return result;
@@ -928,19 +910,51 @@ router.post('/dashboard/assemblea/classi/get', (req, res) => {
 });
 
 
-
 // Logout
 router.get('/dashboard/logout', (req, res) => {
     req.session.destroy((error) => {
         if (error) {
             console.log(error);
         }
-        res.render('admin/logout', { title: 'Logout', loginPage: true });
+        res.render('admin/logout', { title: 'Logout' });
     });
 });
 
 
-// [ ========== UTILS FUNZTIONS ========== ]
+
+// Errors handling
+router.use((err, req, res, next) => {
+    if (err.status == 401) {
+        res.redirect('/gestore/');
+    } else {
+        console.log(err.stack);
+        res.render('error',  {
+            code: 500,
+            message: 'Il server ha riscontrato un problema. Contatta il Tronweb per maggiori informazioni.',
+            redirect: '/gestore'
+        });
+    }
+});
+router.use((req, res) => {
+    res.type('text/html').status(404).render('error',  {
+        code: 404,
+        message: 'La pagina che stai cercando non è stata trovata all\'interno del server.',
+        from: '/gestore'
+    });
+});
+
+// [ ========== FUNCTIONS ========== ]
+function isAuthenticated(req, res, next) {
+    if (req.session.authenticated === true) {
+        next();
+    } else {
+        let error = new Error('Autenticazione richiesta');
+        error.status = 401;
+        next(error);
+    }
+}
+
+// Utils
 function checkZero(n) {
     if (n < 10) {
         return "0" + n;
@@ -952,7 +966,7 @@ function uniqueArray(arrArg) {
     return arrArg.filter((elem, pos, arr) => {
         return arr.indexOf(elem) == pos;
     });
-};
+}
 // [ ===================================== ]
 
 module.exports = router;

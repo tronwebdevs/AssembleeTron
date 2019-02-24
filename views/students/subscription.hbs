@@ -1,0 +1,109 @@
+<head>
+    {{> head}}
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-sm">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm">
+                                <span class="badge badge-primary">
+                                    <h5 class="mb-0">{{student.name}} {{student.surname}} - {{student.classe}}</h5>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm">
+                                <h3 class="card-title display-4">Laboratori</h3>
+                            </div>
+                        </div>
+                        <div class="row mb-2" >
+                            <div class="col-sm">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="labsList">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Laboratorio</th>
+                                                <th scope="col">Descrizione</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="lab-row">
+                                                <td>1</td>
+                                                <td>1</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm text-uppercase">
+                                <p style="font-size: 0.75em !important; color:#c9c9c9;">- Informazioni gentilmente offerte dai Rappresentanti d'Istituto -</p>
+                                <u>Per i progetti da <b>due ore</b> seleziona la prima e la seconda ora o la terza e la quarta ora.</u>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col">
+                                <form action="/iscriviti" method="POST" class="row">
+                                    <div class="col-sm-6 my-md-1">
+                                        <div class="form-group mb-2">
+                                            <select class="form-control">
+                                                <option selected disabled>Prima ora</option>
+                                                {{#each labsOra1}}
+                                                    <option value="this.labID">this.labName</option>
+                                                {{/each}}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 my-md-1">
+                                        <div class="form-group mb-2">
+                                            <select class="form-control">
+                                                <option selected disabled>Seconda ora</option>
+                                                {{#each labsOra2}}
+                                                    <option value="this.labID">this.labName</option>
+                                                {{/each}}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 my-md-1">
+                                        <div class="form-group mb-2">
+                                            <select class="form-control">
+                                                <option selected disabled>Terza ora</option>
+                                                {{#each labsOra3}}
+                                                    <option value="this.labID">this.labName</option>
+                                                {{/each}}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 my-md-1">
+                                        <div class="form-group mb-2">
+                                            <select class="form-control">
+                                                <option selected disabled>Quarta ora</option>
+                                                {{#each labsOra4}}
+                                                    <option value="this.labID">this.labName</option>
+                                                {{/each}}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col text-center">
+                                        <div class="form-group mt-3 mb-0">
+                                            <button type="submit" class="btn btn-primary">Iscriviti</button>
+                                        </div>                            
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer text-muted text-center text-small">
+        <p class="mb-1">Copyright &copy; 2019 TronWeb | Davide Testolin | Made with Node.js</p>
+    </footer>
+    {{> scripts}}
+</body>

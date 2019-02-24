@@ -1,0 +1,18 @@
+<head>
+    {{> head}}
+    <link rel="stylesheet" href="/css/styleLogin.css" />
+</head>
+<body>
+    <form class="form-signin" action="/gestore/login" method="POST">
+        <div class="resp-image">
+            <img class="mb-4" src="/img/tron_logo.png" alt="" style="width:100%;height:auto">
+        </div>
+        {{#if error}}
+            <div class="alert alert-danger" role="alert">{{error}}</div>
+        {{/if}}
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required autofocus>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Accedi</button>
+    </form>
+    {{> scripts}}
+</body>
