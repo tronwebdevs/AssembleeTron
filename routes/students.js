@@ -26,26 +26,46 @@ const mysqlCredentials = require('../config/mysql_credentials.js');
 
 
 router.get('/', (req, res) => {
-    let obj = {
-        subsOpen: true,
-        assemblea: {
-            info: {
-                display: {
-                    date: '06/02/2019'
+    if (req.session.student) {
+        res.redirect('/conferma');
+    } else {
+        mysql.createConnection(mysqlCredentials).then((conn) => {
+            let result = conn.query('SELECT * FROM `Info` ORDER BY `Override` DESC');
+            conn.end();
+            return result;
+        }).then((rows) => {
+            let assemblea;
+            if (rows.length == 0) {
+                assemblea = { exist: false };
+            } else if (rows.length == 1) {
+                assemblea = { exist: true, date: moment(rows[0].ProssimaData).format('DD/MM/YYYY') };
+                if (moment(rows[0].AperturaIscrizioni).diff(moment()) < 0 && moment(rows[0].ChiusuraIscrizioni).diff(moment()) > 0) {
+                    assemblea.subsOpen = true;
                 }
+                req.session.assemblea = assemblea;
+                if (req.session.authError != null) {
+                    if (req.session.authError.code == 509) {
+                        assemblea.error = 'Errore inaspettato del database';
+                        assemblea.consoleError = req.session.authError.message;
+                    } else {
+                        assemblea.error = req.session.authError.message;
+                    }
+                    delete req.session.authError;
+                }
+            } else {
+                let error = new Error('Numero di righe inaspettato, considero solo la pima');
+                error.status = 504;
+                throw error;
             }
-        }
-    };
-    if (req.session.authError != null) {
-        if (req.session.authError.code == 509) {
-            obj.error = 'Errore inaspettato del database';
-            obj.consoleError = req.session.authError.message;
-        } else {
-            obj.error = req.session.authError.message;
-        }
-        delete req.session.authError;
+            res.render('students/home', assemblea);
+        }).catch((error) => {
+            if (error.status == 504) {
+                error.console = error.message;
+                error.message = null;
+            }
+            res.render('students/home', { error: error.message, consoleError: error.console });
+        });
     }
-    res.render('students/home', obj);
 });
 
 
@@ -66,12 +86,9 @@ router.post('/login', (req, res) => {
             // Controlla il numero di righe ottenute (lo studente esiste?)
             if (rows.length == 0) {
                 // Matricola inesistente, torna al login
-                connection.end();
-                req.session.authError = {
-                    code: 504,
-                    message: 'La matricola inserita non esiste'
-                }
-                res.redirect('/');
+                let error = new Error('La matricola inserita non esiste');
+                error.status = 504;
+                throw error;
             } else {
                 // Studente trovato
                 student = {
@@ -106,43 +123,37 @@ router.post('/login', (req, res) => {
                         req.session.student = student;
                         // Va alla pagina di conferma (studente non partecipa)
                         res.redirect('/conferma');
-                    }).catch(() => {
+                    }).catch((error) => {
                         // Errore nel registrare lo studente (non partecipa)
                         if (connection && connection.end) connection.end();
                         req.session.authError = {
                             code: 509,
-                            message: error.toString()
+                            message: error.message
                         }
                         res.redirect('/');
                     });
                 } else {
                     // Valore inaspettato sul radio di partecipo/non partecipo
-                    connection.end();
-                    req.session.authError = {
-                        code: 502,
-                        message: 'Errore inaspettato, codice #SSAD500'
-                    }
-                    res.redirect('/');
+                    let error = new Error('Errore inaspettato, codice #SSAD500');
+                    error.status = 502;
+                    throw error;
                 }
-            } else {
+            } else if (rows.length == 1) {
                 // Studente gia' iscritto all'assemblea
                 student.labs = [ rows[0].Ora1, rows[0].Ora2, rows[0].Ora3, rows[0].Ora4 ];
                 req.session.student = student;
                 res.redirect('/conferma');
 
-                // connection.end();
-                // req.session.authError = {
-                //     code: 503,
-                //     message: 'La matricola inserita è già iscritta'
-                // }
-                // res.redirect('/');
+                // let error = new Error('La matricola inserita è già iscritta');
+                // error.status = 503;
+                // throw error;
             }
         }).catch((error) => {
             // Errore nel processo di autenticaione
             if (connection && connection.end) connection.end();
             req.session.authError = {
-                code: 509,
-                message: error.toString()
+                code: error.status || 509,
+                message: error.message
             }
             res.redirect('/');
         });
@@ -225,7 +236,7 @@ router.get('/iscrizione', (req, res) => {
         }).catch((error) => {
             req.session.authError = {
                 code: 509,
-                message: error.toString()
+                message: error.message
             }
             res.redirect('/');
         });
@@ -258,7 +269,7 @@ router.post('/iscriviti', isAuthenticated, (req, res) => {
         }).catch((error) => {
             req.session.authError = {
                 code: 509,
-                message: error.toString()
+                message: error.message
             }
             res.redirect('/');
         });
@@ -277,36 +288,41 @@ router.get('/conferma', (req, res) => {
     if (req.session.student.labs) {
         // Laboratori salvati in memoria
         if (typeof req.session.student.labs[0] == 'string' || typeof req.session.student.labs[0] == 'number') {
-            mysql.createConnection(mysqlCredentials).then((conn) => {
-                connection = conn;
-                let promiseArray = [];
-                req.session.student.labs.forEach((labID) => {
-                    promiseArray.push(connection.query({
-                        sql: 'SELECT `Nome` AS `labName`, `Aula` AS `labAula` FROM `Progetti` WHERE ID=?',
-                        values: [ labID ]
-                    }));
-                });
-                return Promise.all(promiseArray);
-            }).then((results) => {
+            if (req.session.student.labs[0] == -1) {
                 req.session.student.labs = [];
-                results.forEach((result, index) => {
-                    req.session.student.labs.push({
-                        index: index + 1,
-                        labName: result[0].labName,
-                        labAula: result[0].labAula
+                res.render('students/confirmSub', { student: req.session.student, assemblea: req.session.assemblea });
+            } else {
+                mysql.createConnection(mysqlCredentials).then((conn) => {
+                    connection = conn;
+                    let promiseArray = [];
+                    req.session.student.labs.forEach((labID) => {
+                        promiseArray.push(connection.query({
+                            sql: 'SELECT `Nome` AS `labName`, `Aula` AS `labAula` FROM `Progetti` WHERE ID=?',
+                            values: [ labID ]
+                        }));
                     });
+                    return Promise.all(promiseArray);
+                }).then((results) => {
+                    req.session.student.labs = [];
+                    results.forEach((result, index) => {
+                        req.session.student.labs.push({
+                            index: index + 1,
+                            labName: result[0].labName,
+                            labAula: result[0].labAula
+                        });
+                    });
+                    res.render('students/confirmSub', { student: req.session.student, assemblea: req.session.assemblea });
+                }).catch((error) => {
+                    console.log(error);
+                    req.session.authError = {
+                        code: 509,
+                        message: error.message
+                    }
+                    res.redirect('/');
                 });
-                res.render('students/confirmSub', { student: req.session.student });
-            }).catch((error) => {
-                console.log(error);
-                req.session.authError = {
-                    code: 509,
-                    message: error.toString()
-                }
-                res.redirect('/');
-            });
+            }
         } else {
-            res.render('students/confirmSub', { student: req.session.student });
+            res.render('students/confirmSub', { student: req.session.student, assemblea: req.session.assemblea });
         }
     } else {
         // Laboratori non salvati in memoria
@@ -316,8 +332,13 @@ router.get('/conferma', (req, res) => {
 
 router.get('/logout', (req, res) => {
     req.session.destroy((err) => {
-        if (err) console.log(err);
-        res.status(200).send('Logout effettuato con successo');
+        if (err) {
+            req.session.authError = {
+                code: 512,
+                message: err.message
+            }
+        }
+        res.redirect('/');
     });
 });
 
@@ -340,7 +361,7 @@ router.use((err, req, res, next) => {
 router.use((req, res) => {
     res.type('text/html').status(404).render('error',  {
         code: 404,
-        message: 'La pagina che stai cercando non è stata trovata all\'interno del server.',
+        message: 'OOF! Pagina non trovata :(',
         redirect: '/'
     });
 });
@@ -362,7 +383,7 @@ function destroySession(req) {
         if (req.session) {
             req.session.destroy((error) => {
                 if (error) {
-                    reject(error.toString());
+                    reject(error.message);
                 } else {
                     resolve();
                 }

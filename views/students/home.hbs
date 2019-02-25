@@ -3,38 +3,38 @@
     <link rel="stylesheet" href="/css/styleLogin.css" />
 </head>
 <body>
-    {{#if assemblea}}
+    {{#if exist}}
     <form class="form-signin" action="/login" method="POST">
         <div class="card mb-4 shadow-sm">
             <div class="card-body text-center">
-                <h5 class="card-title">Iscrizioni per l'Assemblea d'Istituto del {{assemblea.info.display.date}}</h5>
+                <h5 class="card-title">Iscrizioni per l'Assemblea d'Istituto del {{date}}</h5>
                 {{#if subsOpen}}
-                <p class="card-text text-left login-subtitle">
-                    Inserisci la tua matricola per entrare:
-                </p>
+                    <p class="card-text text-left login-subtitle">
+                        Inserisci la tua matricola per entrare:
+                    </p>
 
-                {{#if error}}
-                <div class="alert alert-danger" role="alert">{{error}}</div>
-                {{/if}}
+                    {{#if error}}
+                    <div class="alert alert-danger" role="alert">{{error}}</div>
+                    {{/if}}
 
-                <div class="form-group">
-                    <input type="text" class="form-control" name="matricola" placeholder="Matricola" required autofocus>
-                </div>
-                <div class="form-group">
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="partRadio" name="part" class="custom-control-input" value="1" checked>
-                        <label class="custom-control-label" for="partRadio">Partecipo</label>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="matricola" placeholder="Matricola" required autofocus>
                     </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="notPartRadio" name="part" class="custom-control-input" value="0">
-                        <label class="custom-control-label" for="notPartRadio">Non partecipo</label>
+                    <div class="form-group">
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="partRadio" name="part" class="custom-control-input" value="1" checked>
+                            <label class="custom-control-label" for="partRadio">Partecipo</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="notPartRadio" name="part" class="custom-control-input" value="0">
+                            <label class="custom-control-label" for="notPartRadio">Non partecipo</label>
+                        </div>
                     </div>
-                </div>
-                <button class="btn btn-primary btn-block" type="submit">Entra</button>
+                    <button class="btn btn-primary btn-block" type="submit">Entra</button>
                 {{else}}
-                <p class="card-text">
-                    Le iscrizioni non sono ancora aperte, riprova più tardi.
-                </p>
+                    <p class="card-text">
+                        Le iscrizioni non sono ancora aperte o sono già state chiuse
+                    </p>
                 {{/if}}
             </div>
         </div>
@@ -50,6 +50,6 @@
     {{/if}}
     {{> scripts}}
     {{#if consoleError}}
-        <script>console.error('{{consoleError}}');</script>
+        <script> console.error("{{consoleError}}".replace(/&#x27;/g, '\''));</script>
     {{/if}}
 </body>

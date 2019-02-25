@@ -20,8 +20,8 @@ body {
 
 /* Bootstrap sm breakpoint */
 @media only screen and (max-width: 767.98px) {
-    tr.lab-row-student, tr.lab-row-student > td {
-        font-size: 0.8em;
+    .lab-row-student, tr.lab-row-student > td {
+        font-size: 0.9em;
     }
     tr.lab-row-confirm, tr.lab-row-confirm > td {
         font-size: 0.9em;
