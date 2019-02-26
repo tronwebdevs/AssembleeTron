@@ -8,7 +8,7 @@ moment.locale('it');
 const credentials = require('./config/credentials.js');
 
 // SETTINGS
-app.disable('x-powered-by');
+app.use(require('helmet')());
 app.set('views', path.join(__dirname, 'views'));
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');

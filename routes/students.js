@@ -393,19 +393,6 @@ function destroySession(req) {
         }
     });
 }
-
-function checkZero(n) {
-    if (n < 10) {
-        return "0" + n;
-    }
-    return n;
-}
-
-function uniqueArray(arrArg) {
-    return arrArg.filter((elem, pos, arr) => {
-        return arr.indexOf(elem) == pos;
-    });
-}
 // [ ===================================== ]
 
 module.exports = router;

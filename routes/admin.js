@@ -54,10 +54,10 @@ router.get('/dashboard', (req, res) => {
             return result;
         }).then((rows) => {
             if (rows.length > 0) {
-                if (req.session.assemblea == null) {
-                    req.session.assemblea = {};
+                if (req.session.assembleaAdmin == null) {
+                    req.session.assembleaAdmin = {};
                 }
-                req.session.assemblea.info = {
+                req.session.assembleaAdmin.info = {
                     date: moment(rows[0].ProssimaData).format('YYYY-MM-DD'),
                     startSub: {
                         date: moment(rows[0].AperturaIscrizioni).format('YYYY-MM-DD'),
@@ -73,7 +73,7 @@ router.get('/dashboard', (req, res) => {
                         endSub: moment(rows[0].ChiusuraIscrizioni).format('DD/MM/YYYY - HH:mm'),
                     }
                 };
-                req.session.assemblea.info.display.subsClosed = ( moment().diff(moment(req.session.assemblea.info.endSub.date + 'T' + req.session.assemblea.info.endSub.time)) > 0 );
+                req.session.assembleaAdmin.info.display.subsClosed = ( moment().diff(moment(req.session.assembleaAdmin.info.endSub.date + 'T' + req.session.assembleaAdmin.info.endSub.time)) > 0 );
 
                 let error = req.session.showErrorToDashboard;
                 delete req.session.showErrorToDashboard;
@@ -81,7 +81,7 @@ router.get('/dashboard', (req, res) => {
                 let success = req.session.showSuccessToDashboard;
                 delete req.session.showSuccessToDashboard;
 
-                res.render('admin/dashboard', { title: 'Dashboard', error, success, assemblea: req.session.assemblea.info.display });
+                res.render('admin/dashboard', { title: 'Dashboard', error, success, assemblea: req.session.assembleaAdmin.info.display });
             } else {
                 let error = req.session.showErrorToDashboard;
                 delete req.session.showErrorToDashboard;
@@ -100,7 +100,7 @@ router.get('/dashboard/assemblea', (req, res) => res.redirect('/gestore/dashboar
 
 // Create new assemblea
 router.get('/dashboard/assemblea/crea', (req, res) => {
-    if (req.session.assemblea == null) {
+    if (req.session.assembleaAdmin == null) {
         fs.readdir('assemblee', (err, files) => {
             if (err) {
                 console.log(err);
@@ -353,7 +353,7 @@ router.get('/dashboard/assemblea/elimina', (req, res) => {
         return Promise.all(promiseArray);
     }).then(() => {
         connection.end();
-        delete req.session.assemblea;
+        delete req.session.assembleaAdmin;
         req.session.showSuccessToDashboard = 'Assemblea eliminata con successo';
         res.redirect('/gestore/dashboard');
     }).catch((error) => {
@@ -479,7 +479,7 @@ router.get('/dashboard/assemblea/salva', (req, res) => {
                 return el.Ora1 === 1;
             }).map((el) => { return el.SiglaClasse });
         }
-        assemblea = req.session.assemblea;
+        assemblea = req.session.assembleaAdmin;
         delete assemblea.info.display.subsClosed;
         assemblea.labs = labs;
 
@@ -501,8 +501,8 @@ router.get('/dashboard/assemblea/salva', (req, res) => {
 
 // Info page
 router.get('/dashboard/assemblea/informazioni', (req, res) => {
-    if (req.session.assemblea.info) {
-        let obj = req.session.assemblea.info;
+    if (req.session.assembleaAdmin.info) {
+        let obj = req.session.assembleaAdmin.info;
         obj.title = 'Informazioni';
         res.render('admin/info', obj);
     } else {
@@ -510,7 +510,7 @@ router.get('/dashboard/assemblea/informazioni', (req, res) => {
     }
 });
 router.get('/dashboard/assemblea/informazioni/modifica', (req, res) => {
-    let infoAssemblea = req.session.assemblea.info;
+    let infoAssemblea = req.session.assembleaAdmin.info;
     infoAssemblea.edit = true;
     infoAssemblea.title = 'Modifica informazioni'
     if (req.session.infoEdit) {
@@ -537,7 +537,7 @@ router.post('/dashboard/assemblea/informazioni/modifica', isAuthenticated, (req,
             conn.end();
             return
         }).then(() => {
-            req.session.assemblea.info = {
+            req.session.assembleaAdmin.info = {
                 date: req.body.assDate,
                 startSub: {
                     date: req.body.assSubStartDate,

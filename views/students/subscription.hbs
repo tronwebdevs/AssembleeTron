@@ -54,7 +54,7 @@
                         </div>
                         <div class="row mb-2">
                             <div class="col">
-                                <form action="/iscriviti" id="lab-from" method="POST" class="row">
+                                <form action="/iscriviti" id="lab-from" method="POST" class="row needs-validation" novalidate>
                                     <div class="col-sm-6 my-md-1">
                                         <div class="form-group mb-2">
                                             <select class="custom-select select-lab" name="ora1" required>
@@ -63,6 +63,7 @@
                                                     <option value="{{this.labID}}" data-twoH="{{this.lastsTwoH}}">{{this.labName}} - {{this.labPostiOra1}} posti rimanenti</option>
                                                 {{/each}}
                                             </select>
+                                            <div class="invalid-feedback text-left" id="if-ora1"></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 my-md-1">
@@ -73,6 +74,7 @@
                                                     <option value="{{this.labID}}" data-twoH="{{this.lastsTwoH}}">{{this.labName}} - {{this.labPostiOra2}} posti rimanenti</option>
                                                 {{/each}}
                                             </select>
+                                            <div class="invalid-feedback text-left" id="if-ora2"></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 my-md-1">
@@ -83,6 +85,7 @@
                                                     <option value="{{this.labID}}" data-twoH="{{this.lastsTwoH}}">{{this.labName}} - {{this.labPostiOra3}} posti rimanenti</option>
                                                 {{/each}}
                                             </select>
+                                            <div class="invalid-feedback text-left" id="if-ora3"></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 my-md-1">
@@ -93,6 +96,7 @@
                                                     <option value="{{this.labID}}" data-twoH="{{this.lastsTwoH}}">{{this.labName}} - {{this.labPostiOra4}} posti rimanenti</option>
                                                 {{/each}}
                                             </select>
+                                            <div class="invalid-feedback text-left" id="if-ora4"></div>
                                         </div>
                                     </div>
                                     <div class="col text-center">
