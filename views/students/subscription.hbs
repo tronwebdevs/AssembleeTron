@@ -5,6 +5,15 @@
 <body>
     <div class="container">
         <div class="row mt-4">
+            {{#if error}}
+            <div class="col">
+                <div class="alert alert-danger" role="alert">
+                    {{error}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+        <div class="row mt-1">
             <div class="col-sm">
                 <div class="card text-center shadow-sm">
                     <div class="card-body">

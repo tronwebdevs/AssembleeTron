@@ -213,6 +213,7 @@ router.get('/iscrizione', (req, res) => {
             });
             return Promise.all(promiseArray);
         }).then((results) => {
+            connection.end();
             labList.forEach((lab, index) => {
                 if ( (lab.labPostiOra1 - results[index * 4][0].subs) > 0 && classi[index].Ora1 == 1) {
                     lab.labPostiOra1 -= results[index * 4][0].subs;
@@ -231,8 +232,14 @@ router.get('/iscrizione', (req, res) => {
                     labs.ora4.push(lab);
                 }
             });
-            connection.end();
-            res.render('students/subscription', { student: req.session.student, labList, labs });
+
+            let error = null;
+            if (req.session.authError) {
+                let errorLabName = labList.find((lab) => lab.labID == req.session.authError.labError.ID).labName;
+                error = `Posti esauriti nel laboratorio ${errorLabName} (ora ${req.session.authError.labError.hour})`;
+                delete req.session.authError;
+            }
+            res.render('students/subscription', { student: req.session.student, labList, labs, error });
         }).catch((error) => {
             req.session.authError = {
                 code: 509,
@@ -244,34 +251,64 @@ router.get('/iscrizione', (req, res) => {
 });
 router.post('/iscriviti', isAuthenticated, (req, res) => {
     if (req.body.ora1 && req.body.ora2 && req.body.ora3 && req.body.ora4) {
+        let connection;
+        let labs;
+        let selectedLabs = [ (+req.body.ora1 || -1), (+req.body.ora2 || -1), (+req.body.ora3 || -1),  (+req.body.ora4 || -1)];
         mysql.createConnection(mysqlCredentials).then((conn) => {
-            let result = conn.query({
-                sql: 'INSERT INTO `Iscritti` (`MatricolaStudente`, `Ora1`, `Ora2`, `Ora3`, `Ora4`) VALUES (?,?,?,?,?)',
-                values: [
-                    req.session.student.matricola,
-                    req.body.ora1,
-                    req.body.ora2,
-                    req.body.ora3,
-                    req.body.ora4
-                ]
+            connection = conn;
+            let promiseArray = [];
+            selectedLabs.forEach((labID) => {
+                promiseArray.push(connection.query({
+                    sql: 'SELECT `ID`, `Ora1`, `Ora2`, `Ora3`, `Ora4` FROM `Progetti` WHERE ID=?',
+                    values: [ labID ]
+                }));
             });
-    
-            req.session.student.labs = [
-                req.body.ora1,
-                req.body.ora2,
-                req.body.ora3,
-                req.body.ora4
-            ];
-            conn.end();
-            return result;
+            return Promise.all(promiseArray);
+        }).then((rows) => {
+            labs = rows;
+            let promiseArray = [];
+            rows.forEach((lab, index) => {
+                promiseArray.push(connection.query({
+                    sql: 'SELECT COUNT(`Ora' + (index + 1) + '`) AS `subs` FROM `Iscritti` WHERE `Ora' + (index + 1) + '`=?',
+                    values: [ lab[0].ID ]
+                }));
+            });
+            return Promise.all(promiseArray);
+        }).then((results) => {
+            let error = new Error('Posti esauriti per uno dei laboratori scelti');
+            error.status = 512;
+
+            labs.forEach((lab, index) => {
+                orePostiArray = Object.values(lab[0]).slice(1);
+                if (orePostiArray[index] - results[index][0].subs - 1 < 0) {
+                    error.labID = lab[0].ID;
+                    error.hour = index + 1;
+                    throw error;
+                }
+            });
+            return connection.query({
+                sql: 'INSERT INTO `Iscritti` (`MatricolaStudente`, `Ora1`, `Ora2`, `Ora3`, `Ora4`) VALUES (?,?,?,?,?)',
+                values: [ req.session.student.matricola ].concat(selectedLabs)
+            });
         }).then(() => {
+            connection.end();
+            req.session.student.labs = selectedLabs;
             res.redirect('/conferma');
         }).catch((error) => {
-            req.session.authError = {
-                code: 509,
-                message: error.message
+            if (error.status == 512) {
+                req.session.authError = {
+                    code: 512,
+                    message: error.message,
+                    labError: { ID: error.labID, hour: error.hour }
+                };
+                res.redirect('/iscrizione');
+            } else {
+                req.session.authError = {
+                    code: 509,
+                    message: error.message
+                };
+                res.redirect('/');
             }
-            res.redirect('/');
         });
     } else {
         req.session.authError = {
