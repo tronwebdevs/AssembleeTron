@@ -20,7 +20,7 @@
                         <div class="row mb-2">
                             <div class="col-sm">
                                 <span class="badge badge-primary">
-                                    <h5 class="mb-0">{{student.name}} {{student.surname}} - {{student.classe}}</h5>
+                                    <h6 class="mb-0">{{student.name}} {{student.surname}} - {{student.classe}}</h6>
                                 </span>
                             </div>
                         </div>
@@ -31,29 +31,13 @@
                         </div>
                         <div class="row mb-2 px-2">
                                 {{#each labList}}
-                                    <div class="col-sm-6 mb-3 border-bottom">
-                                        <span class="font-weight-bold lab-row-student">{{this.labName}}</span>
-                                        <p class="text-left mb-2 lab-row-student">{{this.labDesc}}</p>
+                                    <div class="col-12 mb-3 border-bottom">
+                                        <div class="row">
+                                            <span class="col-sm-4 font-weight-bold lab-row-student">{{this.labName}}</span>
+                                            <p class="col-sm-6 text-left mb-2 lab-row-student">{{this.labDesc}}</p>
+                                        </div>
                                     </div>
                                 {{/each}}
-                                {{!-- <div class="table-responsive">
-                                    <table class="table table-bordered" id="labsList">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Laboratorio</th>
-                                                <th scope="col">Descrizione</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="text-left">
-                                            {{#each labList}}
-                                                <tr class="lab-row-student">
-                                                    <td class="p-2 font-weight-bold">{{this.labName}}</td>
-                                                    <td class="p-2">{{this.labDesc}}</td>
-                                                </tr>
-                                            {{/each}}
-                                        </tbody>
-                                    </table>
-                                </div> --}}
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm text-uppercase">
