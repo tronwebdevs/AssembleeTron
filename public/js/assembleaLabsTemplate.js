@@ -1,22 +1,22 @@
-$(document).ready(function() {
+"use strict";
+
+$(document).ready(function () {
     $('#labModal').on('shown.bs.modal', function (e) {
         if ($('#labModal').attr('data-method-required') == 'create') {
             $('#labID').val($('.lab-row').length + 1);
         }
-    });
+    }); // Get classi
 
-    // Get classi
-    $.post('/gestore/dashboard/assemblea/classi/get').done(function(data) {
+    $.post('/gestore/classi/get').done(function (data) {
         if (data.result == 200) {
             // Carica classi nelle liste
-            data.list.forEach(function(obj) {
+            data.list.forEach(function (obj) {
                 $('#labClassiOra1').append('<option value="' + obj.Classe + '">' + obj.Classe + '</option>');
                 $('#labClassiOra2').append('<option value="' + obj.Classe + '">' + obj.Classe + '</option>');
                 $('#labClassiOra3').append('<option value="' + obj.Classe + '">' + obj.Classe + '</option>');
                 $('#labClassiOra4').append('<option value="' + obj.Classe + '">' + obj.Classe + '</option>');
-            });
+            }); // Refresh menu bootstrap-select
 
-            // Refresh menu bootstrap-select
             $('#labClassiOra1').selectpicker('refresh');
             $('#labClassiOra2').selectpicker('refresh');
             $('#labClassiOra3').selectpicker('refresh');
@@ -25,47 +25,46 @@ $(document).ready(function() {
             $('#mainLabsTemplate').prepend('<div class="alert alert-danger fade show" role="alert">' + data.message + ' (guarda la console per ulteriori informazioni)</div>');
             console.error(data.error);
         }
-    }).fail(function(error) {
+    }).fail(function (error) {
         $('#mainLabsTemplate').prepend('<div class="alert alert-danger fade show" role="alert">Si è verificato un errore inaspettato nel ottenere le classi dal database (guarda la console per ulteriori informazioni)</div>');
         console.error('Si è verificato un errore inaspettato nel ottenere le classi dal database');
     });
+    $('#labModalSubmit').click(function (event) {
+        event.preventDefault(); // Memorizza valore classi per laboratorio nelle ore 1,2,3,4
 
-    $('#labModalSubmit').click(function(event) {
-        event.preventDefault();
-
-        // Memorizza valore classi per laboratorio nelle ore 1,2,3,4
         var labClassiOra1 = JSON.stringify($('#labClassiOra1').val());
         var labClassiOra2 = JSON.stringify($('#labClassiOra2').val());
         var labClassiOra3 = JSON.stringify($('#labClassiOra3').val());
-        var labClassiOra4 = JSON.stringify($('#labClassiOra4').val());
+        var labClassiOra4 = JSON.stringify($('#labClassiOra4').val()); // Bypass bug di duplicazione su Invio-Errore-Annulla
 
-        // Bypass bug di duplicazione su Invio-Errore-Annulla
         $('#labClassiOra1').selectpicker('destroy');
         $('#labClassiOra2').selectpicker('destroy');
         $('#labClassiOra3').selectpicker('destroy');
         $('#labClassiOra4').selectpicker('destroy');
 
         if ($('#labName').val().trim() == '') {
-            $('#labModalForm').html('<div class="alert alert-danger alert-dismissible fade show form-alert-error" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>Non puoi lasciare il nome del laboratorio vuoto!</div>' + $('#labModalForm').html());
-            // Bypass bug di duplicazione su Invio-Errore-Annulla
+            $('#labModalForm').html('<div class="alert alert-danger alert-dismissible fade show form-alert-error" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>Non puoi lasciare il nome del laboratorio vuoto!</div>' + $('#labModalForm').html()); // Bypass bug di duplicazione su Invio-Errore-Annulla
+
             $('#labClassiOra1').selectpicker();
             $('#labClassiOra2').selectpicker();
             $('#labClassiOra3').selectpicker();
             $('#labClassiOra4').selectpicker();
             return;
         }
+
         if ($('#labDesc').val().trim() == '') {
-            $('#labModalForm').html('<div class="alert alert-danger alert-dismissible fade show form-alert-error" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>Non puoi lasciare la descrizione del laboratorio vuota!</div>' + $('#labModalForm').html());
-            // Bypass bug di duplicazione su Invio-Errore-Annulla
+            $('#labModalForm').html('<div class="alert alert-danger alert-dismissible fade show form-alert-error" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>Non puoi lasciare la descrizione del laboratorio vuota!</div>' + $('#labModalForm').html()); // Bypass bug di duplicazione su Invio-Errore-Annulla
+
             $('#labClassiOra1').selectpicker();
             $('#labClassiOra2').selectpicker();
             $('#labClassiOra3').selectpicker();
             $('#labClassiOra4').selectpicker();
             return;
         }
+
         if ($('#labAula').val().trim() == '') {
-            $('#labModalForm').html('<div class="alert alert-danger alert-dismissible fade show form-alert-error" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>Non puoi lasciare l\'aula del laboratorio vuota!</div>' + $('#labModalForm').html());
-            // Bypass bug di duplicazione su Invio-Errore-Annulla
+            $('#labModalForm').html('<div class="alert alert-danger alert-dismissible fade show form-alert-error" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>Non puoi lasciare l\'aula del laboratorio vuota!</div>' + $('#labModalForm').html()); // Bypass bug di duplicazione su Invio-Errore-Annulla
+
             $('#labClassiOra1').selectpicker();
             $('#labClassiOra2').selectpicker();
             $('#labClassiOra3').selectpicker();
@@ -77,12 +76,12 @@ $(document).ready(function() {
         $('#labClassiOra2').selectpicker();
         $('#labClassiOra3').selectpicker();
         $('#labClassiOra4').selectpicker();
-
         var url;
+
         if ($('#labModal').attr('data-method-required') == 'create') {
-            url = '/gestore/dashboard/assemblea/laboratori/nuovolab';
+            url = '/gestore/laboratori/nuovolab';
         } else if ($('#labModal').attr('data-method-required') == 'edit') {
-            url = '/gestore/dashboard/assemblea/laboratori/modificalab';
+            url = '/gestore/laboratori/modificalab';
         } else {
             console.error("Errore, impossibile determinare perchè hai aperto il modal");
             return;
@@ -92,7 +91,7 @@ $(document).ready(function() {
             labID: $('#labID').val(),
             labName: $('#labName').val(),
             labAula: $('#labAula').val(),
-            labDesc:  $('#labDesc').val(),
+            labDesc: $('#labDesc').val(),
             labPostiOra1: $('#labPostiOra1').val(),
             labPostiOra2: $('#labPostiOra2').val(),
             labPostiOra3: $('#labPostiOra3').val(),
@@ -103,17 +102,17 @@ $(document).ready(function() {
             labClassiOra4: $('#labClassiOra4').val(),
             lastsTwoH: $('#lastsTwoH').is(':checked')
         };
+        var target = $('#mainLabsTemplate').attr('data-labs-target'); //console.log(laboratorio);
 
-        var target = $('#mainLabsTemplate').attr('data-labs-target');
-
-        //console.log(laboratorio);
-
-        $.post(url, { lab: laboratorio, target: target }).done(function(resp) {
+        $.post(url, {
+            lab: laboratorio,
+            target: target
+        }).done(function (resp) {
             if (resp.result == 200) {
                 // Rimuove vecchio lab nella tabella
                 if ($('#labModal').attr('data-method-required') == 'edit') {
-                    var labRowCols = $('#lab' + $('#labID').val()).children();
-                    // Modifica la riga nella tabella
+                    var labRowCols = $('#lab' + $('#labID').val()).children(); // Modifica la riga nella tabella
+
                     $(labRowCols[1]).text($('#labName').val());
                     $(labRowCols[2]).text($('#labDesc').val());
                     $(labRowCols[3]).text($('#labAula').val());
@@ -125,49 +124,30 @@ $(document).ready(function() {
                     $(labRowCols[9]).text(labClassiOra3);
                     $(labRowCols[10]).text($('#labPostiOra4').val());
                     $(labRowCols[11]).text(labClassiOra4);
-                    $(labRowCols[12]).text(( $('#lastsTwoH').is(':checked') ? 'Sì' : 'No' ));
+                    $(labRowCols[12]).text($('#lastsTwoH').is(':checked') ? 'Sì' : 'No');
 
                     if ($('#mainLabsTemplate').attr('data-labs-target') != 'memory') {
                         $('#mainLabsTemplate').prepend('<div class="alert alert-success alert-dismissible fade show" role="alert">' + resp.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
                     }
                 } else {
                     // Aggiunge nuovo lab
-                    $('#labsListTbody').append('<tr class="lab-row" id="lab' + $('#labID').val() + '">' +
-                        '<th scope="row">' + $('#labID').val() + '</th>' +
-                        '<td>' + $('#labName').val() + '</td>' +
-                        '<td>' + $('#labDesc').val() + '</td>' +
-                        '<td>' + $('#labAula').val() + '</td> ' +
-                        '<td class="d-none">' + $('#labPostiOra1').val() + '</td>' +
-                        '<td class="d-none">' + labClassiOra1 + '</td>' +
-                        '<td class="d-none">' + $('#labPostiOra2').val() + '</td>' +
-                        '<td class="d-none">' + labClassiOra2 + '</td>' +
-                        '<td class="d-none">' + $('#labPostiOra3').val() + '</td>' +
-                        '<td class="d-none">' + labClassiOra3 + '</td>' +
-                        '<td class="d-none">' + $('#labPostiOra4').val() + '</td>' +
-                        '<td class="d-none">' + labClassiOra4 + '</td>' +
-                        '<td class="d-none">' + ( $('#lastsTwoH').is(':checked') ? 'Sì' : 'No' ) + '</td>' +
-                        '<td>' +
-                            '<i class="fas fa-list-ul p-1 mx-1 text-primary" role="button" onclick="viewLab(' + $('#labID').val() + ')"></i>' +
-                            '<i class="fas fa-edit p-1 mx-1 text-warning" role="button" onclick="editLab(' + $('#labID').val() + ')"></i>' +
-                            '<i class="fas fa-trash-alt p-1 mx-1 text-danger" role="button" onclick="deleteLab(' + $('#labID').val() + ')"></i>' +
-                        '</td>' +
-                    '</tr>');
+                    $('#labsListTbody').append('<tr class="lab-row" id="lab' + $('#labID').val() + '">' + '<th scope="row">' + $('#labID').val() + '</th>' + '<td>' + $('#labName').val() + '</td>' + '<td>' + $('#labDesc').val() + '</td>' + '<td>' + $('#labAula').val() + '</td> ' + '<td class="d-none">' + $('#labPostiOra1').val() + '</td>' + '<td class="d-none">' + labClassiOra1 + '</td>' + '<td class="d-none">' + $('#labPostiOra2').val() + '</td>' + '<td class="d-none">' + labClassiOra2 + '</td>' + '<td class="d-none">' + $('#labPostiOra3').val() + '</td>' + '<td class="d-none">' + labClassiOra3 + '</td>' + '<td class="d-none">' + $('#labPostiOra4').val() + '</td>' + '<td class="d-none">' + labClassiOra4 + '</td>' + '<td class="d-none">' + ($('#lastsTwoH').is(':checked') ? 'Sì' : 'No') + '</td>' + '<td>' + '<i class="fas fa-list-ul p-1 mx-1 text-primary" role="button" onclick="viewLab(' + $('#labID').val() + ')"></i>' + '<i class="fas fa-edit p-1 mx-1 text-warning" role="button" onclick="editLab(' + $('#labID').val() + ')"></i>' + '<i class="fas fa-trash-alt p-1 mx-1 text-danger" role="button" onclick="deleteLab(' + $('#labID').val() + ')"></i>' + '</td>' + '</tr>');
 
                     if ($('#mainLabsTemplate').attr('data-labs-target') != 'memory') {
                         $('#mainLabsTemplate').prepend('<div class="alert alert-success alert-dismissible fade show" role="alert">' + resp.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
                     }
                 }
             } else {
-                $('#mainLabsTemplate').prepend('<div class="alert alert-danger fade show" role="alert">Si è verificato un errore nel eliminare il laboratorio: ' + resp.message + '</div>');
-            }
-            // Ripulisce il form
-            clearForm();
-            // Nasconde il modal
+                $('#mainLabsTemplate').prepend('<div class="alert alert-danger fade show" role="alert">Si è verificato un errore nel creare/modifcare il laboratorio: ' + resp.message + '</div>');
+            } // Ripulisce il form
+
+
+            clearForm(); // Nasconde il modal
+
             $('#labModal').modal('hide');
         });
     });
-
-    $('#labModalDeleteSubmit').click(function(event) {
+    $('#labModalDeleteSubmit').click(function (event) {
         event.preventDefault();
     });
 });
@@ -195,6 +175,7 @@ function viewLab(labID) {
     $('#labClassiOra3').selectpicker('val', JSON.parse($(rowCols[9]).text()));
     $('#labPostiOra4').val($(rowCols[10]).text());
     $('#labClassiOra4').selectpicker('val', JSON.parse($(rowCols[11]).text()));
+
     if ($(rowCols[12]).text() == 'Sì') {
         $('#lastsTwoH').attr('checked', true);
     }
@@ -219,6 +200,7 @@ function editLab(labID) {
     $('#labClassiOra3').selectpicker('val', JSON.parse($(rowCols[9]).text()));
     $('#labPostiOra4').val($(rowCols[10]).text());
     $('#labClassiOra4').selectpicker('val', JSON.parse($(rowCols[11]).text()));
+
     if ($(rowCols[12]).text() == 'Sì') {
         $('#lastsTwoH').attr('checked', true);
     }
@@ -229,15 +211,16 @@ function editLab(labID) {
 function deleteLab(labID) {
     $('#deleteLabModal').modal('show');
     $('#labDeleteID').text(labID);
-    $('#labModalDeleteSubmit').attr('onclick', 'submitDeleteLab(' + labID + ')')
+    $('#labModalDeleteSubmit').attr('onclick', 'submitDeleteLab(' + labID + ')');
 }
 
 function submitDeleteLab(labID) {
-    $.post('/gestore/dashboard/assemblea/laboratori/eliminalab', { labID: labID }, function(resp) {
+    $.post('/gestore/laboratori/eliminalab', {
+        labID: labID
+    }, function (resp) {
         if (resp.result == 200) {
             $('#deleteLabModal').modal('hide');
             $('#lab' + labID).remove();
-
             $('#mainLabsTemplate').prepend('<div class="alert alert-success alert-dismissible fade show" role="alert">' + resp.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
         } else {
             $('#mainLabsTemplate').prepend('<div class="alert alert-danger fade show" role="alert">Si è verificato un errore nel eliminare il laboratorio: ' + resp.message + '</div>');
@@ -254,9 +237,11 @@ function clearForm() {
     $('#labPostiOra2').val(0);
     $('#labPostiOra3').val(0);
     $('#labPostiOra4').val(0);
+
     if ($('#lastsTwoH').is(':checked')) {
         $('#lastsTwoH').trigger('click');
     }
+
     $('#labClassiOra1').selectpicker('deselectAll');
     $('#labClassiOra2').selectpicker('deselectAll');
     $('#labClassiOra3').selectpicker('deselectAll');
@@ -268,7 +253,6 @@ function lockForm() {
     $('#labModalSubmit').hide();
     $('#labModalReset').hide();
     $('#labModalDismiss').show();
-
     $('#labName').attr('disabled', 'disabled');
     $('#labDesc').attr('disabled', 'disabled');
     $('#labAula').attr('disabled', 'disabled');
@@ -287,7 +271,6 @@ function unlockForm() {
     $('#labModalSubmit').show();
     $('#labModalReset').show();
     $('#labModalDismiss').hide();
-
     $('#labName').removeAttr('disabled');
     $('#labDesc').removeAttr('disabled');
     $('#labAula').removeAttr('disabled');

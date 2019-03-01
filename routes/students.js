@@ -1,30 +1,13 @@
+"use strict";
 const express = require('express');
-const app = express();
 const router = express.Router();
 const mysql = require('promise-mysql');
-const session = require('express-session');
 const moment = require('moment');
 moment.locale('it');
-const credentials = require('../config/credentials.js');
+
 const mysqlCredentials = require('../config/mysql_credentials.js');
 
-/* CODICI ERRORE LOGIN
- * 502 - Parametro Partecipo/Non errato o inesistente
- * 509 - Errore query sql
- *
- */
-
-/* STUDENT
- * student = {
- *     matricola: 000000x,
- *     name: rows[0].name,
- *     surname: rows[0].surname,
- *     classe: rows[0].classe,
- *     labs: []
- * };
- */
-
-
+// Home
 router.get('/', (req, res) => {
     if (req.session.student) {
         res.redirect('/conferma');
@@ -68,63 +51,51 @@ router.get('/', (req, res) => {
     }
 });
 
-
 // Login
 router.post('/login', (req, res) => {
     let connection;
     let student;
-    
+
     if (req.body.matricola && req.body.part) {
         mysql.createConnection(mysqlCredentials).then((conn) => {
             connection = conn;
-            // Seleziona studente in base alla matricola (da tutti gli studenti)
             return connection.query({
-                sql: 'SELECT Nome AS name, Cognome AS surname, Classe AS classe FROM `Studenti` WHERE Matricola=?',
+                sql: 'SELECT `Nome` AS `name`, `Cognome` AS `surname`, `Classe` AS `classe` FROM `Studenti` WHERE `Matricola`=?',
                 values: [ req.body.matricola ]
             });
         }).then((rows) => {
-            // Controlla il numero di righe ottenute (lo studente esiste?)
             if (rows.length == 0) {
-                // Matricola inesistente, torna al login
                 let error = new Error('La matricola inserita non esiste');
                 error.status = 504;
                 throw error;
             } else {
-                // Studente trovato
                 student = {
                     name: rows[0].name,
                     surname: rows[0].surname,
                     classe: rows[0].classe
                 };
-                // Controlla se e' gia' iscritto all'assemblea
                 return connection.query({
-                    sql: 'SELECT * FROM `Iscritti` WHERE MatricolaStudente=?',
+                    sql: 'SELECT * FROM `Iscritti` WHERE `MatricolaStudente`=?',
                     values: [ req.body.matricola ]
                 });
             }
         }).then((rows) => {
             if (rows.length == 0) {
-                // Studente non e' iscritto all'assemblea
                 if (+req.body.part === 1) {
-                    // Studente partecipa all'assemblea
                     student.matricola = req.body.matricola;
                     req.session.student = student;
                     res.redirect('/iscrizione');
                 } else if (+req.body.part === 0) {
-                    // Studente non partecipa all'assemblea
                     connection.query({
                         sql: 'INSERT INTO `Iscritti` (`MatricolaStudente`, `Ora1`, `Ora2`, `Ora3`, `Ora4`) VALUES (?,?,?,?,?)',
                         values: [ req.body.matricola, -1, -1, -1, -1 ]
                     }).then(() => {
                         connection.end();
-                        // Salva array laboratori vuoto e studente
                         student.matricola = req.body.matricola;
                         student.labs = [];
                         req.session.student = student;
-                        // Va alla pagina di conferma (studente non partecipa)
                         res.redirect('/conferma');
                     }).catch((error) => {
-                        // Errore nel registrare lo studente (non partecipa)
                         if (connection && connection.end) connection.end();
                         req.session.authError = {
                             code: 509,
@@ -133,23 +104,40 @@ router.post('/login', (req, res) => {
                         res.redirect('/');
                     });
                 } else {
-                    // Valore inaspettato sul radio di partecipo/non partecipo
                     let error = new Error('Errore inaspettato, codice #SSAD500');
                     error.status = 502;
                     throw error;
                 }
             } else if (rows.length == 1) {
-                // Studente gia' iscritto all'assemblea
-                student.labs = [ rows[0].Ora1, rows[0].Ora2, rows[0].Ora3, rows[0].Ora4 ];
-                req.session.student = student;
-                res.redirect('/conferma');
+                if (rows[0].Ora1 != -1 && rows[0].Ora2 != -1 && rows[0].Ora3 != -1 && rows[0].Ora4 != -1 && +req.body.part === 0) {
+                    connection.query({
+                        sql: 'UPDATE `Iscritti` SET `Ora1`=?, `Ora2`=?, `Ora3`=?, `Ora4`=? WHERE `MatricolaStudente`=?',
+                        values: [ -1, -1, -1, -1, req.body.matricola ]
+                    }).then(() => {
+                        connection.end();
+                        student.matricola = req.body.matricola;
+                        student.labs = [];
+                        req.session.student = student;
+                        res.redirect('/conferma');
+                    }).catch((error) => {
+                        if (connection && connection.end) connection.end();
+                        req.session.authError = {
+                            code: 509,
+                            message: error.message
+                        }
+                        res.redirect('/');
+                    });
+                } else {
+                    student.labs = [ rows[0].Ora1, rows[0].Ora2, rows[0].Ora3, rows[0].Ora4 ];
+                    req.session.student = student;
+                    res.redirect('/conferma');
+                }
 
                 // let error = new Error('La matricola inserita è già iscritta');
                 // error.status = 503;
                 // throw error;
             }
         }).catch((error) => {
-            // Errore nel processo di autenticaione
             if (connection && connection.end) connection.end();
             req.session.authError = {
                 code: error.status || 509,
@@ -158,7 +146,6 @@ router.post('/login', (req, res) => {
             res.redirect('/');
         });
     } else {
-        // Matricola non fornita (non dovrebbe mai succedere)
         req.session.authError = {
             code: 511,
             message: 'Matricola non inserita'
@@ -167,9 +154,9 @@ router.post('/login', (req, res) => {
     }
 });
 
-// Controlla se lo studente e' stato autenticato
-router.all('*', isAuthenticated);
+router.all('*', isLoggedIn);
 
+// Iscrizione studente
 router.get('/iscrizione', (req, res) => {
     let connection;
     let classi;
@@ -179,7 +166,7 @@ router.get('/iscrizione', (req, res) => {
     mysql.createConnection(mysqlCredentials).then((conn) => {
         connection = conn;
         return connection.query({
-            sql: 'SELECT * FROM `Partecipano` WHERE SiglaClasse=? ORDER BY `IDProgetto` ASC',
+            sql: 'SELECT * FROM `Partecipano` WHERE `SiglaClasse`=? ORDER BY `IDProgetto` ASC',
             values: [ req.session.student.classe ]
         }).then((rows) => {
             classi = rows;
@@ -187,7 +174,7 @@ router.get('/iscrizione', (req, res) => {
         }).then((rows) => {
             let promiseArray = [];
             let classe;
-            rows.forEach((lab, index) => {
+            rows.forEach((lab) => {
                 classe = classi.find((cl) => {
                     return cl.IDProgetto == lab.labID;
                 });
@@ -249,7 +236,7 @@ router.get('/iscrizione', (req, res) => {
         });
     });
 });
-router.post('/iscriviti', isAuthenticated, (req, res) => {
+router.post('/iscriviti', isLoggedIn, (req, res) => {
     if (req.body.ora1 && req.body.ora2 && req.body.ora3 && req.body.ora4) {
         let connection;
         let labs;
@@ -259,7 +246,7 @@ router.post('/iscriviti', isAuthenticated, (req, res) => {
             let promiseArray = [];
             selectedLabs.forEach((labID) => {
                 promiseArray.push(connection.query({
-                    sql: 'SELECT `ID`, `Ora1`, `Ora2`, `Ora3`, `Ora4` FROM `Progetti` WHERE ID=?',
+                    sql: 'SELECT `ID`, `Ora1`, `Ora2`, `Ora3`, `Ora4`, `DueOre` FROM `Progetti` WHERE `ID`=?',
                     values: [ labID ]
                 }));
             });
@@ -277,6 +264,7 @@ router.post('/iscriviti', isAuthenticated, (req, res) => {
         }).then((results) => {
             let error = new Error('Posti esauriti per uno dei laboratori scelti');
             error.status = 512;
+            let orePostiArray;
 
             labs.forEach((lab, index) => {
                 orePostiArray = Object.values(lab[0]).slice(1);
@@ -323,7 +311,6 @@ router.post('/iscriviti', isAuthenticated, (req, res) => {
 router.get('/conferma', (req, res) => {
     let connection;
     if (req.session.student.labs) {
-        // Laboratori salvati in memoria
         if (typeof req.session.student.labs[0] == 'string' || typeof req.session.student.labs[0] == 'number') {
             if (req.session.student.labs[0] == -1) {
                 req.session.student.labs = [];
@@ -334,7 +321,7 @@ router.get('/conferma', (req, res) => {
                     let promiseArray = [];
                     req.session.student.labs.forEach((labID) => {
                         promiseArray.push(connection.query({
-                            sql: 'SELECT `Nome` AS `labName`, `Aula` AS `labAula` FROM `Progetti` WHERE ID=?',
+                            sql: 'SELECT `Nome` AS `labName`, `Aula` AS `labAula` FROM `Progetti` WHERE `ID`=?',
                             values: [ labID ]
                         }));
                     });
@@ -362,13 +349,13 @@ router.get('/conferma', (req, res) => {
             res.render('students/confirmSub', { student: req.session.student, assemblea: req.session.assemblea });
         }
     } else {
-        // Laboratori non salvati in memoria
         res.render('students/confirmSub', { student: [{index: 0, labName: 'req.session.labs vuota', labAula: 'WIP'}] });
     }
 });
 
+// Logout
 router.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
+    destroySession(req).then((err) => {
         if (err) {
             req.session.authError = {
                 code: 512,
@@ -379,7 +366,7 @@ router.get('/logout', (req, res) => {
     });
 });
 
-// Errore del server
+// Error handling
 router.use((err, req, res, next) => {
     if (err.status == 401) {
         res.redirect('/');
@@ -394,7 +381,6 @@ router.use((err, req, res, next) => {
         }).catch((error) => console.log(error));
     }
 });
-// Pagina non trovata
 router.use((req, res) => {
     res.type('text/html').status(404).render('error',  {
         code: 404,
@@ -404,8 +390,7 @@ router.use((req, res) => {
 });
 
 
-// [ ========== UTILS FUNZTIONS ========== ]
-function isAuthenticated(req, res, next) {
+function isLoggedIn(req, res, next) {
     if (req.session.student) {
         next();
     } else {
@@ -430,6 +415,5 @@ function destroySession(req) {
         }
     });
 }
-// [ ===================================== ]
 
 module.exports = router;

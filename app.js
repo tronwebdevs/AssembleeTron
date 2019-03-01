@@ -1,10 +1,10 @@
+"use strict";
 const express = require('express');
 const app = express();
 const path = require('path');
 const hbs = require('express-handlebars').create({ extname: 'hbs', defaultLayout: 'main' });
 const session = require('express-session');
-const moment = require('moment');
-moment.locale('it');
+
 const credentials = require('./config/credentials.js');
 
 // SETTINGS
@@ -25,7 +25,7 @@ app.use(session({
 app.use('/gestore', require('./routes/admin.js'));
 app.use('/', require('./routes/students.js'));
 
-
+// SERVER
 app.listen(app.get('port'), () => {
     console.log('Application started on http://localhost:' + app.get('port') + ', press CTRL-C to terminate.');
 });

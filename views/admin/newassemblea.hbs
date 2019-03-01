@@ -1,6 +1,6 @@
 <head>
     {{> head}}
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/assemblea.css" />
 </head>
 <body>
     <div class="container">
@@ -9,8 +9,10 @@
         </div>
         <div class="row">
             {{#if error}}
-            <div class="alert alert-danger" role="alert">
-                Si è verificato un errore: <pre>{{error}}</pre>
+            <div class="col">
+                <div class="alert alert-danger" role="alert">
+                    Si è verificato un errore: <pre>{{error}}</pre>
+                </div>
             </div>
             {{/if}}
             <div class="col-md-9 px-0">
@@ -21,7 +23,7 @@
                 <div class="card mb-4 shadow-sm d-none d-sm-block">
                     <div class="card-body">
                         <h5 class="card-title text-center">Template</h5>
-                        <form class="card-text" action="/gestore/dashboard/assemblea/crea/carica" method="POST">
+                        <form class="card-text" action="/gestore/assemblea/crea/carica" method="POST">
                             <div class="pb-3 border-bottom">
                                 <div class="form-group custom-control custom-checkbox mb-0">
                                     <input type="checkbox" class="custom-control-input" name="saveAsTemplate" id="saveAsTemplate">
@@ -56,7 +58,7 @@
                             </div>
                             <div class="bnt-group">
                                 {{#if templateFiles.selected}}
-                                    <a href="/gestore/dashboard/assemblea/crea" class="btn btn-block btn-danger">Annulla</a>
+                                    <a href="/gestore/assemblea/crea" class="btn btn-block btn-danger">Annulla</a>
                                 {{else}}
                                     <button type="submit" class="btn btn-block btn-primary">Carica</button>
                                 {{/if}}
@@ -99,7 +101,7 @@
 
         $('#btnSubmitCreation').click(function(event) {
             event.preventDefault();
-            $('#infoForum').attr('action', '/gestore/dashboard/assemblea/crea').submit();
+            $('#infoForum').attr('action', '/gestore/assemblea/crea').submit();
         });
 
         $('#infoForum').submit(function(event) {

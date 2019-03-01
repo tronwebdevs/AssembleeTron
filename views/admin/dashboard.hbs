@@ -1,6 +1,6 @@
 <head>
     {{> head}}
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/assemblea.css" />
 </head>
 <body>
     <div class="container">
@@ -43,7 +43,7 @@
                             {{#if assemblea}}
                             <button type="button" data-toggle="modal" data-target="#confirmDeleteAssemblea" class="btn btn-danger">Elimina assemblea</a>
                             {{else}}
-                            <a href="/gestore/dashboard/assemblea/crea" class="btn btn-success">Crea nuova assemblea</a>
+                            <a href="/gestore/assemblea/crea" class="btn btn-success">Crea nuova assemblea</a>
                             {{/if}}
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                                 </dl>
                             </div>
                             <div class="text-center">
-                                <a href="/gestore/dashboard/assemblea/informazioni/modifica" class="btn btn-block btn-sm btn-primary">Modifica</a>
+                                <a href="/gestore/informazioni/modifica" class="btn btn-block btn-sm btn-primary">Modifica</a>
                             </div>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                             <h5 class="card-title text-center">Laboratori</h5>
                             <p class="card-text text-justify">Da questa sezione puoi vedere, modificare ed eliminare i laboratori e le calssi che si possono iscrivere ad essi.</p>
                             <div class="text-center">
-                                <a href="/gestore/dashboard/assemblea/laboratori" class="btn btn-block btn-sm btn-primary">Modifica</a>
+                                <a href="/gestore/laboratori" class="btn btn-block btn-sm btn-primary">Modifica</a>
                             </div>
                         </div>
                     </div>
@@ -89,7 +89,7 @@
                             <h5 class="card-title text-center">Statistiche</h5>
                             <p class="card-text text-justify">In questa sezione puoi vedere le statistiche dell'assemblea, dal numero di iscritti totali, a quelli per laboratorio.</p>
                             <div class="text-center">
-                                <a href="/gestore/dashboard/assemblea/statistiche" class="btn btn-block btn-sm btn-primary">Vedi</a>
+                                <a href="/gestore/statistiche" class="btn btn-block btn-sm btn-primary">Vedi</a>
                             </div>
                         </div>
                     </div>
@@ -102,7 +102,7 @@
                         <div class="card-body">
                             <h6 class="card-title text-success">Iscrizioni concluse</h6>
                             <p class="card-text">Ora puoi generare e stampare il file PDF con l'elenco degli sudenti per ogni ora, di ogni laboratorio</p>
-                            <form class="btn-group" action="/gestore/dashboard/assemblea/pdf" method="POST">
+                            <form class="btn-group" action="/gestore/assemblea/pdf" method="POST">
                                 <button type="submit" class="btn btn-success">Genera PDF</button>
                             </form>
                         </div>
@@ -131,7 +131,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Elimina assemblea</h5>
+                        <h5 class="modal-title">Elimina assemblea</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -142,7 +142,7 @@
                         </p>
                     </div>
                     <div class="modal-footer">
-                        <a href="/gestore/dashboard/assemblea/elimina" class="btn btn-outline-danger">Si</a>
+                        <a href="/gestore/assemblea/elimina" class="btn btn-outline-danger">Si</a>
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Annulla</button>
                     </div>
                 </div>

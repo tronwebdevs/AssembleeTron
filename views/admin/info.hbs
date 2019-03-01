@@ -1,6 +1,6 @@
 <head>
     {{> head}}
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/assemblea.css" />
 </head>
 <body>
     <div class="container">
@@ -46,7 +46,7 @@
     {{> scripts}}
     <script>
         $(document).ready(function() {
-            $('#infoForum').attr('action', '/gestore/dashboard/assemblea/informazioni/modifica');
+            $('#infoForum').attr('action', '/gestore/informazioni/modifica');
             $('#assDate').change(unlockBtn);
             $('#assSubStartDate').change(unlockBtn);
             $('#assSubStartTime').change(unlockBtn);
