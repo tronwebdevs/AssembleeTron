@@ -793,7 +793,7 @@ router.get('/statistiche', async (req, res) => {
     
     mysql.createConnection(mysqlCredentials).then((conn) => {
         connection = conn;
-        return connection.query('SELECT ID AS labID, Nome AS labName, `Ora1`+`Ora2`+`Ora3`+`Ora4` AS labPosti FROM `Progetti`');
+        return connection.query('SELECT `ID` AS `labID`, `Nome` AS `labName`, `Ora1`, `Ora2`, `Ora3`, `Ora4` FROM `Progetti`');
     }).then((rows) => {
         labList = rows;
         return connection.query('SELECT COUNT(*) AS total FROM `Studenti`');
@@ -804,11 +804,11 @@ router.get('/statistiche', async (req, res) => {
         stdsSub = rows[0].subs;
 
         let promiseList = [];
-        for (let lab of labList) {
+        labList.forEach((lab) => {
             for (let i = 1; i <= 4; i++) {
-                promiseList.push(connection.query('SELECT COUNT(*) AS subs FROM `Iscritti` WHERE Ora' + i + '=' + lab.labID));
+                promiseList.push(connection.query('SELECT COUNT(*) AS subs FROM `Iscritti` WHERE `Ora' + i + '`=' + lab.labID));
             }
-        }
+        });
 
         return Promise.all(promiseList);
     }).then((results) => {
@@ -822,30 +822,46 @@ router.get('/statistiche', async (req, res) => {
             labsStats.push({
                 labID: labList[i].labID,
                 labName: labList[i].labName,
-                labSubs: {
-                    total: labList[i].labPosti,
-                    now: labTotalSubs,
-                    perc: ( (results[i][0].subs * 100) / labList[i].labPosti )
-                }
+                labSubs: [
+                    {
+                        ora: 1,
+                        total: labList[i].Ora1,
+                        now: labTotalSubs,
+                        perc: Math.round( (results[i * 4][0].subs * 100) / labList[i].Ora1 )
+                    },
+                    {
+                        ora: 2,
+                        total: labList[i].Ora2,
+                        now: labTotalSubs,
+                        perc: Math.round( (results[i * 4 + 1][0].subs * 100) / labList[i].Ora2 )
+                    },
+                    {
+                        ora: 3,
+                        total: labList[i].Ora3,
+                        now: labTotalSubs,
+                        perc: Math.round( (results[i * 4 + 2][0].subs * 100) / labList[i].Ora3 )
+                    },
+                    {
+                        ora: 4,
+                        total: labList[i].Ora4,
+                        now: labTotalSubs,
+                        perc: Math.round( (results[i * 4 + 3][0].subs * 100) / labList[i].Ora4 )
+                    }
+                ]
             });
         }
-    }).then(() => {
-        connection.query('SELECT * FROM `Studenti`').then((rows) => {
-            connection.end();
-            res.render('admin/stats', {
-                subs: {
-                    total: totalStds,
-                    now: stdsSub,
-                    perc: ( (stdsSub * 100) / totalStds )
-                },
-                labsStats: labsStats,
-                students: rows,
-                title: 'Statistiche'
-            });
-        }).catch((error) => {
-            if (connection && connection.end) connection.end();
-            console.log(error);
-            res.render('admin/stats', { title: 'Statistiche', error });
+        return connection.query('SELECT * FROM `Studenti`');
+    }).then((rows) => {
+        connection.end();
+        res.render('admin/stats', {
+            subs: {
+                total: totalStds,
+                now: stdsSub,
+                perc: Math.round( (stdsSub * 100) / totalStds )
+            },
+            labsStats: labsStats,
+            students: rows,
+            title: 'Statistiche'
         });
     }).catch((error) => {
         if (connection && connection.end) connection.end();

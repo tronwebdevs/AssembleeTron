@@ -232,7 +232,7 @@ router.get('/iscrizione', (req, res) => {
                 code: 509,
                 message: error.message
             }
-            res.redirect('/');
+            res.redirect('/logout');
         });
     });
 });
@@ -295,7 +295,7 @@ router.post('/iscriviti', isLoggedIn, (req, res) => {
                     code: 509,
                     message: error.message
                 };
-                res.redirect('/');
+                res.redirect('/logout');
             }
         });
     } else {
@@ -303,7 +303,7 @@ router.post('/iscriviti', isLoggedIn, (req, res) => {
             code: 503,
             message: 'Devi riempire tutti i campi!'
         }
-        res.redirect('/');
+        res.redirect('/logout');
     }
 });
 
@@ -342,14 +342,14 @@ router.get('/conferma', (req, res) => {
                         code: 509,
                         message: error.message
                     }
-                    res.redirect('/');
+                    res.redirect('/logut');
                 });
             }
         } else {
             res.render('students/confirmSub', { student: req.session.student, assemblea: req.session.assemblea });
         }
     } else {
-        res.render('students/confirmSub', { student: [{index: 0, labName: 'req.session.labs vuota', labAula: 'WIP'}] });
+        res.redirect('/logout');
     }
 });
 

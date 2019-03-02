@@ -59,9 +59,12 @@
                                                         <th scope="row">{{this.labID}}</th>
                                                         <td>{{this.labName}}</td>
                                                         <td>
+                                                            {{#each this.labSubs}}
+                                                            {{this.ora}}
                                                             <div class="progress">
-                                                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuenow="{{this.labSubs.now}}" aria-valuemin="0" aria-valuemax="{{this.labSubs.total}}" style="width: {{this.labSubs.perc}}%">{{this.labSubs.perc}}%</div>
+                                                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuenow="{{this.now}}" aria-valuemin="0" aria-valuemax="{{this.total}}" style="width: {{this.perc}}%">{{this.perc}}%</div>
                                                             </div>
+                                                            {{/each}}
                                                         </td>
                                                         <td>{{this.labSubs.now}}/{{this.labSubs.total}}</td>
                                                     </tr>
