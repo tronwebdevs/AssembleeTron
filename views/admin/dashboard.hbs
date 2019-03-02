@@ -39,13 +39,18 @@
                     <div class="card-body">
                         <h5 class="card-title">Gestione assemblea</h5>
                         <p class="card-text">In questa dashboard puoi creare, eliminare e modificare assemblee future o in corso.</p>
+                        {{#if assemblea}}
                         <div class="btn-group">
-                            {{#if assemblea}}
-                            <button type="button" data-toggle="modal" data-target="#confirmDeleteAssemblea" class="btn btn-danger">Elimina assemblea</a>
-                            {{else}}
-                            <a href="/gestore/assemblea/crea" class="btn btn-success">Crea nuova assemblea</a>
-                            {{/if}}
+                            <a href="/gestore/assemblea/salva" class="btn btn-success"><i class="fas fa-bookmark"></i> Salva assemblea</a>
                         </div>
+                        <div class="btn-group">
+                            <button type="button" data-toggle="modal" data-target="#confirmDeleteAssemblea" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Elimina assemblea</button>
+                        </div>
+                        {{else}}
+                        <div class="btn-group">
+                            <a href="/gestore/assemblea/crea" class="btn btn-success">Crea nuova assemblea</a>
+                        </div>
+                        {{/if}}
                     </div>
                 </div>
             </div>
@@ -67,7 +72,7 @@
                                 </dl>
                             </div>
                             <div class="text-center">
-                                <a href="/gestore/informazioni/modifica" class="btn btn-block btn-sm btn-primary">Modifica</a>
+                                <a href="/gestore/informazioni/modifica" class="btn btn-block btn-sm btn-primary"> <i class="fas fa-edit"></i> Modifica</a>
                             </div>
                         </div>
                     </div>
@@ -78,7 +83,7 @@
                             <h5 class="card-title text-center">Laboratori</h5>
                             <p class="card-text text-justify">Da questa sezione puoi vedere, modificare ed eliminare i laboratori e le calssi che si possono iscrivere ad essi.</p>
                             <div class="text-center">
-                                <a href="/gestore/laboratori" class="btn btn-block btn-sm btn-primary">Modifica</a>
+                                <a href="/gestore/laboratori" class="btn btn-block btn-sm btn-primary"><i class="fas fa-edit"></i> Modifica</a>
                             </div>
                         </div>
                     </div>
@@ -86,10 +91,10 @@
                 <div class="col-md-4">
                     <div class="card mb-4 shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title text-center">Statistiche</h5>
-                            <p class="card-text text-justify">In questa sezione puoi vedere le statistiche dell'assemblea, dal numero di iscritti totali, a quelli per laboratorio.</p>
+                            <h5 class="card-title text-center">Studenti</h5>
+                            <p class="card-text text-justify">In questa sezione puoi vedere gli studenti iscritti e non all'assemblea.</p>
                             <div class="text-center">
-                                <a href="/gestore/statistiche" class="btn btn-block btn-sm btn-primary">Vedi</a>
+                                <a href="/gestore/studenti" class="btn btn-block btn-sm btn-primary"><i class="fas fa-list-ul"></i> Vedi</a>
                             </div>
                         </div>
                     </div>
@@ -103,7 +108,7 @@
                             <h6 class="card-title text-success">Iscrizioni concluse</h6>
                             <p class="card-text">Ora puoi generare e stampare il file PDF con l'elenco degli sudenti per ogni ora, di ogni laboratorio</p>
                             <form class="btn-group" action="/gestore/assemblea/pdf" method="POST">
-                                <button type="submit" class="btn btn-success">Genera PDF</button>
+                                <button type="submit" class="btn btn-success"><i class="fas fa-file-pdf"></i> Genera PDF</button>
                             </form>
                         </div>
                     </div>

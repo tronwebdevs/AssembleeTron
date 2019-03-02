@@ -85,30 +85,33 @@
     {{> scripts}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/it.js" type="text/javascript"></script>
-    <script type="text/javascript">
+    <script data-main="/js/jquery.min.js" type="text/javascript">
+        $(function() {
+            $(document).ready(function() {
+                moment.locale('it');
 
-        moment.locale('it');
+                $('#saveAsTemplate').change(function() {
+                    if($(this).is(":checked")) {
+                        $('#saveAsTemplateNameGroup').show();
+                        $('#saveAsTemplateName').val('assemblea_' + moment().format('DD-MM-YYYY'));
+                    } else {
+                        $('#saveAsTemplateNameGroup').hide();
+                        $('#saveAsTemplateName').val('');
+                    }
+                });
 
-        $('#saveAsTemplate').change(function() {
-            if($(this).is(":checked")) {
-                $('#saveAsTemplateNameGroup').show();
-                $('#saveAsTemplateName').val('assemblea_' + moment().format('DD-MM-YYYY'));
-            } else {
-                $('#saveAsTemplateNameGroup').hide();
-                $('#saveAsTemplateName').val('');
-            }
-        });
+                $('#btnSubmitCreation').click(function(event) {
+                    event.preventDefault();
+                    $('#infoForum').attr('action', '/gestore/assemblea/crea').submit();
+                });
 
-        $('#btnSubmitCreation').click(function(event) {
-            event.preventDefault();
-            $('#infoForum').attr('action', '/gestore/assemblea/crea').submit();
-        });
-
-        $('#infoForum').submit(function(event) {
-            if ($('#saveAsTemplate').is(':checked')) {
-                $('#infoForum').append('<input type="text" class="d-none" name="saveAsTemplateName" value="' + $('#saveAsTemplateName').val() + '">')
-            }
-            return true;
+                $('#infoForum').submit(function(event) {
+                    if ($('#saveAsTemplate').is(':checked')) {
+                        $('#infoForum').append('<input type="text" class="d-none" name="saveAsTemplateName" value="' + $('#saveAsTemplateName').val() + '">')
+                    }
+                    return true;
+                });
+            });
         });
     </script>
 </body>

@@ -15,59 +15,32 @@
                 {{/if}}
                 <div class="card mb-4 shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title text-center">Statistiche</h5>
+                        <h5 class="card-title text-center">Iscritti</h5>
                         {{#unless error}}
                         <div class="card-text">
                             <div class="row mb-3">
                                 <div class="col-md">
                                     <div class="row">
-                                        <p class="col-md-12 mb-1">
-                                            Studenti totali iscritti all'assemblea:
-                                        </p>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-10">
-                                            <div class="progress">
-                                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{subs.now}}" aria-valuemin="0" aria-valuemax="{{subs.total}}" style="width: {{subs.perc}}%">{{subs.perc}}%</div>
-                                            </div>
-                                        </div>
-                                        <span class="col-md-2 text-muted">{{subs.now}}/{{subs.total}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md">
-                                    <div class="row">
                                         <div class="col-md">
-                                            <h6 class="card-title text-center">Laboratori</h6>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md">
-                                            <table class="table table-responsive-sm">
+                                            <table class="table table-hover table-responsive-sm datatable">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col" style="width:5%">ID</th>
-                                                        <th scope="col">Nome</th>
-                                                        <th scope="col" style="width:65%">Percentuale iscritti</th>
-                                                        <th scope="col" style="width:10%">Iscritti</th>
+                                                        <th scope="col">Matricola</th>
+                                                        <th scope="col">Ora 1</th>
+                                                        <th scope="col">Ora 2</th>
+                                                        <th scope="col">Ora 3</th>
+                                                        <th scope="col">Ora 4</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {{#each labsStats}}
-                                                    <tr>
-                                                        <th scope="row">{{this.labID}}</th>
-                                                        <td>{{this.labName}}</td>
-                                                        <td>
-                                                            {{#each this.labSubs}}
-                                                            {{this.ora}}
-                                                            <div class="progress">
-                                                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuenow="{{this.now}}" aria-valuemin="0" aria-valuemax="{{this.total}}" style="width: {{this.perc}}%">{{this.perc}}%</div>
-                                                            </div>
-                                                            {{/each}}
-                                                        </td>
-                                                        <td>{{this.labSubs.now}}/{{this.labSubs.total}}</td>
-                                                    </tr>
+                                                    {{#each subs}}
+                                                        <tr>
+                                                            <th scope="row">{{this.MatricolaStudente}}</th>
+                                                            <td>{{this.Ora1}}</td>
+                                                            <td>{{this.Ora2}}</td>
+                                                            <td>{{this.Ora3}}</td>
+                                                            <td>{{this.Ora4}}</td>
+                                                        </tr>
                                                     {{/each}}
                                                 </tbody>
                                             </table>
@@ -89,7 +62,7 @@
                                 <div class="col-md">
                                     <div class="row">
                                         <div class="col-md">
-                                            <table class="table table-hover table-responsive-sm" id="studentList">
+                                            <table class="table table-hover table-responsive-sm datatable">
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">Matricola</th>
@@ -134,7 +107,7 @@
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#studentList').DataTable({
+            $('.datatable').DataTable({
                 "paging": "simple",
                 "language": {
                     "emptyTable": "Tabella vuota",

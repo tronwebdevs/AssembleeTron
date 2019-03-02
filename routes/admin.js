@@ -151,7 +151,15 @@ router.post('/assemblea/crea/carica', isAuthenticated, (req, res) => {
                 res.redirect('/gestore/assemblea/crea');
             } else {
                 let pData = JSON.parse(data);
-                req.session.newLabs = pData.labs.labsList;
+                console.log(pData.labs);
+                req.session.newLabs = pData.labs;
+                pData.labs.map(lab => {
+                    lab.labClassiOra1 = JSON.stringify(lab.labClassiOra1);
+                    lab.labClassiOra2 = JSON.stringify(lab.labClassiOra2);
+                    lab.labClassiOra3 = JSON.stringify(lab.labClassiOra3);
+                    lab.labClassiOra4 = JSON.stringify(lab.labClassiOra4);
+                    return lab;
+                });
                 req.session.loadTemplate = {
                     assemblea: pData,
                     fileName: req.body.templateFile
@@ -185,6 +193,8 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
         let classiPromiseArray;
         let classi;
 
+        console.log(newLabs);
+
         newLabs.forEach((lab) => {
             labsPromiseArray.push(connection.query({
                 sql: 'INSERT INTO `Progetti` (`ID`, `Nome`, `Descrizione`, `Aula`, `Ora1`, `Ora2`, `Ora3`, `Ora4`, `DueOre`) VALUES (?,?,?,?,?,?,?,?,?)',
@@ -200,6 +210,10 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
                     (lab.lastsTwoH ? 1 : 0)
                 ]
             }).then(() => {
+                lab.labClassiOra1 = (lab.labClassiOra1 || []);
+                lab.labClassiOra2 = (lab.labClassiOra2 || []);
+                lab.labClassiOra3 = (lab.labClassiOra3 || []);
+                lab.labClassiOra4 = (lab.labClassiOra4 || []);
                 classi = uniqueArray(lab.labClassiOra1.concat(lab.labClassiOra2, lab.labClassiOra3, lab.labClassiOra4));
                 classiPromiseArray = []
                 classi.forEach((classe) => {
@@ -423,6 +437,10 @@ router.get('/assemblea/salva', (req, res) => {
         delete assemblea.info.display.subsClosed;
         assemblea.labs = labs;
 
+        if (!fs.existsSync(assembleeDir)){
+            fs.mkdirSync(assembleeDir);
+        }
+
         let file = assembleeDir + '/assemblea_' + moment(assemblea.info.date).format('DD-MM-YYYY') + '.json';
         fs.writeFile(file, JSON.stringify(assemblea, null, 4), 'utf8', (error) => {
             if (error) {
@@ -609,8 +627,9 @@ router.post('/laboratori/nuovolab', isAuthenticated, (req, res) => {
         });
     } else {
         let connection;
-        mysql.createConnection(mysqlCredentials).then((conn) => {
         let lab = req.body.lab;
+        console.log(lab);
+        mysql.createConnection(mysqlCredentials).then((conn) => {
             connection = conn;
             return connection.query({
                 sql: 'INSERT INTO `Progetti` (`ID`, `Nome`, `Descrizione`, `Aula`, `Ora1`, `Ora2`, `Ora3`, `Ora4`, `DueOre`) VALUES (?,?,?,?,?,?,?,?,?)',
@@ -623,7 +642,7 @@ router.post('/laboratori/nuovolab', isAuthenticated, (req, res) => {
                     lab.labPostiOra2,
                     lab.labPostiOra3,
                     lab.labPostiOra4,
-                    (lab.lastsTwoH ? 1 : 0)
+                    (lab.lastsTwoH == 'true' ? 1 : 0)
                 ]
             });
         }).then(() => {
@@ -694,7 +713,7 @@ router.post('/laboratori/modificalab', isAuthenticated, (req, res) => {
                     lab.labPostiOra2,
                     lab.labPostiOra3,
                     lab.labPostiOra4,
-                    (lab.lastsTwoH ? 1 : 0),
+                    (lab.lastsTwoH == 'true' ? 1 : 0),
                     lab.labID
                 ]
             });
@@ -784,91 +803,39 @@ router.post('/laboratori/eliminalab', isAuthenticated, (req, res) => {
     }
 });
 
-router.get('/statistiche', async (req, res) => {
+router.get('/studenti', (req, res) => {
     let connection;
-    let labList;
-    let totalStds;
-    let stdsSub;
-    let labsStats = [];
+    let subs;
+    let labs;
     
     mysql.createConnection(mysqlCredentials).then((conn) => {
         connection = conn;
-        return connection.query('SELECT `ID` AS `labID`, `Nome` AS `labName`, `Ora1`, `Ora2`, `Ora3`, `Ora4` FROM `Progetti`');
+        return connection.query('SELECT * FROM `Iscritti`');
     }).then((rows) => {
-        labList = rows;
-        return connection.query('SELECT COUNT(*) AS total FROM `Studenti`');
+        subs = rows;
+        return connection.query('SELECT * FROM `Progetti`');
     }).then((rows) => {
-        totalStds = rows[0].total;
-        return connection.query('SELECT COUNT(*) AS subs FROM `Iscritti`');
-    }).then((rows) => {
-        stdsSub = rows[0].subs;
-
-        let promiseList = [];
-        labList.forEach((lab) => {
-            for (let i = 1; i <= 4; i++) {
-                promiseList.push(connection.query('SELECT COUNT(*) AS subs FROM `Iscritti` WHERE `Ora' + i + '`=' + lab.labID));
-            }
+        let nonPartecipa = { Nome: 'Non partecipa' };
+        subs.map(std => {
+            std.Ora1 = (rows.find(lab => lab.ID == std.Ora1) || nonPartecipa).Nome;
+            std.Ora2 = (rows.find(lab => lab.ID == std.Ora2) || nonPartecipa).Nome;
+            std.Ora3 = (rows.find(lab => lab.ID == std.Ora3) || nonPartecipa).Nome;
+            std.Ora4 = (rows.find(lab => lab.ID == std.Ora4) || nonPartecipa).Nome;
+            return std;
         });
-
-        return Promise.all(promiseList);
-    }).then((results) => {
-        let labTotalSubs;
-        for (let i = 0; i < (results.length / 4); i++) {
-            labTotalSubs = 0;
-            for (let l = 0; l < 4; l++) {
-                labTotalSubs += results[i + l][0].subs;
-            }
-
-            labsStats.push({
-                labID: labList[i].labID,
-                labName: labList[i].labName,
-                labSubs: [
-                    {
-                        ora: 1,
-                        total: labList[i].Ora1,
-                        now: labTotalSubs,
-                        perc: Math.round( (results[i * 4][0].subs * 100) / labList[i].Ora1 )
-                    },
-                    {
-                        ora: 2,
-                        total: labList[i].Ora2,
-                        now: labTotalSubs,
-                        perc: Math.round( (results[i * 4 + 1][0].subs * 100) / labList[i].Ora2 )
-                    },
-                    {
-                        ora: 3,
-                        total: labList[i].Ora3,
-                        now: labTotalSubs,
-                        perc: Math.round( (results[i * 4 + 2][0].subs * 100) / labList[i].Ora3 )
-                    },
-                    {
-                        ora: 4,
-                        total: labList[i].Ora4,
-                        now: labTotalSubs,
-                        perc: Math.round( (results[i * 4 + 3][0].subs * 100) / labList[i].Ora4 )
-                    }
-                ]
-            });
-        }
         return connection.query('SELECT * FROM `Studenti`');
     }).then((rows) => {
         connection.end();
-        res.render('admin/stats', {
-            subs: {
-                total: totalStds,
-                now: stdsSub,
-                perc: Math.round( (stdsSub * 100) / totalStds )
-            },
-            labsStats: labsStats,
+        res.render('admin/students', {
             students: rows,
-            title: 'Statistiche'
+            subs,
+            title: 'Studenti'
         });
     }).catch((error) => {
         if (connection && connection.end) connection.end();
-        res.render('admin/stats', { title: 'Statistiche', error });
+        res.render('admin/students', { title: 'Studenti', error });
     });
 });
-
 
 // Get classi da lista studenti
 router.post('/classi/get', isAuthenticated, (req, res) => {
@@ -885,7 +852,6 @@ router.post('/classi/get', isAuthenticated, (req, res) => {
         res.json({ result: 500, message: 'Si è verificato un errore nel ottenere la lista classi', error: error });
     });
 });
-
 
 // Logout
 router.get('/dashboard/logout', (req, res) => {
