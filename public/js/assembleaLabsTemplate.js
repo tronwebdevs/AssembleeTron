@@ -181,7 +181,7 @@ function viewLab(labID) {
         $('#lastsTwoH').attr('checked', true);
     }
 
-    $('#labModal').modal('show');
+    $('#labModal').attr('data-method-required', 'view').modal('show');
 }
 
 function editLab(labID) {

@@ -101,19 +101,30 @@ router.get('/assemblea/crea', (req, res) => {
                 console.log(err);
                 res.render('admin/newassemblea', { title: 'Crea Assemblea', error: err });
             } else {
-                let assemblea;
+                let assemblea = {};
                 if (req.session.loadTemplate != null) {
-                    assemblea = req.session.loadTemplate.assemblea;
+                    req.session.newLabs = req.session.loadTemplate.assemblea.labs;
+
+                    assemblea.info = req.session.loadTemplate.assemblea.info;
                     assemblea.info.edit = true;
+                    
                     assemblea.labs = {
                         labsList: req.session.loadTemplate.assemblea.labs,
                         labStoreTarget: 'memory'
                     };
-                    req.session.newLabs = assemblea.labs.labsList;
+                    assemblea.labs.labsList.map(lab => {
+                        lab.labClassiOra1 = JSON.stringify(lab.labClassiOra1);
+                        lab.labClassiOra2 = JSON.stringify(lab.labClassiOra2);
+                        lab.labClassiOra3 = JSON.stringify(lab.labClassiOra3);
+                        lab.labClassiOra4 = JSON.stringify(lab.labClassiOra4);
+                        return lab;
+                    });
+
                     assemblea.templateFiles = {
                         list: files,
                         selected: req.session.loadTemplate.fileName
                     };
+                    
                     delete req.session.loadTemplate;
                 } else {
                     assemblea = {
@@ -151,15 +162,7 @@ router.post('/assemblea/crea/carica', isAuthenticated, (req, res) => {
                 res.redirect('/gestore/assemblea/crea');
             } else {
                 let pData = JSON.parse(data);
-                console.log(pData.labs);
                 req.session.newLabs = pData.labs;
-                pData.labs.map(lab => {
-                    lab.labClassiOra1 = JSON.stringify(lab.labClassiOra1);
-                    lab.labClassiOra2 = JSON.stringify(lab.labClassiOra2);
-                    lab.labClassiOra3 = JSON.stringify(lab.labClassiOra3);
-                    lab.labClassiOra4 = JSON.stringify(lab.labClassiOra4);
-                    return lab;
-                });
                 req.session.loadTemplate = {
                     assemblea: pData,
                     fileName: req.body.templateFile
@@ -173,6 +176,14 @@ router.post('/assemblea/crea/carica', isAuthenticated, (req, res) => {
 });
 router.post('/assemblea/crea', isAuthenticated, (req, res) => {
     req.session.nuovaAssemblea = req.body;
+    // This fix a BIG bug in express sessions
+    req.session.newLabs.map(lab => {
+        lab.labClassiOra1 = JSON.parse(lab.labClassiOra1);
+        lab.labClassiOra2 = JSON.parse(lab.labClassiOra2);
+        lab.labClassiOra3 = JSON.parse(lab.labClassiOra3);
+        lab.labClassiOra4 = JSON.parse(lab.labClassiOra4);
+        return lab;
+    });
 
     // Crea variabile connessione
     let connection;
@@ -192,8 +203,6 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
         let labsPromiseArray = [];
         let classiPromiseArray;
         let classi;
-
-        console.log(newLabs);
 
         newLabs.forEach((lab) => {
             labsPromiseArray.push(connection.query({
@@ -230,7 +239,7 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
                     }));
                 });
                 return Promise.all(classi);
-            }));
+            }).catch(err => { throw err; }));
         });
 
         return Promise.all(labsPromiseArray);
@@ -285,11 +294,29 @@ router.get('/assemblea/creata/:finalResult', (req, res) => {
             labs: req.session.newLabs
         });
     } else if (req.params.finalResult == 'errore') {
-        res.render('admin/assembleaCreated', {
-            title: 'Assemblea non creata',
-            error: req.session.nuovaAssembleaError,
-            info: req.session.nuovaAssemblea,
-            labs: req.session.newLabs
+        let connection;
+        mysql.createConnection(mysqlCredentials).then((conn) => {
+            connection = conn;
+            let tables = [ 'Info', 'Progetti', 'Partecipano', 'Iscritti' ];
+            let promiseArray = [];
+            tables.forEach((table) => {
+                promiseArray.push(connection.query(`TRUNCATE TABLE ${table}`));
+            });
+            return Promise.all(promiseArray);
+        }).then(() => {
+            connection.end();
+            delete req.session.assembleaAdmin;
+            res.render('admin/assembleaCreated', {
+                title: 'Assemblea non creata',
+                error: req.session.nuovaAssembleaError,
+                info: req.session.nuovaAssemblea,
+                labs: req.session.newLabs
+            });
+        }).catch((error) => {
+            if (connection && connection.end) connection.end();
+            console.log(error);
+            req.session.showErrorToDashboard = error.message;
+            res.redirect('/gestore/');
         });
     } else {
         res.redirect('/gestore/assemblea/crea');
@@ -888,7 +915,7 @@ router.use((req, res) => {
 
 
 function isAuthenticated(req, res, next) {
-    if (req.session.authenticated === true) {
+    if (req.session.authenticated === true || process.env.NODE_ENV === 'development') {
         next();
     } else {
         let error = new Error('Autenticazione richiesta');

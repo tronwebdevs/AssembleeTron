@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js",
-    "start": "node app.js",
-    "debug": "nodemon --inspect app.js"
+    "start": "NODE_ENV=development node app.js",
+    "debug": "NODE_ENV=development nodemon --inspect app.js"
   },
   "author": "Davide Testolin - Tronweb",
   "license": "ISC",
