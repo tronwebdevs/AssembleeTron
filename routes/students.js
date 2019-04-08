@@ -5,7 +5,7 @@ const mysql = require('promise-mysql');
 const moment = require('moment');
 moment.locale('it');
 
-const mysqlCredentials = require('../config/mysql_credentials.js');
+const { mysqlCredentials } = require('../config/config.json');
 
 // Home
 router.get('/', (req, res) => {
@@ -18,19 +18,21 @@ router.get('/', (req, res) => {
             return result;
         }).then((rows) => {
             let assemblea;
-            if (rows.length == 0) {
+            if (rows.length === 0) {
                 assemblea = { exist: false };
-            } else if (rows.length == 1) {
+            } else if (rows.length === 1) {
                 assemblea = { exist: true, date: moment(rows[0].ProssimaData).format('DD/MM/YYYY') };
                 if (moment(rows[0].AperturaIscrizioni).diff(moment()) < 0 && moment(rows[0].ChiusuraIscrizioni).diff(moment()) > 0) {
                     assemblea.subsOpen = true;
                 }
                 req.session.assemblea = assemblea;
-                if (req.session.authError != null) {
+                if (req.session.authError) {
                     if (req.session.authError.code == 509) {
                         assemblea.error = 'Errore inaspettato del database';
-                        assemblea.consoleError = req.session.authError.message;
-                    } else {
+                        if (assemblea.consoleError && typeof assemblea.consoleError === 'string') {
+                            assemblea.consoleError = req.session.authError.message;
+                        }
+                    } else if (req.session.authError.message && typeof req.session.authError.message === 'string') {
                         assemblea.error = req.session.authError.message;
                     }
                     delete req.session.authError;
@@ -55,8 +57,8 @@ router.get('/', (req, res) => {
 router.post('/login', (req, res) => {
     let connection;
     let student;
-
-    if (req.body.matricola && req.body.part) {
+    
+    if ((+req.body.matricola || 0) && (+req.body.part === 1 || +req.body.part === 0)) {
         mysql.createConnection(mysqlCredentials).then((conn) => {
             connection = conn;
             return connection.query({
@@ -64,11 +66,11 @@ router.post('/login', (req, res) => {
                 values: [ req.body.matricola ]
             });
         }).then((rows) => {
-            if (rows.length == 0) {
+            if (rows.length === 0) {
                 let error = new Error('La matricola inserita non esiste');
                 error.status = 504;
                 throw error;
-            } else {
+            } else if (rows.length === 1) {
                 student = {
                     name: rows[0].name,
                     surname: rows[0].surname,
@@ -78,14 +80,18 @@ router.post('/login', (req, res) => {
                     sql: 'SELECT * FROM `Iscritti` WHERE `MatricolaStudente`=?',
                     values: [ req.body.matricola ]
                 });
+            } else {
+                let error = new Error('Sono state trovate 2 matricole uguali');
+                error.status = 409;
+                throw error;
             }
         }).then((rows) => {
-            if (rows.length == 0) {
+            if (rows.length === 0) {
                 if (+req.body.part === 1) {
                     student.matricola = req.body.matricola;
                     req.session.student = student;
                     res.redirect('/iscrizione');
-                } else if (+req.body.part === 0) {
+                } else {
                     connection.query({
                         sql: 'INSERT INTO `Iscritti` (`MatricolaStudente`, `Ora1`, `Ora2`, `Ora3`, `Ora4`) VALUES (?,?,?,?,?)',
                         values: [ req.body.matricola, -1, -1, -1, -1 ]
@@ -103,12 +109,8 @@ router.post('/login', (req, res) => {
                         }
                         res.redirect('/');
                     });
-                } else {
-                    let error = new Error('Errore inaspettato, codice #SSAD500');
-                    error.status = 502;
-                    throw error;
                 }
-            } else if (rows.length == 1) {
+            } else if (rows.length === 1) {
                 if (rows[0].Ora1 != -1 && rows[0].Ora2 != -1 && rows[0].Ora3 != -1 && rows[0].Ora4 != -1 && +req.body.part === 0) {
                     connection.query({
                         sql: 'UPDATE `Iscritti` SET `Ora1`=?, `Ora2`=?, `Ora3`=?, `Ora4`=? WHERE `MatricolaStudente`=?',
@@ -136,6 +138,10 @@ router.post('/login', (req, res) => {
                 // let error = new Error('La matricola inserita è già iscritta');
                 // error.status = 503;
                 // throw error;
+            } else {
+                let error = new Error('Iscritto doppio');
+                error.status = 409;
+                throw error;
             }
         }).catch((error) => {
             if (connection && connection.end) connection.end();
@@ -180,43 +186,23 @@ router.get('/iscrizione', (req, res) => {
                 });
                 if (classe) {
                     labList.push(lab);
-                    promiseArray.push(connection.query({
-                        sql: 'SELECT COUNT(*) AS `subs` FROM `Iscritti` WHERE `Ora1`=?',
-                        values: [ lab.labID ]
-                    }));
-                    promiseArray.push(connection.query({
-                        sql: 'SELECT COUNT(*) AS `subs` FROM `Iscritti` WHERE `Ora2`=?',
-                        values: [ lab.labID ]
-                    }));
-                    promiseArray.push(connection.query({
-                        sql: 'SELECT COUNT(*) AS `subs` FROM `Iscritti` WHERE `Ora3`=?',
-                        values: [ lab.labID ]
-                    }));
-                    promiseArray.push(connection.query({
-                        sql: 'SELECT COUNT(*) AS `subs` FROM `Iscritti` WHERE `Ora4`=?',
-                        values: [ lab.labID ]
-                    }));
+                    for (let i = 1; i <= 4; i++) {
+                        promiseArray.push(connection.query({
+                            sql: 'SELECT COUNT(*) AS `subs` FROM `Iscritti` WHERE `Ora' + i + '`=?',
+                            values: [ lab.labID ]
+                        }));
+                    }
                 }
             });
             return Promise.all(promiseArray);
         }).then((results) => {
             connection.end();
             labList.forEach((lab, index) => {
-                if ( (lab.labPostiOra1 - results[index * 4][0].subs) > 0 && classi[index].Ora1 == 1) {
-                    lab.labPostiOra1 -= results[index * 4][0].subs;
-                    labs.ora1.push(lab);
-                }
-                if ( (lab.labPostiOra2 - results[index * 4 + 1][0].subs) > 0 && classi[index].Ora2 == 1) {
-                    lab.labPostiOra2 -= results[index * 4 + 1][0].subs;
-                    labs.ora2.push(lab);
-                }
-                if ( (lab.labPostiOra3 - results[index * 4 + 2][0].subs) > 0 && classi[index].Ora3 == 1) {
-                    lab.labPostiOra3 -= results[index * 4 + 2][0].subs;
-                    labs.ora3.push(lab);
-                }
-                if ( (lab.labPostiOra4 - results[index * 4 + 3][0].subs) > 0 && classi[index].Ora4 == 1) {
-                    lab.labPostiOra4 -= results[index * 4 + 3][0].subs;
-                    labs.ora4.push(lab);
+                for (let i = 1; i <= 4; i++) {
+                    if ( (lab['labPostiOra' + i] - results[index * 4 + (i - 1)][0].subs) > 0 && classi[index]['Ora' + i] == 1) {
+                        lab['labPostiOra' + i] -= results[index * 4 + (i - 1)][0].subs;
+                        labs['ora' + i].push(lab);
+                    }
                 }
             });
 
@@ -415,5 +401,10 @@ function destroySession(req) {
         }
     });
 }
+
+function isGoodNum(num) {
+    return (num && typeof value === 'number' && isFinite(value));
+}
+
 
 module.exports = router;

@@ -9,13 +9,12 @@ const fs = require('fs');
 const fsPromise = fs.promises;
 const PdfPrinter = require('pdfmake');
 
-const credentials = require('../config/credentials.js');
-const mysqlCredentials = require('../config/mysql_credentials.js');
+const { mysqlCredentials, adminPassword } = require('../config/config.json');
 const assembleeDir = 'assemblee';
 
 // Home
 router.get('/', (req, res) => {
-    if (req.session.authenticated == true) {
+    if (req.session.authenticated === true) {
         res.redirect('/gestore/dashboard');
     } else {
         res.render('admin/home', {
@@ -28,7 +27,7 @@ router.get('/', (req, res) => {
 
 // Login
 router.post('/login/', (req, res) => {
-    if (req.body.password == credentials.adminPassword) {
+    if (req.body.password === adminPassword) {
         req.session.authenticated = true;
         res.redirect('/gestore/dashboard');
     } else {
@@ -47,7 +46,7 @@ router.get('/dashboard', (req, res) => {
         return result;
     }).then((rows) => {
         if (rows.length > 0) {
-            if (req.session.assembleaAdmin == null) {
+            if (!req.session.assembleaAdmin) {
                 req.session.assembleaAdmin = {};
             }
             req.session.assembleaAdmin.info = {
@@ -92,7 +91,7 @@ router.get('/dashboard/assemblea', (req, res) => res.redirect('/gestore/dashboar
 
 // New assemblea
 router.get('/assemblea/crea', (req, res) => {
-    if (req.session.assembleaAdmin == null) {
+    if (!req.session.assembleaAdmin) {
         if (!fs.existsSync(assembleeDir)) {
             fs.mkdirSync(assembleeDir);
         }
@@ -102,7 +101,7 @@ router.get('/assemblea/crea', (req, res) => {
                 res.render('admin/newassemblea', { title: 'Crea Assemblea', error: err });
             } else {
                 let assemblea = {};
-                if (req.session.loadTemplate != null) {
+                if (req.session.loadTemplate) {
                     req.session.newLabs = req.session.loadTemplate.assemblea.labs;
 
                     assemblea.info = req.session.loadTemplate.assemblea.info;
@@ -113,10 +112,9 @@ router.get('/assemblea/crea', (req, res) => {
                         labStoreTarget: 'memory'
                     };
                     assemblea.labs.labsList.map(lab => {
-                        lab.labClassiOra1 = JSON.stringify(lab.labClassiOra1);
-                        lab.labClassiOra2 = JSON.stringify(lab.labClassiOra2);
-                        lab.labClassiOra3 = JSON.stringify(lab.labClassiOra3);
-                        lab.labClassiOra4 = JSON.stringify(lab.labClassiOra4);
+                        for (let i = 1; i <= 4; i++) {
+                            lab["labClassiOra" + i] = JSON.stringify(lab["labClassiOra" + i]);
+                        }
                         return lab;
                     });
 
@@ -155,7 +153,7 @@ router.get('/assemblea/crea', (req, res) => {
     }
 });
 router.post('/assemblea/crea/carica', isAuthenticated, (req, res) => {
-    if (req.body.templateFile) {
+    if (req.body.templateFile && typeof req.body.templateFile === 'string') {
         fs.readFile(assembleeDir + '/' + req.body.templateFile, (err, data) => {
             if (err) {
                 console.log(err);
@@ -178,10 +176,9 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
     req.session.nuovaAssemblea = req.body;
     // This fix a BIG bug in express sessions
     req.session.newLabs.map(lab => {
-        lab.labClassiOra1 = JSON.parse(lab.labClassiOra1);
-        lab.labClassiOra2 = JSON.parse(lab.labClassiOra2);
-        lab.labClassiOra3 = JSON.parse(lab.labClassiOra3);
-        lab.labClassiOra4 = JSON.parse(lab.labClassiOra4);
+        for (let i = 1; i <= 4; i++) {
+            lab["labClassiOra" + i] = JSON.parse(lab["labClassiOra" + i]);
+        }
         return lab;
     });
 
@@ -219,10 +216,9 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
                     (lab.lastsTwoH ? 1 : 0)
                 ]
             }).then(() => {
-                lab.labClassiOra1 = (lab.labClassiOra1 || []);
-                lab.labClassiOra2 = (lab.labClassiOra2 || []);
-                lab.labClassiOra3 = (lab.labClassiOra3 || []);
-                lab.labClassiOra4 = (lab.labClassiOra4 || []);
+                for (let i = 1; i <= 4; i++) {
+                    lab["labClassiOra" + i] = (lab["labClassiOra" + i] || []);
+                }
                 classi = uniqueArray(lab.labClassiOra1.concat(lab.labClassiOra2, lab.labClassiOra3, lab.labClassiOra4));
                 classiPromiseArray = []
                 classi.forEach((classe) => {
@@ -231,10 +227,10 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
                         values: [
                             classe,
                             lab.labID,
-                            ( lab.labClassiOra1.indexOf(classe) == -1 ? 0 : 1),
-                            ( lab.labClassiOra2.indexOf(classe) == -1 ? 0 : 1),
-                            ( lab.labClassiOra3.indexOf(classe) == -1 ? 0 : 1),
-                            ( lab.labClassiOra4.indexOf(classe) == -1 ? 0 : 1)
+                            ( lab.labClassiOra1.indexOf(classe) === -1 ? 0 : 1),
+                            ( lab.labClassiOra2.indexOf(classe) === -1 ? 0 : 1),
+                            ( lab.labClassiOra3.indexOf(classe) === -1 ? 0 : 1),
+                            ( lab.labClassiOra4.indexOf(classe) === -1 ? 0 : 1)
                         ]
                     }));
                 });
@@ -287,13 +283,13 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
     });
 });
 router.get('/assemblea/creata/:finalResult', (req, res) => {
-    if (req.params.finalResult == 'successo') {
+    if (req.params.finalResult === 'successo') {
         res.render('admin/assembleaCreated', {
             title: 'Assemblea creata',
             info: req.session.nuovaAssemblea,
             labs: req.session.newLabs
         });
-    } else if (req.params.finalResult == 'errore') {
+    } else if (req.params.finalResult === 'errore') {
         let connection;
         mysql.createConnection(mysqlCredentials).then((conn) => {
             connection = conn;
@@ -376,7 +372,7 @@ router.post('/assemblea/pdf', isAuthenticated, (req, res) => {
 
         for (let i = 0; i < ( results.length / 4 ); i++) {
             for (let l = 0; l < 4; l++) {
-                if (i == 0 && l == 0) {
+                if (i === 0 && l === 0) {
                     docDefinition.content.push({
                         text: labs[i].labName + ' - ora ' + (l + 1)
                     });
@@ -387,7 +383,7 @@ router.post('/assemblea/pdf', isAuthenticated, (req, res) => {
                     });
                 }
 
-                if (results[(i * 4) + l].length == 0) {
+                if (results[(i * 4) + l].length === 0) {
                     docDefinition.content.push({
                         text: 'Nessuno studente iscritto a questo laboratorio',
                         alignment: 'center'
@@ -426,6 +422,7 @@ router.post('/assemblea/pdf', isAuthenticated, (req, res) => {
                 if (err) {
                     console.log(err);
                     req.session.showErrorToDashboard = 'Si è verificato un errore nel tentare di scaricare il pdf';
+                    res.redirect('/gestore/');
                 }
             });
         });
@@ -454,10 +451,9 @@ router.get('/assemblea/salva', (req, res) => {
         return Promise.all(promiseArray);
     }).then((results) => {
         labs.map((lab, index) => {
-            lab.labClassiOra1 = results[index].filter(el => el.Ora1 === 1).map(el => el.SiglaClasse);
-            lab.labClassiOra2 = results[index].filter(el => el.Ora2 === 1).map(el => el.SiglaClasse);
-            lab.labClassiOra3 = results[index].filter(el => el.Ora3 === 1).map(el => el.SiglaClasse);
-            lab.labClassiOra4 = results[index].filter(el => el.Ora4 === 1).map(el => el.SiglaClasse);
+            for (let i = 1; i <= 4; i++) {
+                lab["labClassiOra" + i] = results[index].filter(el => el["Ora" + i] === 1).map(el => el.SiglaClasse);
+            }
             return lab;
         });
         let assemblea = req.session.assembleaAdmin;
@@ -499,9 +495,9 @@ router.get('/informazioni/modifica', (req, res) => {
     infoAssemblea.edit = true;
     infoAssemblea.title = 'Modifica informazioni'
     if (req.session.infoEdit) {
-        if (req.session.infoEdit.code == 200) {
+        if (req.session.infoEdit.code === 200) {
             infoAssemblea.success = req.session.infoEdit.message;
-        } else if (req.session.infoEdit.code == 500) {
+        } else if (req.session.infoEdit.code === 500) {
             infoAssemblea.error = req.session.infoEdit.message;
         }
         delete req.session.infoEdit;
@@ -583,29 +579,13 @@ router.get('/laboratori', (req, res) => {
                 values: [ labID ]
             }).then((rows) => {
                 for (let row of rows) {
-                    if (row.Ora1 == 1) {
-                        if (labs[labsIndex].labClassiOra1 == null) {
-                            labs[labsIndex].labClassiOra1 = [];
+                    for (let i = 1; i <= 4; i++) {
+                        if (row["Ora" + i] === 1) {
+                            if (!labs[labsIndex]["labClassiOra" + i]) {
+                                labs[labsIndex]["labClassiOra" + i] = [];
+                            }
+                            labs[labsIndex]["labClassiOra" + i].push(row.SiglaClasse);
                         }
-                        labs[labsIndex].labClassiOra1.push(row.SiglaClasse);
-                    }
-                    if (row.Ora2 == 1) {
-                        if (labs[labsIndex].labClassiOra2 == null) {
-                            labs[labsIndex].labClassiOra2 = [];
-                        }
-                        labs[labsIndex].labClassiOra2.push(row.SiglaClasse);
-                    }
-                    if (row.Ora3 == 1) {
-                        if (labs[labsIndex].labClassiOra3 == null) {
-                            labs[labsIndex].labClassiOra3 = [];
-                        }
-                        labs[labsIndex].labClassiOra3.push(row.SiglaClasse);
-                    }
-                    if (row.Ora4 == 1) {
-                        if (labs[labsIndex].labClassiOra4 == null) {
-                            labs[labsIndex].labClassiOra4 = [];
-                        }
-                        labs[labsIndex].labClassiOra4.push(row.SiglaClasse);
                     }
                 }
 
@@ -628,10 +608,13 @@ router.get('/laboratori', (req, res) => {
     }).then((results) => {
         connection.end();
         labs.map(lab => {
-            lab.labClassiOra1 = (lab.labClassiOra1 ? JSON.stringify(lab.labClassiOra1) : "[]");
-            lab.labClassiOra2 = (lab.labClassiOra2 ? JSON.stringify(lab.labClassiOra2) : "[]");
-            lab.labClassiOra3 = (lab.labClassiOra3 ? JSON.stringify(lab.labClassiOra3) : "[]");
-            lab.labClassiOra4 = (lab.labClassiOra4 ? JSON.stringify(lab.labClassiOra4) : "[]");
+            for (let i = 1; i <= 4; i++) {
+                if (lab["labClassiOra" + i]) {
+                    lab["labClassiOra" + i] = JSON.stringify(lab["labClassiOra" + i]);
+                } else {
+                    lab["labClassiOra" + i] = "[]";
+                }
+            }
             return lab;
         });
         res.render('admin/labs', { title: 'Laboratori', labsList: labs });
@@ -643,8 +626,8 @@ router.get('/laboratori', (req, res) => {
 
 // Aggiungi laboratorio
 router.post('/laboratori/nuovolab', isAuthenticated, (req, res) => {
-    if (req.body.target == 'memory') {
-        if (req.session.newLabs == null) {
+    if (req.body.target === 'memory') {
+        if (!req.session.newLabs) {
             req.session.newLabs = [];
         }
         req.session.newLabs.push(req.body.lab);
@@ -669,15 +652,14 @@ router.post('/laboratori/nuovolab', isAuthenticated, (req, res) => {
                     lab.labPostiOra2,
                     lab.labPostiOra3,
                     lab.labPostiOra4,
-                    (lab.lastsTwoH == 'true' ? 1 : 0)
+                    (lab.lastsTwoH === 'true' ? 1 : 0)
                 ]
             });
         }).then(() => {
             let promiseArray = [];
-            lab.labClassiOra1 = (lab.labClassiOra1 || []);
-            lab.labClassiOra2 = (lab.labClassiOra2 || []);
-            lab.labClassiOra3 = (lab.labClassiOra3 || []);
-            lab.labClassiOra4 = (lab.labClassiOra4 || []);
+            for (let i = 1; i <= 4; i++) {
+                lab["labClassiOra" + i] = (lab["labClassiOra" + i] || []);
+            }
             let classi = uniqueArray(lab.labClassiOra1.concat(lab.labClassiOra2, lab.labClassiOra3, lab.labClassiOra4));
             classi.forEach((classe) => {
                 promiseArray.push(connection.query({
@@ -685,10 +667,10 @@ router.post('/laboratori/nuovolab', isAuthenticated, (req, res) => {
                     values: [
                         classe,
                         lab.labID,
-                        ( lab.labClassiOra1.indexOf(classe) == -1 ? 0 : 1),
-                        ( lab.labClassiOra2.indexOf(classe) == -1 ? 0 : 1),
-                        ( lab.labClassiOra3.indexOf(classe) == -1 ? 0 : 1),
-                        ( lab.labClassiOra4.indexOf(classe) == -1 ? 0 : 1),
+                        ( lab.labClassiOra1.indexOf(classe) === -1 ? 0 : 1),
+                        ( lab.labClassiOra2.indexOf(classe) === -1 ? 0 : 1),
+                        ( lab.labClassiOra3.indexOf(classe) === -1 ? 0 : 1),
+                        ( lab.labClassiOra4.indexOf(classe) === -1 ? 0 : 1),
                         lab.lastsTwoH
                     ]
                 }));
@@ -713,10 +695,10 @@ router.post('/laboratori/nuovolab', isAuthenticated, (req, res) => {
 });
 // Modifica laboratorio
 router.post('/laboratori/modificalab', isAuthenticated, (req, res) => {
-    if (req.body.target == 'memory') {
+    if (req.body.target === 'memory') {
         let targetLabIndex;
         req.session.newLabs.forEach((lab, index) => {
-            if (lab.labID == req.body.lab.labID) {
+            if (lab.labID === req.body.lab.labID) {
                 targetLabIndex = index;
             }
         });
@@ -740,7 +722,7 @@ router.post('/laboratori/modificalab', isAuthenticated, (req, res) => {
                     lab.labPostiOra2,
                     lab.labPostiOra3,
                     lab.labPostiOra4,
-                    (lab.lastsTwoH == 'true' ? 1 : 0),
+                    (lab.lastsTwoH === 'true' ? 1 : 0),
                     lab.labID
                 ]
             });
@@ -751,10 +733,9 @@ router.post('/laboratori/modificalab', isAuthenticated, (req, res) => {
             });
         }).then(() => {
             let promiseArray = [];
-            lab.labClassiOra1 = (lab.labClassiOra1 || []);
-            lab.labClassiOra2 = (lab.labClassiOra2 || []);
-            lab.labClassiOra3 = (lab.labClassiOra3 || []);
-            lab.labClassiOra4 = (lab.labClassiOra4 || []);
+            for (let i = 1; i <= 4; i++) {
+                lab["labClassiOra" + i] = (lab["labClassiOra" + i] || []);
+            }
             let classi = uniqueArray(lab.labClassiOra1.concat(lab.labClassiOra2, lab.labClassiOra3, lab.labClassiOra4));
             classi.forEach((classe) => {
                 promiseArray.push(connection.query({
@@ -762,10 +743,10 @@ router.post('/laboratori/modificalab', isAuthenticated, (req, res) => {
                     values: [
                         classe,
                         lab.labID,
-                        ( lab.labClassiOra1.indexOf(classe) == -1 ? 0 : 1),
-                        ( lab.labClassiOra2.indexOf(classe) == -1 ? 0 : 1),
-                        ( lab.labClassiOra3.indexOf(classe) == -1 ? 0 : 1),
-                        ( lab.labClassiOra4.indexOf(classe) == -1 ? 0 : 1),
+                        ( lab.labClassiOra1.indexOf(classe) === -1 ? 0 : 1),
+                        ( lab.labClassiOra2.indexOf(classe) === -1 ? 0 : 1),
+                        ( lab.labClassiOra3.indexOf(classe) === -1 ? 0 : 1),
+                        ( lab.labClassiOra4.indexOf(classe) === -1 ? 0 : 1),
                         lab.lastsTwoH
                     ]
                 }));
@@ -789,9 +770,9 @@ router.post('/laboratori/modificalab', isAuthenticated, (req, res) => {
 // Elimina laboratorio
 router.post('/laboratori/eliminalab', isAuthenticated, (req, res) => {
     let targetLabIndex;
-    if (req.body.target == 'memory') {
+    if (req.body.target === 'memory') {
         req.session.newLabs.forEach((lab, index) => {
-            if (lab.labID == req.body.labID) {
+            if (lab.labID === req.body.labID) {
                 targetLabIndex = index;
             }
         });
@@ -844,10 +825,9 @@ router.get('/studenti', (req, res) => {
     }).then((rows) => {
         let nonPartecipa = { Nome: 'Non partecipa' };
         subs.map(std => {
-            std.Ora1 = (rows.find(lab => lab.ID == std.Ora1) || nonPartecipa).Nome;
-            std.Ora2 = (rows.find(lab => lab.ID == std.Ora2) || nonPartecipa).Nome;
-            std.Ora3 = (rows.find(lab => lab.ID == std.Ora3) || nonPartecipa).Nome;
-            std.Ora4 = (rows.find(lab => lab.ID == std.Ora4) || nonPartecipa).Nome;
+            for (let i = 1; i <= 4; i++) {
+                std["Ora" + i] = (rows.find(lab => lab.ID == std["Ora" + i]) || nonPartecipa).Nome;
+            }
             return std;
         });
         return connection.query('SELECT * FROM `Studenti`');
@@ -885,6 +865,7 @@ router.get('/dashboard/logout', (req, res) => {
     req.session.destroy((error) => {
         if (error) {
             console.log(error);
+            res.send('Si e\' verificato un errore inaspettato!');
         }
         res.render('admin/logout', { title: 'Logout' });
     });
@@ -915,7 +896,7 @@ router.use((req, res) => {
 
 
 function isAuthenticated(req, res, next) {
-    if (req.session.authenticated === true || process.env.NODE_ENV === 'development') {
+    if (req.session && req.session.authenticated === true) {
         next();
     } else {
         let error = new Error('Autenticazione richiesta');

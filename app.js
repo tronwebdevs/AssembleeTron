@@ -5,7 +5,7 @@ const path = require('path');
 const hbs = require('express-handlebars').create({ extname: 'hbs', defaultLayout: 'main' });
 const session = require('express-session');
 
-const credentials = require('./config/credentials.js');
+const { cookieSecret } = require('./config/config.json');
 
 // SETTINGS
 app.use(require('helmet')());
@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     resave: false,
     saveUninitialized: true,
-    secret: credentials.cookieSecret
+    secret: cookieSecret
 }));
 
 // ROUTES
@@ -26,6 +26,4 @@ app.use('/gestore', require('./routes/admin.js'));
 app.use('/', require('./routes/students.js'));
 
 // SERVER
-app.listen(app.get('port'), () => {
-    console.log('Application started on http://localhost:' + app.get('port') + ', press CTRL-C to terminate.');
-});
+app.listen(app.get('port'), () => console.log('Application started on http://localhost:' + app.get('port') + ', press CTRL-C to terminate.'));
