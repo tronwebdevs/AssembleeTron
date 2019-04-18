@@ -97,10 +97,10 @@ $(function() {
                 labPostiOra2: $('#labPostiOra2').val(),
                 labPostiOra3: $('#labPostiOra3').val(),
                 labPostiOra4: $('#labPostiOra4').val(),
-                labClassiOra1: $('#labClassiOra1').val(),
-                labClassiOra2: $('#labClassiOra2').val(),
-                labClassiOra3: $('#labClassiOra3').val(),
-                labClassiOra4: $('#labClassiOra4').val(),
+                labClassiOra1: JSON.stringify($('#labClassiOra1').val()),
+                labClassiOra2: JSON.stringify($('#labClassiOra2').val()),
+                labClassiOra3: JSON.stringify($('#labClassiOra3').val()),
+                labClassiOra4: JSON.stringify($('#labClassiOra4').val()),
                 lastsTwoH: $('#lastsTwoH').is(':checked')
             };
             var target = $('#mainLabsTemplate').attr('data-labs-target'); //console.log(laboratorio);

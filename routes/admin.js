@@ -111,6 +111,9 @@ router.get('/assemblea/crea', (req, res) => {
                         labsList: req.session.loadTemplate.assemblea.labs,
                         labStoreTarget: 'memory'
                     };
+                    if (!assemblea.labs.labsList) {
+                        assemblea.labs.labsList = [];
+                    }
                     assemblea.labs.labsList.map(lab => {
                         for (let i = 1; i <= 4; i++) {
                             lab["labClassiOra" + i] = JSON.stringify(lab["labClassiOra" + i]);
@@ -239,9 +242,7 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
         });
 
         return Promise.all(labsPromiseArray);
-    }).then(() => {
-        // Chiude la connessione
-        connection.end();
+    }).then(() => connection.end()).then(() => {
 
         if (req.body.saveAsTemplateName != null) {
             let assemblea = {
@@ -299,8 +300,7 @@ router.get('/assemblea/creata/:finalResult', (req, res) => {
                 promiseArray.push(connection.query(`TRUNCATE TABLE ${table}`));
             });
             return Promise.all(promiseArray);
-        }).then(() => {
-            connection.end();
+        }).then(() => connection.end()).then(() => {
             delete req.session.assembleaAdmin;
             res.render('admin/assembleaCreated', {
                 title: 'Assemblea non creata',
@@ -328,8 +328,7 @@ router.get('/assemblea/elimina', (req, res) => {
             promiseArray.push(connection.query(`TRUNCATE TABLE ${table}`));
         });
         return Promise.all(promiseArray);
-    }).then(() => {
-        connection.end();
+    }).then(() => connection.end()).then(() => {
         delete req.session.assembleaAdmin;
         req.session.showSuccessToDashboard = 'Assemblea eliminata con successo';
         res.redirect('/gestore/dashboard');
@@ -516,7 +515,7 @@ router.post('/informazioni/modifica', isAuthenticated, (req, res) => {
                 ]
             });
             conn.end();
-            return
+            return results;
         }).then(() => {
             req.session.assembleaAdmin.info = {
                 date: req.body.assDate,
@@ -556,7 +555,6 @@ router.post('/informazioni/modifica', isAuthenticated, (req, res) => {
 router.get('/laboratori', (req, res) => {
     let connection;
     let labs;
-    let labsIndex = 0;
 
     mysql.createConnection(mysqlCredentials).then((conn) => {
         connection = conn;
@@ -572,41 +570,30 @@ router.get('/laboratori', (req, res) => {
                           'FROM `Progetti`');
     }).then((rows) => {
         labs = rows;
+        let promiseArray = [];
 
-        function getClassiLab(labID, resolve, reject) {
-            connection.query({
-                sql: 'SELECT * FROM `Partecipano` WHERE IDProgetto=?',
-                values: [ labID ]
-            }).then((rows) => {
-                for (let row of rows) {
-                    for (let i = 1; i <= 4; i++) {
-                        if (row["Ora" + i] === 1) {
-                            if (!labs[labsIndex]["labClassiOra" + i]) {
-                                labs[labsIndex]["labClassiOra" + i] = [];
+        labs.forEach(lab => {
+            promiseArray.push(
+                connection.query({
+                    sql: 'SELECT * FROM `Partecipano` WHERE IDProgetto=?',
+                    values: [ lab.labID ]
+                }).then((rows) => {
+                    for (let row of rows) {
+                        for (let i = 1; i <= 4; i++) {
+                            if (row["Ora" + i] === 1) {
+                                if (!lab["labClassiOra" + i]) {
+                                    lab["labClassiOra" + i] = [];
+                                }
+                                lab["labClassiOra" + i].push(row.SiglaClasse);
                             }
-                            labs[labsIndex]["labClassiOra" + i].push(row.SiglaClasse);
                         }
                     }
-                }
-
-                if (labsIndex < (labs.length - 1)) {
-                    getClassiLab(labs[++labsIndex].labID, resolve, reject);
-                } else {
-                    resolve();
-                    return;
-                }
-            }).catch((error) => {
-                if (connection && connection.end) connection.end();
-                console.log(error);
-                reject(new Error(error.message));
-            });
-        }
-
-        return new Promise((resolve, reject) => {
-            getClassiLab(labs[labsIndex].labID, resolve, reject);
+                })
+            );
         });
-    }).then((results) => {
-        connection.end();
+
+        return Promise.all(promiseArray);
+    }).then(() => connection.end()).then(() => {
         labs.map(lab => {
             for (let i = 1; i <= 4; i++) {
                 if (lab["labClassiOra" + i]) {
@@ -638,7 +625,6 @@ router.post('/laboratori/nuovolab', isAuthenticated, (req, res) => {
     } else {
         let connection;
         let lab = req.body.lab;
-        console.log(lab);
         mysql.createConnection(mysqlCredentials).then((conn) => {
             connection = conn;
             return connection.query({
@@ -658,7 +644,7 @@ router.post('/laboratori/nuovolab', isAuthenticated, (req, res) => {
         }).then(() => {
             let promiseArray = [];
             for (let i = 1; i <= 4; i++) {
-                lab["labClassiOra" + i] = (lab["labClassiOra" + i] || []);
+                lab["labClassiOra" + i] = (JSON.parse(lab["labClassiOra" + i]) || []);
             }
             let classi = uniqueArray(lab.labClassiOra1.concat(lab.labClassiOra2, lab.labClassiOra3, lab.labClassiOra4));
             classi.forEach((classe) => {
@@ -677,8 +663,7 @@ router.post('/laboratori/nuovolab', isAuthenticated, (req, res) => {
             });
 
             return Promise.all(promiseArray);
-        }).then(() => {
-            connection.end();
+        }).then(() => connection.end()).then(() => {
             res.json({
                 result: 200,
                 message: 'Laboratorio ' + req.body.lab.labID + ' creato con successo'
@@ -734,7 +719,7 @@ router.post('/laboratori/modificalab', isAuthenticated, (req, res) => {
         }).then(() => {
             let promiseArray = [];
             for (let i = 1; i <= 4; i++) {
-                lab["labClassiOra" + i] = (lab["labClassiOra" + i] || []);
+                lab["labClassiOra" + i] = (JSON.parse(lab["labClassiOra" + i]) || []);
             }
             let classi = uniqueArray(lab.labClassiOra1.concat(lab.labClassiOra2, lab.labClassiOra3, lab.labClassiOra4));
             classi.forEach((classe) => {
@@ -751,8 +736,9 @@ router.post('/laboratori/modificalab', isAuthenticated, (req, res) => {
                     ]
                 }));
             });
-        }).then(() => {
-            connection.end();
+
+            return Promise.all(promiseArray);
+        }).then(() => connection.end()).then(() => {
             res.json({
                 result: 200,
                 message: 'Laboratorio ' + req.body.lab.labID + ' modificato con successo'
@@ -794,8 +780,7 @@ router.post('/laboratori/eliminalab', isAuthenticated, (req, res) => {
                 sql: 'DELETE FROM `Partecipano` WHERE IDProgetto=?',
                 values: [ req.body.labID ]
             });
-        }).then(() => {
-            connection.end();
+        }).then(() => connection.end()).then(() => {
             res.json({
                 result: 200,
                 message: 'Laboratorio ' + req.body.labID + ' eliminato con successo'
@@ -831,8 +816,7 @@ router.get('/studenti', (req, res) => {
             return std;
         });
         return connection.query('SELECT * FROM `Studenti`');
-    }).then((rows) => {
-        connection.end();
+    }).then(() => connection.end()).then((rows) => {
         res.render('admin/students', {
             students: rows,
             subs,
