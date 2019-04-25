@@ -5,8 +5,7 @@ const mysql = require('promise-mysql');
 const path = require('path');
 const moment = require('moment');
 moment.locale('it');
-const fs = require('fs');
-const fsPromise = fs.promises;
+const fs = require('fs-extra');
 const PdfPrinter = require('pdfmake');
 
 const { mysqlCredentials, adminPassword } = require('../config/config.json');
@@ -269,7 +268,7 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
             let postFileName = req.body.saveAsTemplateName.trim().replace(/ /g, '_');
             delete req.body.saveAsTemplateName;
             let file = assembleeDir + '/' + ( postFileName == '' ? ('assemblea_' + moment().format('DD-MM-YYYY') ) : postFileName ) + '.json';
-            return fsPromise.writeFile(file, JSON.stringify(assemblea, null, 4), 'utf8');
+            return fs.writeFile(file, JSON.stringify(assemblea, null, 4), 'utf8');
         }
     }).then(() => {
         req.session.showSuccessToDashboard = 'Assemblea creata con successo';
