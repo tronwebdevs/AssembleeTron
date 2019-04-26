@@ -14,6 +14,9 @@ const client = redis.createClient();
 const { mysqlCredentials, adminPassword } = require('../config/config.json');
 const assembleeDir = 'assemblee';
 
+
+router.get('*', checkForMessages);
+
 // Home
 router.get('/', (req, res) => {
     if (req.session.authed === true) {
@@ -53,6 +56,7 @@ router.all('*', isAuthenticated);
 
 // DASHBOARD
 router.get('/dashboard', (req, res) => {
+    const { error, warning, success } = req.show;
     mysql.createConnection(mysqlCredentials).then((conn) => {
         let result = conn.query('SELECT * FROM `Info`');
         conn.end();
@@ -70,55 +74,31 @@ router.get('/dashboard', (req, res) => {
                 'date', moment(rows[0].ProssimaData).format('YYYY-MM-DD'),
                 'startSub', moment(rows[0].AperturaIscrizioni).format(),
                 'endSub', moment(rows[0].ChiusuraIscrizioni).format(),
-                () => {
-                    getMessagesToShow(req.session.id, 'dashboard').then(obj => {
-                        let error = null;
-                        let warning = null;
-                        let success = null;
-                        if (obj !== null) {
-                            error = obj.error;
-                            warning = obj.warning;
-                            success = obj.success;
-                        }
-                        res.render('admin/dashboard', {
-                            title: 'Dashboard',
-                            error, warning, success,
-                            assemblea: displayInfo
-                        });
-                    }).catch(error => res.render('admin/dashboard', {
-                        title: 'Dashboard',
-                        error,
-                        assemblea: displayInfo
-                    }));
-                }
+                () => res.render('admin/dashboard', {
+                    title: 'Dashboard',
+                    assemblea: displayInfo,
+                    error, warning, success
+                })
             );
         } else {
-            getMessagesToShow(req.session.id, 'dashboard').then(obj => {
-                let error = null;
-                let warning = null;
-                let success = null;
-                if (obj !== null) {
-                    error = obj.error;
-                    warning = obj.warning;
-                    success = obj.success;
-                }
-                res.render('admin/dashboard', {
-                    title: 'Dashboard',
-                    error, warning, success
-                });
-            }).catch(error => res.render('admin/dashboard', {
+            res.render('admin/dashboard', {
                 title: 'Dashboard',
-                error
-            }));
+                error, warning, success
+            });
         }
     }).catch((error) => {
-        res.render('admin/dashboard', { title: 'Dashboard', ferror: error });
+        res.render('admin/dashboard', {
+            title: 'Dashboard',
+            ferror: error,
+            error, warning, success
+        });
     });
 });
 router.get('/dashboard/assemblea', (req, res) => res.redirect('/gestore/dashboard'));
 
 // New assemblea
 router.get('/assemblea/crea', (req, res) => {
+    const { error, warning, success } = req.show;
     if (!req.session.assembleaAdmin) {
         if (!fs.existsSync(assembleeDir)) {
             fs.mkdirSync(assembleeDir);
@@ -126,7 +106,11 @@ router.get('/assemblea/crea', (req, res) => {
         fs.readdir(assembleeDir, (err, files) => {
             if (err) {
                 console.log(err);
-                res.render('admin/newassemblea', { title: 'Crea Assemblea', error: err });
+                res.render('admin/newassemblea', {
+                    title: 'Crea Assemblea',
+                    error: err.message,
+                    warning, success
+                });
             } else {
                 let assemblea = {};
                 if (req.session.loadTemplate) {
@@ -172,7 +156,8 @@ router.get('/assemblea/crea', (req, res) => {
                         templateFiles: {
                             list: files
                         },
-                        title: 'Crea Assemblea'
+                        title: 'Crea Assemblea',
+                        error, warning, success
                     }
                 }
                 res.render('admin/newassemblea', assemblea);
@@ -226,7 +211,7 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
         connection = conn;
         // Esegue la prima query, inserisce informazioni nella tabella corrispondente
         return connection.query({
-            sql: 'INSERT INTO `Info` (`uuid` ,`ProssimaData`, `AperturaIscrizioni`, `ChiusuraIscrizioni`, `Override`) VALUES (?,?,?,0)',
+            sql: 'INSERT INTO `Info` (`uuid` ,`ProssimaData`, `AperturaIscrizioni`, `ChiusuraIscrizioni`, `Override`) VALUES (?,?,?,?,0)',
             values: [ assUUID, req.body.assDate, (req.body.assSubStartDate + ' ' + req.body.assSubStartTime), (req.body.assSubEndDate + ' ' + req.body.assSubEndTime) ]
         });
     }).then(() => {
@@ -314,11 +299,13 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
     });
 });
 router.get('/assemblea/creata/:finalResult', (req, res) => {
+    const { error, warning, success } = req.show;
     if (req.params.finalResult === 'successo') {
         res.render('admin/assembleaCreated', {
             title: 'Assemblea creata',
             info: req.session.nuovaAssemblea,
-            labs: req.session.newLabs
+            labs: req.session.newLabs,
+            error, warning, success
         });
     } else if (req.params.finalResult === 'errore') {
         let connection;
@@ -336,7 +323,8 @@ router.get('/assemblea/creata/:finalResult', (req, res) => {
                 title: 'Assemblea non creata',
                 error: req.session.nuovaAssembleaError,
                 info: req.session.nuovaAssemblea,
-                labs: req.session.newLabs
+                labs: req.session.newLabs,
+                error, warning, success
             });
         }).catch((error) => {
             if (connection && connection.end) connection.end();
@@ -511,6 +499,7 @@ router.get('/assemblea/salva', (req, res) => {
 
 // Info
 router.get('/informazioni', (req, res, next) => {
+    const { error, warning, success } = req.show;
     client.hgetall('assemblea:info', (err, obj) => {
         if (err) {
             next(err);
@@ -518,7 +507,7 @@ router.get('/informazioni', (req, res, next) => {
             if (obj === null) {
                 setMessagesToShow(req.session.id, { error: 'Informazioni dell\'assemblea non trovate' }, 'dashboard')
                 .then(() => res.redirect('/gestore/dashboard'))
-                .catch(() => res.redirect('/gestore/dashboard'));
+                .catch(err => next(err));
             } else {
                 res.render('admin/info', {
                     title: 'Informazioni',
@@ -531,13 +520,15 @@ router.get('/informazioni', (req, res, next) => {
                     endSub: {
                         date: moment(obj.endSub).format('YYYY-MM-DD'),
                         time: moment(obj.endSub).format('HH:mm')
-                    }
+                    },
+                    error, success, warning
                 });
             }
         }
     });
 });
-router.get('/informazioni/modifica', (req, res) => {
+router.get('/informazioni/modifica', (req, res, next) => {
+    const { error, warning, success } = req.show;
     client.hgetall('assemblea:info', (err, obj) => {
         if (err) {
             next(err);
@@ -545,30 +536,9 @@ router.get('/informazioni/modifica', (req, res) => {
             if (obj === null) {
                 setMessagesToShow(req.session.id, { error: 'Informazioni dell\'assemblea non trovate' }, 'dashboard')
                 .then(() => res.redirect('/gestore/dashboard'))
-                .catch(() => res.redirect('/gestore/dashboard'));
+                .catch(err => next(err));
             } else {
-                getMessagesToShow()
-                .then(msg => {
-                    const { error, success, warning } = msg;
-                    console.log(msg);
-                    console.log(error);
-                    res.render('admin/info', {
-                        title: 'Modifica Informazioni',
-                        uuid: obj.uuid,
-                        date: obj.date,
-                        startSub: {
-                            date: moment(obj.startSub).format('YYYY-MM-DD'),
-                            time: moment(obj.startSub).format('HH:mm')
-                        },
-                        endSub: {
-                            date: moment(obj.endSub).format('YYYY-MM-DD'),
-                            time: moment(obj.endSub).format('HH:mm')
-                        },
-                        edit: true,
-                        error, success, warning
-                    });
-                })
-                .catch(e => res.render('admin/info', {
+                res.render('admin/info', {
                     title: 'Modifica Informazioni',
                     uuid: obj.uuid,
                     date: obj.date,
@@ -581,24 +551,23 @@ router.get('/informazioni/modifica', (req, res) => {
                         time: moment(obj.endSub).format('HH:mm')
                     },
                     edit: true,
-                    error: e.message
-                }));
+                    error, success, warning
+                });
             }
         }
     });
 });
-router.post('/informazioni/modifica', isAuthenticated, (req, res) => {
+router.post('/informazioni/modifica', isAuthenticated, (req, res, next) => {
     if (req.body) {
-        console.log(req.body.assDate);
-        let newStartSub = moment(req.body.assSubStartDate + ' ' + req.body.assSubStartTime).format();
-        let newEndSub = moment(req.body.assSubEndDate + ' ' + req.body.assSubEndTime).format();
+        let newStartSub = moment(req.body.assSubStartDate + ' ' + req.body.assSubStartTime);
+        let newEndSub = moment(req.body.assSubEndDate + ' ' + req.body.assSubEndTime);
         mysql.createConnection(mysqlCredentials).then((conn) => {
             let results = conn.query({
                 sql: 'UPDATE `Info` SET ProssimaData=?, AperturaIscrizioni=?, ChiusuraIscrizioni=? WHERE 1',
                 values: [
                     req.body.assDate,
-                    newStartSub,
-                    newEndSub
+                    newStartSub.format('DD-MM-YYTHH:mm:ss'),
+                    newEndSub.format('DD-MM-YYTHH:mm:ss')
                 ]
             });
             conn.end();
@@ -608,20 +577,19 @@ router.post('/informazioni/modifica', isAuthenticated, (req, res) => {
                 'assemblea:info',
                 //'uuid', is the same
                 'date', req.body.assDate,
-                'startSub', moment(newStartSub).format(),
-                'endSub', moment(newEndSub).format(),
+                'startSub', newStartSub.format(),
+                'endSub', newEndSub.format(),
                 () => {
                     setMessagesToShow(req.session.id, { success: 'Informazioni modificate con successo' })
                     .then(() => res.redirect('/gestore/informazioni'))
-                    .catch(() => res.redirect('/gestore/informazioni'));
+                    .catch(err => next(err));
                 }
             );
         }).catch((error) => {
             let msg = error.message.replace(/'/g, '').replace(/"/g, '');
-            console.log("[ERROR HERE]: " + msg);
             setMessagesToShow(req.session.id, { error: error.message.replace(/'/g, '').replace(/"/g, '') })
             .then(() => res.redirect('/gestore/informazioni'))
-            .catch(err => console.log(err));
+            .catch(err => next(err));
         });
     } else {
         res.redirect('/gestore/informazioni/modifica');
@@ -630,6 +598,7 @@ router.post('/informazioni/modifica', isAuthenticated, (req, res) => {
 
 // Labs
 router.get('/laboratori', (req, res) => {
+    const { error, warning, success } = req.show;
     let connection;
     let labs;
 
@@ -681,10 +650,18 @@ router.get('/laboratori', (req, res) => {
             }
             return lab;
         });
-        res.render('admin/labs', { title: 'Laboratori', labsList: labs });
+        res.render('admin/labs', {
+            title: 'Laboratori',
+            labsList: labs,
+            error, warning, success
+        });
     }).catch((error) => {
         if (connection && connection.end) connection.end();
-        res.render('admin/labs', { title: 'Laboratori', error: error });
+        res.render('admin/labs', {
+            title: 'Laboratori',
+            error: error.message,
+            warning, success
+        });
     });
 });
 
@@ -874,6 +851,7 @@ router.post('/laboratori/eliminalab', isAuthenticated, (req, res) => {
 });
 
 router.get('/studenti', (req, res) => {
+    const { error, warning, success } = req.show;
     let connection;
     let subs;
     let labs;
@@ -895,13 +873,18 @@ router.get('/studenti', (req, res) => {
         return connection.query('SELECT * FROM `Studenti`');
     }).then(() => connection.end()).then((rows) => {
         res.render('admin/students', {
+            title: 'Studenti',
             students: rows,
             subs,
-            title: 'Studenti'
+            error, warning, success
         });
     }).catch((error) => {
         if (connection && connection.end) connection.end();
-        res.render('admin/students', { title: 'Studenti', error });
+        res.render('admin/students', {
+            title: 'Studenti',
+            error: error.message,
+            warning, success
+        });
     });
 });
 
@@ -964,6 +947,15 @@ function isAuthenticated(req, res, next) {
         error.status = 401;
         next(error);
     }
+}
+
+function checkForMessages(req, res, next) {
+    getMessagesToShow(req.sessionID)
+    .then(msg => {
+        req.show = msg;
+        next();
+    })
+    .catch(err => next(err));
 }
 
 function getMessagesToShow(sessionID, target = 'page') {
