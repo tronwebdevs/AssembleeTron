@@ -32,7 +32,11 @@
         <div class="row">
             <div class="col-md-12 text-center">
                 <div class="btn-group">
-                    <button class="btn btn-success" id="updateBtn" disabled>Aggiorna</button>
+                    {{#if edit}}
+                        <button class="btn btn-success" id="updateBtn" disabled>Aggiorna</button>
+                    {{else}}
+                        <a href="/gestore/informazioni/modifica" class="btn btn-warning">Modifica</a>
+                    {{/if}}
                 </div>
                 <div class="btn-group">
                     <a href="/gestore/dashboard" class="btn btn-outline-primary">Dashboard</a>

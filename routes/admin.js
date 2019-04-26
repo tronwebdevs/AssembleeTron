@@ -3,22 +3,36 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('promise-mysql');
 const path = require('path');
+const uuid = require('uuid/v4');
 const moment = require('moment');
 moment.locale('it');
 const fs = require('fs-extra');
 const PdfPrinter = require('pdfmake');
+const redis = require('redis');
+const client = redis.createClient();
 
 const { mysqlCredentials, adminPassword } = require('../config/config.json');
 const assembleeDir = 'assemblee';
 
 // Home
 router.get('/', (req, res) => {
-    if (req.session.authenticated === true) {
+    if (req.session.authed === true) {
         res.redirect('/gestore/dashboard');
     } else {
-        res.render('admin/home', {
-            title: 'Gestore Assemblea - Login',
-            error: req.session.authError
+        let message = null;
+        client.get('admin_' + req.session.id + '_auth_error', (err, msg) => {
+            if (err) {
+                message = err.message;
+            } else {
+                if (msg !== null) {
+                    message = msg;
+                    client.del('admin_' + req.session.id + '_auth_error');
+                }
+            }
+            res.render('admin/home', {
+                title: 'Gestore Assemblea - Login',
+                error: message
+            });
         });
     }
 });
@@ -27,10 +41,10 @@ router.get('/', (req, res) => {
 // Login
 router.post('/login/', (req, res) => {
     if (req.body.password === adminPassword) {
-        req.session.authenticated = true;
+        req.session.authed = true;
         res.redirect('/gestore/dashboard');
     } else {
-        req.session.authError = 'Password errata';
+        client.set('admin_' + req.session.id + '_auth_error', 'Password errata', 'EX', 30);
         res.redirect('/gestore/');
     }
 });
@@ -45,42 +59,57 @@ router.get('/dashboard', (req, res) => {
         return result;
     }).then((rows) => {
         if (rows.length > 0) {
-            if (!req.session.assembleaAdmin) {
-                req.session.assembleaAdmin = {};
-            }
-            req.session.assembleaAdmin.info = {
-                date: moment(rows[0].ProssimaData).format('YYYY-MM-DD'),
-                startSub: {
-                    date: moment(rows[0].AperturaIscrizioni).format('YYYY-MM-DD'),
-                    time: moment(rows[0].AperturaIscrizioni).format('HH:mm')
-                },
-                endSub: {
-                    date: moment(rows[0].ChiusuraIscrizioni).format('YYYY-MM-DD'),
-                    time: moment(rows[0].ChiusuraIscrizioni).format('HH:mm')
-                },
-                display: {
-                    date: moment(rows[0].ProssimaData).format('DD/MM/YYYY'),
-                    startSub: moment(rows[0].AperturaIscrizioni).format('DD/MM/YYYY - HH:mm'),
-                    endSub: moment(rows[0].ChiusuraIscrizioni).format('DD/MM/YYYY - HH:mm'),
-                }
+            const displayInfo = {
+                date: moment(rows[0].ProssimaData).format('DD/MM/YYYY'),
+                startSub: moment(rows[0].AperturaIscrizioni).format('DD/MM/YYYY - HH:mm'),
+                endSub: moment(rows[0].ChiusuraIscrizioni).format('DD/MM/YYYY - HH:mm'),
             };
-            req.session.assembleaAdmin.info.display.subsClosed = ( moment().diff(moment(req.session.assembleaAdmin.info.endSub.date + 'T' + req.session.assembleaAdmin.info.endSub.time)) > 0 );
-
-            let error = req.session.showErrorToDashboard;
-            delete req.session.showErrorToDashboard;
-
-            let success = req.session.showSuccessToDashboard;
-            delete req.session.showSuccessToDashboard;
-
-            res.render('admin/dashboard', { title: 'Dashboard', error, success, assemblea: req.session.assembleaAdmin.info.display });
+            client.hmset(
+                'assemblea:info',
+                'uuid', rows[0].uuid,
+                'date', moment(rows[0].ProssimaData).format('YYYY-MM-DD'),
+                'startSub', moment(rows[0].AperturaIscrizioni).format(),
+                'endSub', moment(rows[0].ChiusuraIscrizioni).format(),
+                () => {
+                    getMessagesToShow(req.session.id, 'dashboard').then(obj => {
+                        let error = null;
+                        let warning = null;
+                        let success = null;
+                        if (obj !== null) {
+                            error = obj.error;
+                            warning = obj.warning;
+                            success = obj.success;
+                        }
+                        res.render('admin/dashboard', {
+                            title: 'Dashboard',
+                            error, warning, success,
+                            assemblea: displayInfo
+                        });
+                    }).catch(error => res.render('admin/dashboard', {
+                        title: 'Dashboard',
+                        error,
+                        assemblea: displayInfo
+                    }));
+                }
+            );
         } else {
-            let error = req.session.showErrorToDashboard;
-            delete req.session.showErrorToDashboard;
-
-            let success = req.session.showSuccessToDashboard;
-            delete req.session.showSuccessToDashboard;
-
-            res.render('admin/dashboard', { title: 'Dashboard', error, success });
+            getMessagesToShow(req.session.id, 'dashboard').then(obj => {
+                let error = null;
+                let warning = null;
+                let success = null;
+                if (obj !== null) {
+                    error = obj.error;
+                    warning = obj.warning;
+                    success = obj.success;
+                }
+                res.render('admin/dashboard', {
+                    title: 'Dashboard',
+                    error, warning, success
+                });
+            }).catch(error => res.render('admin/dashboard', {
+                title: 'Dashboard',
+                error
+            }));
         }
     }).catch((error) => {
         res.render('admin/dashboard', { title: 'Dashboard', ferror: error });
@@ -189,14 +218,16 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
     // Variabile laboratori (da sessione)
     let newLabs = req.session.newLabs;
 
+    let assUUID = uuid();
+
     // Crea connessione e inizia la catena query-then
     mysql.createConnection(mysqlCredentials).then((conn) => {
         // Stabilita la connessione, assegna a variabile globale
         connection = conn;
         // Esegue la prima query, inserisce informazioni nella tabella corrispondente
         return connection.query({
-            sql: 'INSERT INTO `Info` (`ProssimaData`, `AperturaIscrizioni`, `ChiusuraIscrizioni`, `Override`) VALUES (?,?,?,0)',
-            values: [ req.body.assDate, (req.body.assSubStartDate + ' ' + req.body.assSubStartTime), (req.body.assSubEndDate + ' ' + req.body.assSubEndTime) ]
+            sql: 'INSERT INTO `Info` (`uuid` ,`ProssimaData`, `AperturaIscrizioni`, `ChiusuraIscrizioni`, `Override`) VALUES (?,?,?,0)',
+            values: [ assUUID, req.body.assDate, (req.body.assSubStartDate + ' ' + req.body.assSubStartTime), (req.body.assSubEndDate + ' ' + req.body.assSubEndTime) ]
         });
     }).then(() => {
         let labsPromiseArray = [];
@@ -479,71 +510,118 @@ router.get('/assemblea/salva', (req, res) => {
 
 
 // Info
-router.get('/informazioni', (req, res) => {
-    if (req.session.assembleaAdmin.info) {
-        let obj = req.session.assembleaAdmin.info;
-        obj.title = 'Informazioni';
-        res.render('admin/info', obj);
-    } else {
-        res.redirect('/gestore/dashboard');
-    }
+router.get('/informazioni', (req, res, next) => {
+    client.hgetall('assemblea:info', (err, obj) => {
+        if (err) {
+            next(err);
+        } else {
+            if (obj === null) {
+                setMessagesToShow(req.session.id, { error: 'Informazioni dell\'assemblea non trovate' }, 'dashboard')
+                .then(() => res.redirect('/gestore/dashboard'))
+                .catch(() => res.redirect('/gestore/dashboard'));
+            } else {
+                res.render('admin/info', {
+                    title: 'Informazioni',
+                    uuid: obj.uuid,
+                    date: obj.date,
+                    startSub: {
+                        date: moment(obj.startSub).format('YYYY-MM-DD'),
+                        time: moment(obj.startSub).format('HH:mm')
+                    },
+                    endSub: {
+                        date: moment(obj.endSub).format('YYYY-MM-DD'),
+                        time: moment(obj.endSub).format('HH:mm')
+                    }
+                });
+            }
+        }
+    });
 });
 router.get('/informazioni/modifica', (req, res) => {
-    let infoAssemblea = req.session.assembleaAdmin.info;
-    infoAssemblea.edit = true;
-    infoAssemblea.title = 'Modifica informazioni'
-    if (req.session.infoEdit) {
-        if (req.session.infoEdit.code === 200) {
-            infoAssemblea.success = req.session.infoEdit.message;
-        } else if (req.session.infoEdit.code === 500) {
-            infoAssemblea.error = req.session.infoEdit.message;
+    client.hgetall('assemblea:info', (err, obj) => {
+        if (err) {
+            next(err);
+        } else {
+            if (obj === null) {
+                setMessagesToShow(req.session.id, { error: 'Informazioni dell\'assemblea non trovate' }, 'dashboard')
+                .then(() => res.redirect('/gestore/dashboard'))
+                .catch(() => res.redirect('/gestore/dashboard'));
+            } else {
+                getMessagesToShow()
+                .then(msg => {
+                    const { error, success, warning } = msg;
+                    console.log(msg);
+                    console.log(error);
+                    res.render('admin/info', {
+                        title: 'Modifica Informazioni',
+                        uuid: obj.uuid,
+                        date: obj.date,
+                        startSub: {
+                            date: moment(obj.startSub).format('YYYY-MM-DD'),
+                            time: moment(obj.startSub).format('HH:mm')
+                        },
+                        endSub: {
+                            date: moment(obj.endSub).format('YYYY-MM-DD'),
+                            time: moment(obj.endSub).format('HH:mm')
+                        },
+                        edit: true,
+                        error, success, warning
+                    });
+                })
+                .catch(e => res.render('admin/info', {
+                    title: 'Modifica Informazioni',
+                    uuid: obj.uuid,
+                    date: obj.date,
+                    startSub: {
+                        date: moment(obj.startSub).format('YYYY-MM-DD'),
+                        time: moment(obj.startSub).format('HH:mm')
+                    },
+                    endSub: {
+                        date: moment(obj.endSub).format('YYYY-MM-DD'),
+                        time: moment(obj.endSub).format('HH:mm')
+                    },
+                    edit: true,
+                    error: e.message
+                }));
+            }
         }
-        delete req.session.infoEdit;
-    }
-    res.render('admin/info', infoAssemblea);
+    });
 });
 router.post('/informazioni/modifica', isAuthenticated, (req, res) => {
     if (req.body) {
+        console.log(req.body.assDate);
+        let newStartSub = moment(req.body.assSubStartDate + ' ' + req.body.assSubStartTime).format();
+        let newEndSub = moment(req.body.assSubEndDate + ' ' + req.body.assSubEndTime).format();
         mysql.createConnection(mysqlCredentials).then((conn) => {
             let results = conn.query({
                 sql: 'UPDATE `Info` SET ProssimaData=?, AperturaIscrizioni=?, ChiusuraIscrizioni=? WHERE 1',
                 values: [
                     req.body.assDate,
-                    req.body.assSubStartDate + 'T' + req.body.assSubStartTime,
-                    req.body.assSubEndDate + 'T' + req.body.assSubEndTime
+                    newStartSub,
+                    newEndSub
                 ]
             });
             conn.end();
             return results;
         }).then(() => {
-            req.session.assembleaAdmin.info = {
-                date: req.body.assDate,
-                startSub: {
-                    date: req.body.assSubStartDate,
-                    time: req.body.assSubStartTime
-                },
-                endSub: {
-                    date: req.body.assSubEndDate,
-                    time: req.body.assSubEndTime
-                },
-                display: {
-                    date: moment(req.body.assDate).format('DD/MM/YYYY'),
-                    startSub: moment(req.body.assSubStartDate + 'T' + req.body.assSubStartTime).format('DD/MM/YYYY - HH:mm'),
-                    endSub: moment(req.body.assSubEndDate + 'T' + req.body.assSubEndTime).format('DD/MM/YYYY - HH:mm'),
+            client.hmset(
+                'assemblea:info',
+                //'uuid', is the same
+                'date', req.body.assDate,
+                'startSub', moment(newStartSub).format(),
+                'endSub', moment(newEndSub).format(),
+                () => {
+                    setMessagesToShow(req.session.id, { success: 'Informazioni modificate con successo' })
+                    .then(() => res.redirect('/gestore/informazioni'))
+                    .catch(() => res.redirect('/gestore/informazioni'));
                 }
-            };
-            req.session.infoEdit = {
-                code: 200,
-                message: 'Informazioni modificate con successo'
-            }
-            res.redirect('/gestore/informazioni/modifica');
+            );
         }).catch((error) => {
-            console.log(error);
-            req.session.infoEdit = {
-                code: 500,
-                message: error.message
-            }
-            res.redirect('/gestore/informazioni/modifica');
+            let msg = error.message.replace(/'/g, '').replace(/"/g, '');
+            console.log("[ERROR HERE]: " + msg);
+            setMessagesToShow(req.session.id, { error: error.message.replace(/'/g, '').replace(/"/g, '') })
+            .then(() => res.redirect('/gestore/informazioni'))
+            .catch(err => console.log(err));
         });
     } else {
         res.redirect('/gestore/informazioni/modifica');
@@ -844,11 +922,10 @@ router.post('/classi/get', isAuthenticated, (req, res) => {
 });
 
 // Logout
-router.get('/dashboard/logout', (req, res) => {
+router.get('/dashboard/logout', (req, res, next) => {
     req.session.destroy((error) => {
         if (error) {
-            console.log(error);
-            res.send('Si e\' verificato un errore inaspettato!');
+            next(error);
         }
         res.render('admin/logout', { title: 'Logout' });
     });
@@ -859,6 +936,7 @@ router.get('/dashboard/logout', (req, res) => {
 // Errors handling
 router.use((err, req, res, next) => {
     if (err.status == 401) {
+        client.set('admin_' + req.session.id + '_auth_error', err.message, 'EX', 30);
         res.redirect('/gestore/');
     } else {
         console.log(err.stack);
@@ -879,13 +957,68 @@ router.use((req, res) => {
 
 
 function isAuthenticated(req, res, next) {
-    if (req.session && req.session.authenticated === true) {
+    if (req.session && req.session.authed === true) {
         next();
     } else {
         let error = new Error('Autenticazione richiesta');
         error.status = 401;
         next(error);
     }
+}
+
+function getMessagesToShow(sessionID, target = 'page') {
+    return new Promise((resolve, reject) => {
+        client.hgetall('admin:' + sessionID + ':' + target +':show', (err, obj) => {
+            if (err) {
+                reject(err);
+            } else {
+                client.hdel('admin:' + sessionID + ':' + target +':show', 'error', 'warning', 'success', (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        if (obj === null) {
+                            resolve({
+                                error: null,
+                                warning: null,
+                                success: null
+                            });
+                        } else {
+                            resolve(obj)
+                        }
+                    }
+                });
+            }
+        });
+    });
+}
+
+function setMessagesToShow(sessionID, load, target = 'page') {
+    return new Promise((resolve, reject) => {
+        let objArray = [ 'admin:' + sessionID + ':' + target + ':show' ];
+        if (load !== null) {
+            for (let key in load) {
+                if (load[key] !== null) {
+                    objArray.push(key, load[key]);
+                }
+            }
+            client.hmset(objArray, (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        client.expire('admin:' + sessionID + ':' + target +':show', 20, (err) => {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                resolve();
+                            }
+                        });
+                    }
+                }
+            );
+        } else {
+            reject(new Error('Load cannot be null!'));
+        }
+    });
 }
 
 function uniqueArray(arrArg) {
