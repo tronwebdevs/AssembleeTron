@@ -208,7 +208,11 @@ router.post('/assemblea/crea', isAuthenticated, (req, res) => {
     // This fix a BIG bug in express sessions
     req.session.newLabs.map(lab => {
         for (let i = 1; i <= 4; i++) {
-            lab["labClassiOra" + i] = JSON.parse(lab["labClassiOra" + i]);
+            if (lab["labClassiOra" + i].length !== 0) {
+                lab["labClassiOra" + i] = JSON.parse(lab["labClassiOra" + i]);
+            } else {
+                lab["labClassiOra" + i] = [];
+            }
         }
         return lab;
     });
