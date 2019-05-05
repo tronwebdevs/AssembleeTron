@@ -1,34 +1,34 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { authStudent } from '../../../actions/studentActions';
+import { fetchAssemblyInfo } from '../../../actions/assemblyActions';
 import { Form, Card, Button } from 'react-bootstrap';
-import { Redirect } from 'react-router-dom';
-import Authentication from '../../AuthRoute/Authentication';
 import './index.css';
+
 
 class Login extends Component {
     state = {
-        matricola: 0,
-        part: 1,
-        redirectToReferrer: false
-    };
-
-    login = () => {
-        Authentication.signin(() => {
-            this.setState({ redirectToReferrer: true });
-        });
+        studentID: 0,
+        part: 1
     };
 
     handleChange = (event) => {
-        this.setState({ [event.target.name]: event.target.value });
+        this.setState({ [event.target.name]: +event.target.value });
+    }
+
+    handleSubmit = (event) => {
+        event.preventDefault();
+        this.props.authStudent(this.state.studentID, this.state.part);
+    }
+
+    componentDidMount() {
+        this.props.fetchAssemblyInfo();
     }
 
     render() {
-        let { from } = this.props.location.state || { from: { pathname: "/" } };
-        let { redirectToReferrer } = this.state;
-
-        if (redirectToReferrer) return <Redirect to={from} />;
-
         return (
-            <Form className="form-signin">
+            <Form className="form-signin" onSubmit={this.handleSubmit}>
                 <Card className="mb-4 shadow-sm">
                     <Card.Body className="text-center">
                         <Card.Title>Iscrizioni per l'Assemblea d'Istituto del </Card.Title>
@@ -36,17 +36,38 @@ class Login extends Component {
                             Inserisci la tua matricola per entrare:
                     </Card.Text>
                         <Form.Group>
-                            <Form.Control type="number" placeholder="Matricola" required autoFocus />
+                            <Form.Control
+                                type="number"
+                                name="studentID"
+                                placeholder="Matricola"
+                                onChange={this.handleChange}
+                                required
+                                autoFocus
+                            />
                         </Form.Group>
                         <Form.Group>
-                            <div className="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="partRadio" name="part" className="custom-control-input" value="1" checked />
-                                <label className="custom-control-label" htmlFor="partRadio">Partecipo</label>
-                            </div>
-                            <div className="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="notPartRadio" name="part" className="custom-control-input" value="0" />
-                                <label className="custom-control-label" htmlFor="notPartRadio">Non partecipo</label>
-                            </div>
+                            <Form.Check 
+                                type="radio"
+                                custom
+                                className="custom-control-inline"
+                                label="Partecipo"
+                                id="partRadio"
+                                name="part"
+                                value={1}
+                                onChange={this.handleChange}
+                                checked={this.state.part === 1}
+                            />
+                            <Form.Check
+                                type="radio"
+                                custom
+                                className="custom-control-inline"
+                                label="Non partecipo"
+                                id="notPartRadio"
+                                name="part"
+                                value={0}
+                                onChange={this.handleChange}
+                                checked={this.state.part === 0}
+                            />
                         </Form.Group>
                         <Button variant="primary" type="submit" block>Entra</Button>
                     </Card.Body>
@@ -56,4 +77,16 @@ class Login extends Component {
     }
 }
 
-export default Login;
+Login.propTypes = {
+    authStudent: PropTypes.func.isRequired,
+    fetchAssemblyInfo: PropTypes.func.isRequired,
+    student: PropTypes.object.isRequired,
+    assembly: PropTypes.object.isRequired
+}
+
+const mapStateToProps = state => ({
+    student: state.student,
+    assembly: state.assembly
+});
+
+export default connect(mapStateToProps, { authStudent, fetchAssemblyInfo })(Login);

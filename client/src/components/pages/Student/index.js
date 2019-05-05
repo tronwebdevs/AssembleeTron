@@ -12,8 +12,8 @@ class Student extends Component {
             <BrowserRouter>
                 <div>
                     <Switch>
-                        <AuthRoute path="/iscrizione" component={LabsSelect} exact />
                         <Route path="/" component={Login} exact />
+                        <Route path="/iscrizione" component={LabsSelect} />
                         <Route component={Error} />
                     </Switch>
                 </div>
