@@ -2,7 +2,8 @@ import {
     ASSEMBLY_SUBS_CLOSE,
     ASSEMBLY_SUBS_OPEN,
     ASSEMBLY_NOT_AVABILE,
-    ASSEMBLY_ERROR
+    ASSEMBLY_ERROR,
+    FETCH_ASSEMBLY_LABS
 } from '../actions/types.js';
 
 const initialState = {
@@ -20,12 +21,19 @@ export default function (state = initialState, action) {
         case ASSEMBLY_NOT_AVABILE:
             return {
                 ...state,
-                error: payload.message
+                error: {
+                    info: payload.message
+                }
             }
         case ASSEMBLY_SUBS_OPEN:
             return {
                 ...state,
-                info: payload.info
+                info: payload
+            }
+        case FETCH_ASSEMBLY_LABS:
+            return {
+                ...state,
+                avabile_labs: payload
             }
         default:
             return state;

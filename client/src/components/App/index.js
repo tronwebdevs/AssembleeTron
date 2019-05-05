@@ -13,13 +13,13 @@ class App extends Component {
         return (
             <Provider store={store}>
                 <BrowserRouter>
-                    <div>
+                    <>
                         <Switch>
                             <Route path="/gestore" component={Admin} />
                             <Route path="/" component={Student} />
                             <Route component={Error} />
                         </Switch>
-                    </div>
+                    </>
                 </BrowserRouter>
             </Provider>
         );

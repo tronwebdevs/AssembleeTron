@@ -1,16 +1,27 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
-import Authentication from './Authentication';
 
-function AuthRoute({ component: Component, ...rest }) {
-    return (
-        <Route
-            {...rest}
-            render={
-                props => Authentication.isAuthed ? <Component {...props} /> : <Redirect to={{ pathname: "/", state: { from: props.location } }} />
-            }
-        />
-    );
-}
+const AuthRoute = ({ component: Component, ...rest }) => (
+    <Route
+        {...rest}
+        render={props => (
+            rest.student.profile.ID ? (
+                <Component {...props} />
+            ) : (
+                <Redirect to={{
+                    pathname: "/",
+                    state: {
+                        from: props.location
+                    }
+                }} />
+            )
+        )}
+    />
+);
 
-export default AuthRoute;
+const mapStateToProps = state => ({
+    student: state.student
+});
+
+export default connect(mapStateToProps)(AuthRoute);

@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { authStudent } from '../../../actions/studentActions';
-import { fetchAssemblyInfo } from '../../../actions/assemblyActions';
+import { authStudent } from '../../../../actions/studentActions';
+import { fetchAssemblyInfo } from '../../../../actions/assemblyActions';
 import { Form, Card, Button } from 'react-bootstrap';
-import './index.css';
+import moment from 'moment';
+import '../index.css';
 
-
-class Login extends Component {
+class LoginComponent extends Component {
     state = {
         studentID: 0,
         part: 1
@@ -22,22 +22,20 @@ class Login extends Component {
         this.props.authStudent(this.state.studentID, this.state.part);
     }
 
-    componentDidMount() {
-        this.props.fetchAssemblyInfo();
-    }
-
     render() {
+        const { info } = this.props;
         return (
             <Form className="form-signin" onSubmit={this.handleSubmit}>
                 <Card className="mb-4 shadow-sm">
                     <Card.Body className="text-center">
-                        <Card.Title>Iscrizioni per l'Assemblea d'Istituto del </Card.Title>
+                        <Card.Title>Iscrizioni per l'Assemblea d'Istituto del {moment(info.date).format('DD/MM/YYYY')}</Card.Title>
                         <Card.Text className="text-left" style={{ fontSize: '0.9em' }}>
                             Inserisci la tua matricola per entrare:
-                    </Card.Text>
+                        </Card.Text>
                         <Form.Group>
                             <Form.Control
                                 type="number"
+                                className="login-input"
                                 name="studentID"
                                 placeholder="Matricola"
                                 onChange={this.handleChange}
@@ -46,7 +44,7 @@ class Login extends Component {
                             />
                         </Form.Group>
                         <Form.Group>
-                            <Form.Check 
+                            <Form.Check
                                 type="radio"
                                 custom
                                 className="custom-control-inline"
@@ -77,7 +75,7 @@ class Login extends Component {
     }
 }
 
-Login.propTypes = {
+LoginComponent.propTypes = {
     authStudent: PropTypes.func.isRequired,
     fetchAssemblyInfo: PropTypes.func.isRequired,
     student: PropTypes.object.isRequired,
@@ -89,4 +87,4 @@ const mapStateToProps = state => ({
     assembly: state.assembly
 });
 
-export default connect(mapStateToProps, { authStudent, fetchAssemblyInfo })(Login);
+export default connect(mapStateToProps, { authStudent, fetchAssemblyInfo })(LoginComponent);

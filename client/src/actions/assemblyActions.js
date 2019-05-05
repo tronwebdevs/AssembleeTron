@@ -2,7 +2,8 @@ import {
     ASSEMBLY_SUBS_CLOSE,
     ASSEMBLY_SUBS_OPEN,
     ASSEMBLY_NOT_AVABILE,
-    ASSEMBLY_ERROR
+    ASSEMBLY_ERROR,
+    FETCH_ASSEMBLY_LABS
 } from '../actions/types.js';
 
 export const fetchAssemblyInfo = () => dispatch => {
@@ -58,10 +59,32 @@ export const fetchAssemblyInfo = () => dispatch => {
     }))
 };
 
-export const fetchAllLabs = () => dispatch => {
-
+export const fetchLabsAvabile = classLabel => dispatch => {
+    fetch('api/assembly/labs?classLabel=' + classLabel)
+    .then(resp => resp.json())
+    .then(data => {
+        if (data.code === 1) {
+            dispatch({
+                type: FETCH_ASSEMBLY_LABS,
+                payload: data.labList
+            })
+        } else {
+            dispatch({
+                type: ASSEMBLY_ERROR,
+                payload: {
+                    message: 'Errore inaspettato'
+                }
+            })
+        }
+    })
+    .catch(err => dispatch({
+        type: ASSEMBLY_ERROR,
+        payload: {
+            message: err.message
+        }
+    }))
 };
 
-export const fetchLabsAvabile = () => dispatch => {
+export const fetchAllLabs = () => dispatch => {
 
 };

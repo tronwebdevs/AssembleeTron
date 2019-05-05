@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Card, Badge, Table } from 'react-bootstrap';
-import './index.css';
+import Footer from './Footer';
 
-class LabsSelect extends Component {
+class ConfirmSub extends Component {
 
     renderLabs = () => {
-        let assDate, student = { name: '', surname: '', classLabel: '' };
+        let student = { name: '', surname: '', classLabel: '' };
         if (student.labs) {
             return (
                 <Table responsive>
@@ -39,7 +39,7 @@ class LabsSelect extends Component {
     }
 
     renderInfo = () => {
-        let assDate, student = { name: '', surname: '', classLabel: '' };
+        let student = { name: '', surname: '', classLabel: '' };
         if (student.labs) {
             return (
                 <Row className="mb-1">
@@ -66,7 +66,7 @@ class LabsSelect extends Component {
 
         return (
             <>
-                <Container>
+                <Container className="std-page">
                     <Row className="mt-4">
                         <Col>
                             <Card className="text-center shadow-sm">
@@ -92,15 +92,13 @@ class LabsSelect extends Component {
                         </Col>
                     </Row>
                 </Container>
-                <footer className="footer text-muted text-center text-small">
-                    <p className="mb-1">Copyright &copy; 2019 TronWeb | Davide Testolin | Made with Node.js</p>
-                </footer>
+                <Footer />
             </>
         );
     }
 }
 
-LabsSelect.propTypes = {
+ConfirmSub.propTypes = {
     student: PropTypes.object.isRequired
 };
 
@@ -108,4 +106,4 @@ const mapStateToProps = state => ({
     student: state.student
 });
 
-export default connect(mapStateToProps, {})(LabsSelect);
+export default connect(mapStateToProps, {})(ConfirmSub);
