@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { fetchAssemblyInfo } from '../../../../actions/assemblyActions';
+import { fetchAssemblyInfo, fetchLabsAvabile, fetchAllLabs } from '../../../../actions/assemblyActions';
 import { Redirect } from 'react-router-dom';
 
 import LoginComponent from './LoginComponent';
@@ -14,27 +14,68 @@ class Login extends Component {
 
     renderLogin = () => {
         const { info, error } = this.props.assembly;
+        const { fetch_pending } = this.props.student;
         if (info) {
-            return <LoginComponent info={info} />;
+            return <LoginComponent info={info} fetchPending={fetch_pending.profile || false} />;
         } else {
             return <AssemblyClose message={error.info} />
         }
     }
 
     render() {
-        if (this.props.student.profile.ID) {
-            const { from } = this.props.location.state || { from: { pathname: '/iscrizione' } };
-            //TODO: check if student is alredy sub/wants unsub
-            return <Redirect to={from} />;
-        }
+        const { student, assembly } = this.props;
 
-        return (
-            <div className="fake-body">
-                <div className="login-wrapper">
-                    {this.renderLogin()}
+        if (student.fetch_pending.profile === false) {
+            if (student.labs.length > 0) {
+                // studente e' iscritto/disiscritto
+                let notSub = student.labs.every(labID => labID === -1);
+                if (notSub === true) {
+                    return <Redirect to={{ pathname: '/conferma' }} />;
+                } else {
+                    if (assembly.fetch_pending.labs !== true && assembly.fetch_pending.labs !== false) {
+                        this.props.fetchAllLabs();
+                    }
+                    if (assembly.fetch_pending.labs === false) {
+                        return <Redirect to={{ pathname: '/conferma' }} />;
+                    } else {
+                        return (
+                            <div className="fake-body">
+                                <div className="login-wrapper">
+                                    {this.renderLogin()}
+                                </div>
+                            </div>
+                        );
+                    }
+                }
+            } else {
+                // studente non e' ancora iscritto/disiscritto
+                // fetch avabile labs to student
+                if (assembly.fetch_pending.avabile_labs !== true && assembly.fetch_pending.avabile_labs !== false) {
+                    this.props.fetchLabsAvabile(student.profile.classLabel);
+                }
+
+                if (assembly.fetch_pending.avabile_labs === false) {
+                    const { from } = this.props.location.state || { from: { pathname: '/iscrizione' } };
+                    return <Redirect to={from} />;
+                } else {
+                    return (
+                        <div className="fake-body">
+                            <div className="login-wrapper">
+                                {this.renderLogin()}
+                            </div>
+                        </div>
+                    );
+                }
+            }
+        } else {
+            return (
+                <div className="fake-body">
+                    <div className="login-wrapper">
+                        {this.renderLogin()}
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        }
     }
 }
 
@@ -49,4 +90,4 @@ const mapStateToProps = state => ({
     assembly: state.assembly
 });
 
-export default connect(mapStateToProps, { fetchAssemblyInfo })(Login);
+export default connect(mapStateToProps, { fetchAssemblyInfo, fetchLabsAvabile, fetchAllLabs })(Login);

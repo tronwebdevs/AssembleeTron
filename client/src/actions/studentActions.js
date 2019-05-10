@@ -3,10 +3,17 @@ import {
     STUDENT_IS_PART,
     STUDENT_NOT_PART,
     STUDENT_WAS_PART,
-    ERROR_IN_STUDENT_AUTH
+    ERROR_IN_STUDENT_AUTH,
+    FETCH_STUDENT_PENDING
 } from '../actions/types.js';
 
 export const authStudent = (studentID, part) => dispatch => {
+    dispatch({
+        type: FETCH_STUDENT_PENDING,
+        payload: {
+            profile: true
+        }
+    });
     fetch('api/students?studentID=' + studentID + '&part=' + part)
     .then(res => res.json())
     .then(data => {

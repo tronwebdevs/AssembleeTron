@@ -1,14 +1,33 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { clearFetchPending } from '../../../actions/assemblyActions';
 import { Container, Row, Col, Card, Badge, Table } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import Footer from './Footer';
+
+function SubTableRow(props) {
+    const { h, lab } = props;
+    return (
+        <tr className="lab-row-confirm">
+            <td>{h}</td>
+            <td>{lab.title}</td>
+            <td>{lab.room}</td>
+        </tr>
+    );
+}
 
 class ConfirmSub extends Component {
 
+    state = { notSub: this.props.student.labs.every(labID => labID === -1) };
+
     renderLabs = () => {
-        let student = { name: '', surname: '', classLabel: '' };
-        if (student.labs) {
+        const { student } = this.props;
+        const { labs } = this.props.assembly;
+        if (this.state.notSub === false) {
+            let labList = student.labs;
+            labList = labList.map(labID => labs.find(aLab => aLab.ID === labID));
+            console.log(labList);
             return (
                 <Table responsive>
                     <thead>
@@ -19,13 +38,7 @@ class ConfirmSub extends Component {
                         </tr>
                     </thead>
                     <tbody className="text-left">
-                        {/* {{#each student.labs}}
-                        <tr className="lab-row-confirm">
-                            <td>{{this.index}}</td>
-                            <td>{{this.labName}}</td>
-                            <td>{{this.labAula}}</td>
-                        </tr>
-                        {{/each}} */}
+                        {labList.map((lab, index) => <SubTableRow h={index + 1} lab={lab} key={index} />)}
                     </tbody>
                 </Table>
             );
@@ -39,8 +52,7 @@ class ConfirmSub extends Component {
     }
 
     renderInfo = () => {
-        let student = { name: '', surname: '', classLabel: '' };
-        if (student.labs) {
+        if (this.state.notSub === false) {
             return (
                 <Row className="mb-1">
                     <Col>
@@ -49,10 +61,10 @@ class ConfirmSub extends Component {
                                 Conserva questa tabella! Ti consigliamo di salvare uno screenshot di questa schermata prima di uscire.
                             </p>
                             <p className="font-weight-bold">
-                                Potrai visualizzarla nuovamente inserendo la tua matricola nella <a href="/logout">pagina di login</a>
+                                Potrai visualizzarla nuovamente inserendo la tua matricola nella <Link to="/">pagina di login</Link>
                             </p>
                             <p>
-                                Per disiscriverti dall'assemblea vai alla <a href="/logout">pagina di login</a> e seleziona "Non partecipo"
+                                Per disiscriverti dall'assemblea vai alla <Link to="/">pagina di login</Link> e seleziona "Non partecipo"
                             </p>
                         </small>
                     </Col>
@@ -61,8 +73,13 @@ class ConfirmSub extends Component {
         }
     }
 
+    componentDidMount() {
+        this.props.clearFetchPending();
+    }
+
     render() {
-        let assDate, student = { name: '', surname: '', classLabel: '' };
+        const { profile } = this.props.student;
+        let assDate;
 
         return (
             <>
@@ -78,7 +95,9 @@ class ConfirmSub extends Component {
                                     </Row>
                                     <Row className="mb-4">
                                         <Col>
-                                            <Badge variant="primary">{student.name} {student.surname} - {student.classLabel}</Badge>
+                                            <Badge variant="primary">
+                                                <h6 className="mb-0">{profile.name} {profile.surname} - {profile.classLabel}</h6>
+                                            </Badge>
                                         </Col>
                                     </Row>
                                     <Row className="mb-2">
@@ -99,11 +118,14 @@ class ConfirmSub extends Component {
 }
 
 ConfirmSub.propTypes = {
-    student: PropTypes.object.isRequired
+    clearFetchPending: PropTypes.func.isRequired,
+    student: PropTypes.object.isRequired,
+    assembly: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-    student: state.student
+    student: state.student,
+    assembly: state.assembly
 });
 
-export default connect(mapStateToProps, {})(ConfirmSub);
+export default connect(mapStateToProps, { clearFetchPending })(ConfirmSub);

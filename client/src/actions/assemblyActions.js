@@ -1,19 +1,28 @@
 import {
-    ASSEMBLY_SUBS_CLOSE,
-    ASSEMBLY_SUBS_OPEN,
-    ASSEMBLY_NOT_AVABILE,
-    ASSEMBLY_ERROR,
-    FETCH_ASSEMBLY_LABS
+    FETCH_ASSEMBLY_SUBS_CLOSE,
+    FETCH_ASSEMBLY_SUBS_OPEN,
+    FETCH_ASSEMBLY_NOT_AVABILE,
+    FETCH_ASSEMBLY_ERROR,
+    FETCH_ASSEMBLY_LABS,
+    FETCH_ASSEMBLY_AVABILE_LABS,
+    FETCH_ASSEMBLY_PENDING,
+    ASSEMBLY_CLEAR_PENDING
 } from '../actions/types.js';
 
 export const fetchAssemblyInfo = () => dispatch => {
+    dispatch({
+        type: FETCH_ASSEMBLY_PENDING,
+        payload: {
+            info: true
+        }
+    });
     fetch('api/assembly/info')
     .then(resp => resp.json())
     .then(data => {
         switch (data.code) {
             case 0:
                 dispatch({
-                    type: ASSEMBLY_NOT_AVABILE,
+                    type: FETCH_ASSEMBLY_NOT_AVABILE,
                     payload: {
                         message: data.message
                     }
@@ -21,7 +30,7 @@ export const fetchAssemblyInfo = () => dispatch => {
                 break;
             case 1:
                 dispatch({
-                    type: ASSEMBLY_SUBS_CLOSE,
+                    type: FETCH_ASSEMBLY_SUBS_CLOSE,
                     payload: {
                         message: data.message
                     }
@@ -29,13 +38,13 @@ export const fetchAssemblyInfo = () => dispatch => {
                 break;
             case 2:
                 dispatch({
-                    type: ASSEMBLY_SUBS_OPEN,
+                    type: FETCH_ASSEMBLY_SUBS_OPEN,
                     payload: data.info
                 });
                 break;
             case 3:
                 dispatch({
-                    type: ASSEMBLY_SUBS_CLOSE,
+                    type: FETCH_ASSEMBLY_SUBS_CLOSE,
                     payload: {
                         message: data.message
                     }
@@ -43,7 +52,7 @@ export const fetchAssemblyInfo = () => dispatch => {
                 break;
             default:
                 dispatch({
-                    type: ASSEMBLY_ERROR,
+                    type: FETCH_ASSEMBLY_ERROR,
                     payload: {
                         message: 'Errore non riconosciuto (assembly)'
                     }
@@ -52,7 +61,7 @@ export const fetchAssemblyInfo = () => dispatch => {
         }
     })
     .catch(err => dispatch({
-        type: ASSEMBLY_ERROR,
+        type: FETCH_ASSEMBLY_ERROR,
         payload: {
             message: err.message
         }
@@ -60,7 +69,45 @@ export const fetchAssemblyInfo = () => dispatch => {
 };
 
 export const fetchLabsAvabile = classLabel => dispatch => {
-    fetch('api/assembly/labs?classLabel=' + classLabel)
+    dispatch({
+        type: FETCH_ASSEMBLY_PENDING,
+        payload: {
+            avabile_labs: true
+        }
+    })
+    fetch('api/assembly/labs/avabile/?classLabel=' + classLabel)
+    .then(resp => resp.json())
+    .then(data => {
+        if (data.code === 1) {
+            dispatch({
+                type: FETCH_ASSEMBLY_AVABILE_LABS,
+                payload: data.labList
+            })
+        } else {
+            dispatch({
+                type: FETCH_ASSEMBLY_ERROR,
+                payload: {
+                    message: 'Errore inaspettato'
+                }
+            })
+        }
+    })
+    .catch(err => dispatch({
+        type: FETCH_ASSEMBLY_ERROR,
+        payload: {
+            message: err.message
+        }
+    }))
+};
+
+export const fetchAllLabs = () => dispatch => {
+    dispatch({
+        type: FETCH_ASSEMBLY_PENDING,
+        payload: {
+            labs: true
+        }
+    });
+    fetch('api/assembly/labs/all/')
     .then(resp => resp.json())
     .then(data => {
         if (data.code === 1) {
@@ -70,7 +117,7 @@ export const fetchLabsAvabile = classLabel => dispatch => {
             })
         } else {
             dispatch({
-                type: ASSEMBLY_ERROR,
+                type: FETCH_ASSEMBLY_ERROR,
                 payload: {
                     message: 'Errore inaspettato'
                 }
@@ -78,13 +125,15 @@ export const fetchLabsAvabile = classLabel => dispatch => {
         }
     })
     .catch(err => dispatch({
-        type: ASSEMBLY_ERROR,
+        type: FETCH_ASSEMBLY_ERROR,
         payload: {
             message: err.message
         }
     }))
 };
 
-export const fetchAllLabs = () => dispatch => {
-
-};
+export const clearFetchPending = () => dispatch => {
+    dispatch({
+        type: ASSEMBLY_CLEAR_PENDING
+    });
+}

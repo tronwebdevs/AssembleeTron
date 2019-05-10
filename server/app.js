@@ -149,23 +149,34 @@ app.get('/api/students', (req, res) => {
                             wasSubscribed: true
                         });
                     } else {
+                        res.status(200).json({
+                            code: 4,
+                            student,
+                            labs: [
+                                results.h1,
+                                results.h2,
+                                results.h3,
+                                results.h4,
+                            ],
+                            wasSubscribed: true
+                        });
                         // STUDENTE VUOLE VISUALIZZARE I LABORATORI
-                        Lab.findAndCountAll({
-                            where: {
-                                id: [ results.h1, results.h2, results.h3, results.h4 ]
-                            }
-                        }).then(result => {
-                            if (result.count <= 4 || result.count > 0) {
-                                res.status(200).json({
-                                    code: 4,
-                                    student,
-                                    labs: result.rows,
-                                    wasSubscribed: true,
-                                });
-                            } else {
-                                next(new Error('Errore inaspettato: numero di laboratori inaspettato (' + result.count + ')'));
-                            }
-                        }).catch(err => next(err));
+                        // Lab.findAndCountAll({
+                        //     where: {
+                        //         id: [ results.h1, results.h2, results.h3, results.h4 ]
+                        //     }
+                        // }).then(result => {
+                        //     if (result.count <= 4 || result.count > 0) {
+                        //         res.status(200).json({
+                        //             code: 4,
+                        //             student,
+                        //             labs: result.rows,
+                        //             wasSubscribed: true,
+                        //         });
+                        //     } else {
+                        //         next(new Error('Errore inaspettato: numero di laboratori inaspettato (' + result.count + ')'));
+                        //     }
+                        // }).catch(err => next(err));
                     }
                 } else {
                     // LO STUDENTE NON PARTECIPA ALL'ASSEMBLEA
@@ -250,68 +261,96 @@ app.get('/api/assembly/info', (req, res, next) => {
 /**
  * @method get
  */
-app.get('/api/assembly/labs', (req, res) => {
-    if (typeof req.query.classLabel === 'string') {
-        let classes;
-        let labList = [];
-        LabClass.findAll({
-            where: {
-                classLabel: req.query.classLabel
-            },
+app.get('/api/assembly/labs/:type', (req, res) => {
+    if (req.params.type === 'all') {
+        Lab.findAll({
             order: [
-                ['labID', 'ASC']
+                ['id', 'ASC']
             ]
-        }).then(labClasses => {
-            classes = labClasses || [];
-            return Lab.findAll({
-                order: [
-                    ['id', 'ASC']
-                ]
-            });
-        }).then(fetchedLabs => {
-            fetchedLabs = fetchedLabs || [];
-            let labClass;
-            let promiseArray = [];
-            fetchedLabs.forEach(lab => {
-                labClass = classes.find(cl => cl.labID === lab.id);
-                if (labClass) {
-                    labList.push({
-                        ID: lab.id,
-                        title: lab.title,
-                        description: lab.description,
-                        seatsH1: lab.seatsH1,
-                        seatsH2: lab.seatsH2,
-                        seatsH3: lab.seatsH3,
-                        seatsH4: lab.seatsH4,
-                        lastsTwoH: lab.lastsTwoH,
-                    });
-                    for (let i = 1; i <= 4; i++) {
-                        promiseArray.push(Sub.count({
-                            where: {
-                                ['h' + i]: lab.id
-                            }
-                        }));
-                    }
-                }
-            });
-            return Promise.all(promiseArray);
-        }).then(results => {
-            labList.map((lab, index) => {
-                for (let i = 1; i <= 4; i++) {
-                    if ( (lab['seatsH' + i] - results[index * 4 + (i - 1)]) > 0 && classes[index]['allowedH' + i] == 1) {
-                        lab['seatsH' + i] -= results[index * 4 + (i - 1)];
-                    }
-                }
-                return lab;
-            });
+        })
+        .then(labs => {
+            labs = labs.map(lab => ({
+                ID: lab.id,
+                title: lab.title,
+                room: lab.room
+            }));
+            
             res.status(200).json({
                 code: 1,
-                labList
+                labList: labs
             });
         }).catch(err => res.status(500).json({
             code: -1,
             message: err.message
         }));
+    } else if (req.params.type === 'avabile') {
+        if (typeof req.query.classLabel === 'string') {
+            let classes;
+            let labList = [];
+            LabClass.findAll({
+                where: {
+                    classLabel: req.query.classLabel
+                },
+                order: [
+                    ['labID', 'ASC']
+                ]
+            }).then(labClasses => {
+                classes = labClasses || [];
+                return Lab.findAll({
+                    order: [
+                        ['id', 'ASC']
+                    ]
+                });
+            }).then(fetchedLabs => {
+                fetchedLabs = fetchedLabs || [];
+                let labClass;
+                let promiseArray = [];
+                fetchedLabs.forEach(lab => {
+                    labClass = classes.find(cl => cl.labID === lab.id);
+                    if (labClass) {
+                        labList.push({
+                            ID: lab.id,
+                            title: lab.title,
+                            description: lab.description,
+                            seatsH1: lab.seatsH1,
+                            seatsH2: lab.seatsH2,
+                            seatsH3: lab.seatsH3,
+                            seatsH4: lab.seatsH4,
+                            lastsTwoH: lab.lastsTwoH,
+                        });
+                        for (let i = 1; i <= 4; i++) {
+                            promiseArray.push(Sub.count({
+                                where: {
+                                    ['h' + i]: lab.id
+                                }
+                            }));
+                        }
+                    }
+                });
+                return Promise.all(promiseArray);
+            }).then(results => {
+                labList.map((lab, index) => {
+                    for (let i = 1; i <= 4; i++) {
+                        if ( (lab['seatsH' + i] - results[index * 4 + (i - 1)]) > 0 && classes[index]['allowedH' + i] == 1) {
+                            lab['seatsH' + i] -= results[index * 4 + (i - 1)];
+                        }
+                    }
+                    return lab;
+                });
+                res.status(200).json({
+                    code: 1,
+                    labList
+                });
+            }).catch(err => res.status(500).json({
+                code: -1,
+                message: err.message
+            }));
+        } else {
+            res.status(200).json({
+                code: -1,
+                message: 'Parametri non accettati'
+            });
+        }
     } else {
         res.status(200).json({
             code: -1,
@@ -328,11 +367,11 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(5000, () => {
+app.listen(6000, () => {
     Student.sync()
     .then(() => Sub.sync())
     .then(() => Lab.sync())
     .then(() => LabClass.sync())
     .then(() => AssemblyInfo.sync());
-    console.log('SERVER STARTED ON PORT 5000')
+    console.log('SERVER STARTED ON PORT 6000')
 });

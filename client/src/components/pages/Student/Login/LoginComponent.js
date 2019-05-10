@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { authStudent } from '../../../../actions/studentActions';
 import { fetchAssemblyInfo } from '../../../../actions/assemblyActions';
-import { Form, Card, Button } from 'react-bootstrap';
+import { Form, Card, Button, Spinner, Alert } from 'react-bootstrap';
 import moment from 'moment';
 import '../index.css';
 
@@ -13,13 +13,28 @@ class LoginComponent extends Component {
         part: 1
     };
 
-    handleChange = (event) => {
+    handleChange = event => {
         this.setState({ [event.target.name]: +event.target.value });
     }
 
-    handleSubmit = (event) => {
+    handleSubmit = event => {
         event.preventDefault();
         this.props.authStudent(this.state.studentID, this.state.part);
+    }
+
+    renderBtnText = () => {
+        if (this.props.fetchPending === true) {
+            return <Spinner animation="border" variant="light" size="sm" />;
+        } else {
+            return 'Entra';
+        }
+    }
+
+    returnRenderError = () => {
+        const { error } = this.props.assembly;
+        if (error.auth) {
+            return <Alert variant="danger">{error.auth}</Alert>;
+        }
     }
 
     render() {
@@ -32,6 +47,7 @@ class LoginComponent extends Component {
                         <Card.Text className="text-left" style={{ fontSize: '0.9em' }}>
                             Inserisci la tua matricola per entrare:
                         </Card.Text>
+                        {this.returnRenderError()}
                         <Form.Group>
                             <Form.Control
                                 type="number"
@@ -67,7 +83,9 @@ class LoginComponent extends Component {
                                 checked={this.state.part === 0}
                             />
                         </Form.Group>
-                        <Button variant="primary" type="submit" block>Entra</Button>
+                        <Button variant="primary" type="submit" block>
+                            {this.renderBtnText()}
+                        </Button>
                     </Card.Body>
                 </Card>
             </Form>
@@ -79,7 +97,8 @@ LoginComponent.propTypes = {
     authStudent: PropTypes.func.isRequired,
     fetchAssemblyInfo: PropTypes.func.isRequired,
     student: PropTypes.object.isRequired,
-    assembly: PropTypes.object.isRequired
+    assembly: PropTypes.object.isRequired,
+    fetchPending: PropTypes.bool.isRequired
 }
 
 const mapStateToProps = state => ({
