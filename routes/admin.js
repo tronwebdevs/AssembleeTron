@@ -120,38 +120,50 @@ router.get('/assemblea/crea', (req, res, next) => {
                     warning, success
                 });
             } else {
-                const template = req.session.loadTemplate;
-                let assemblea = {};
-                if (template) {
-                    req.session.newLabs = template.assemblea.labs;
-
-                    assemblea.info = template.assemblea.info;
-                    assemblea.info.uuid = uuid();
-                    assemblea.info.edit = true;
-                    
-                    assemblea.labs = {
-                        labsList: template.assemblea.labs || [],
-                        labStoreTarget: 'memory'
-                    };
-
-                    assemblea.labs.labsList.map(lab => {
-                        for (let i = 1; i <= 4; i++) {
-                            lab["labClassiOra" + i] = JSON.stringify(lab["labClassiOra" + i]);
+                const { templateFile } = req.session;
+                if (templateFile) {
+                    fs.readFile(path.join(assembleeDir, templateFile), (err, data) => {
+                        if (err) {
+                            console.error(err);
+                            setMessagesToShow(req.sessionID, { error: err.message })
+                            .then(() => res.redirect('/gestore/assemblea/crea'))
+                            .catch(rerr => next(rerr));
+                        } else {
+                            let assemblea = {};
+                            let pData = JSON.parse(data);
+                            req.session.newLabs = pData.labs;
+                            
+                            assemblea.title = 'Crea Assemblea';
+                            assemblea.info = pData.info;
+                            assemblea.info.uuid = uuid();
+                            assemblea.info.edit = true;
+                            
+                            assemblea.labs = {
+                                labsList: pData.labs || [],
+                                labStoreTarget: 'memory'
+                            }
+                            assemblea.labs.labsList.map(lab => {
+                                for (let i = 1; i <= 4; i++) {
+                                    lab["labClassiOra" + i] = JSON.stringify(lab["labClassiOra" + i]);
+                                }
+                                return lab;
+                            });
+                            
+                            assemblea.templateFiles = {
+                                list: files,
+                                selected: templateFile
+                            };
+                            assemblea.error = error;
+                            assemblea.warning = warning;
+                            assemblea.success = success;
+                            
+                            delete req.session.templateFile;
+                            
+                            res.render('admin/newassemblea', assemblea);
                         }
-                        return lab;
                     });
-
-                    assemblea.templateFiles = {
-                        list: files,
-                        selected: template.fileName
-                    };
-                    assemblea.error = error;
-                    assemblea.warning = warning;
-                    assemblea.success = success;
-                    
-                    delete req.session.loadTemplate;
                 } else {
-                    assemblea = {
+                    res.render('admin/newassemblea', {
                         info: {
                             uuid: uuid(),
                             startSub: {
@@ -170,9 +182,8 @@ router.get('/assemblea/crea', (req, res, next) => {
                         },
                         title: 'Crea Assemblea',
                         error, warning, success
-                    }
+                    });
                 }
-                res.render('admin/newassemblea', assemblea);
             }
         });
     } else {
@@ -183,22 +194,8 @@ router.get('/assemblea/crea', (req, res, next) => {
 });
 router.post('/assemblea/crea/carica', (req, res, next) => {
     if (req.body.templateFile && typeof req.body.templateFile === 'string') {
-        fs.readFile(assembleeDir + '/' + req.body.templateFile, (err, data) => {
-            if (err) {
-                console.error(err);
-                setMessagesToShow(req.sessionID, { error: err.message })
-                .then(() => res.redirect('/gestore/assemblea/crea'))
-                .catch(rerr => next(rerr));
-            } else {
-                let pData = JSON.parse(data);
-                req.session.newLabs = pData.labs;
-                req.session.loadTemplate = {
-                    assemblea: pData,
-                    fileName: req.body.templateFile
-                }
-                res.redirect('/gestore/assemblea/crea');
-            }
-        });
+        req.session.templateFile = req.body.templateFile;
+        res.redirect('/gestore/assemblea/crea');
     } else {
         res.redirect('/gestore/assemblea/crea');
     }
@@ -210,6 +207,14 @@ router.post('/assemblea/crea', (req, res, next) => {
     let connection;
     // Variabile laboratori (da sessione)
     let newLabs = req.session.newLabs;
+    if (newLabs.length > 0 && !(newLabs[0].labClassiOra1 instanceof Array)) {
+        newLabs.map(lab => {
+            for (let i = 1; i <= 4; i++) {
+                lab['labClassiOra' + i] = JSON.parse(lab['labClassiOra' + i]);
+            }
+            return lab;
+        });
+    }
 
     // Crea connessione e inizia la catena query-then
     mysql.createConnection(mysqlCredentials).then((conn) => {
@@ -241,7 +246,9 @@ router.post('/assemblea/crea', (req, res, next) => {
                 ]
             }).then(() => {
                 for (let i = 1; i <= 4; i++) {
-                    lab["labClassiOra" + i] = (lab["labClassiOra" + i] || []);
+                    if (!lab["labClassiOra" + i]) {
+                        lab["labClassiOra" + i] = [];
+                    }
                 }
                 classi = uniqueArray(lab.labClassiOra1.concat(lab.labClassiOra2, lab.labClassiOra3, lab.labClassiOra4));
                 classiPromiseArray = []
