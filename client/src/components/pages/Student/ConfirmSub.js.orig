@@ -1,12 +1,32 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+<<<<<<< HEAD
 import { clearFetchPending } from '../../../actions/assemblyActions';
-import { Redirect, Link } from 'react-router-dom';
+import { Container, Row, Col, Card, Badge, Table } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import Footer from './Footer';
+||||||| merged common ancestors
+import { Container, Row, Col, Card, Badge, Table } from 'react-bootstrap';
+import Footer from './Footer';
+=======
+import { Redirect } from 'react-router-dom';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import LabsTable from '../../Student/LabsTable';
 import Badge from '../../Student/Badge';
 import Footer from '../../Footer/';
+>>>>>>> 11c2aef6a568bed921955ce02e5ba3147e9eb90b
+
+function SubTableRow(props) {
+    const { h, lab } = props;
+    return (
+        <tr className="lab-row-confirm">
+            <td>{h}</td>
+            <td>{lab.title}</td>
+            <td>{lab.room}</td>
+        </tr>
+    );
+}
 
 class ConfirmSub extends Component {
 
@@ -111,7 +131,13 @@ class ConfirmSub extends Component {
         this.props.clearFetchPending();
     }
 
-	render() {
+    render() {
+<<<<<<< HEAD
+        const { profile } = this.props.student;
+        let assDate;
+||||||| merged common ancestors
+        let assDate, student = { name: '', surname: '', classLabel: '' };
+=======
 
         const { profile, labs, authed } = this.props.student;
         
@@ -120,6 +146,7 @@ class ConfirmSub extends Component {
         }
         
         const { date } = this.props.assembly.info;
+>>>>>>> 11c2aef6a568bed921955ce02e5ba3147e9eb90b
 
         return (
             <>
@@ -130,7 +157,25 @@ class ConfirmSub extends Component {
                                 <Card.Body>
                                     <Row className="mb-2">
                                         <Col>
+<<<<<<< HEAD
+                                            <Card.Title>Iscrizioni per l'Assemblea d'Istituto del {assDate}</Card.Title>
+                                        </Col>
+                                    </Row>
+                                    <Row className="mb-4">
+                                        <Col>
+                                            <Badge variant="primary">
+                                                <h6 className="mb-0">{profile.name} {profile.surname} - {profile.classLabel}</h6>
+                                            </Badge>
+||||||| merged common ancestors
+                                            <Card.Title>Iscrizioni per l'Assemblea d'Istituto del {assDate}</Card.Title>
+                                        </Col>
+                                    </Row>
+                                    <Row className="mb-4">
+                                        <Col>
+                                            <Badge variant="primary">{student.name} {student.surname} - {student.classLabel}</Badge>
+=======
                                             <Card.Title>Iscrizioni per l'Assemblea d'Istituto del {date}</Card.Title>
+>>>>>>> 11c2aef6a568bed921955ce02e5ba3147e9eb90b
                                         </Col>
                                     </Row>
                                     <Badge student={profile} />
@@ -152,9 +197,16 @@ class ConfirmSub extends Component {
 }
 
 ConfirmSub.propTypes = {
+<<<<<<< HEAD
     clearFetchPending: PropTypes.func.isRequired,
     student: PropTypes.object.isRequired,
     assembly: PropTypes.object.isRequired
+||||||| merged common ancestors
+    student: PropTypes.object.isRequired
+=======
+    student: PropTypes.object.isRequired,
+    assembly: PropTypes.object.isRequired
+>>>>>>> 11c2aef6a568bed921955ce02e5ba3147e9eb90b
 };
 
 const mapStateToProps = state => ({
@@ -162,4 +214,10 @@ const mapStateToProps = state => ({
     assembly: state.assembly
 });
 
+<<<<<<< HEAD
 export default connect(mapStateToProps, { clearFetchPending })(ConfirmSub);
+||||||| merged common ancestors
+export default connect(mapStateToProps, {})(ConfirmSub);
+=======
+export default connect(mapStateToProps)(ConfirmSub);
+>>>>>>> 11c2aef6a568bed921955ce02e5ba3147e9eb90b

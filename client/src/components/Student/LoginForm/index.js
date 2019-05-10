@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { authStudent } from '../../../actions/studentActions';
+import { fetchAssemblyInfo } from '../../../actions/assemblyActions';
+import { Form, Card, Button, Spinner } from 'react-bootstrap';
+||||||| merged common ancestors
 import { authStudent } from '../../../../actions/studentActions';
 import { fetchAssemblyInfo } from '../../../../actions/assemblyActions';
-import { Form, Card, Button, Spinner, Alert } from 'react-bootstrap';
+import { Form, Card, Button } from 'react-bootstrap';
 import moment from 'moment';
 import '../index.css';
+
 
 class LoginComponent extends Component {
     state = {
@@ -30,15 +35,8 @@ class LoginComponent extends Component {
         }
     }
 
-    returnRenderError = () => {
-        const { error } = this.props.assembly;
-        if (error.auth) {
-            return <Alert variant="danger">{error.auth}</Alert>;
-        }
-    }
-
     render() {
-        const { info } = this.props;
+        const { info } = this.props.assembly;
         return (
             <Form className="form-signin" onSubmit={this.handleSubmit}>
                 <Card className="mb-4 shadow-sm">
@@ -47,7 +45,6 @@ class LoginComponent extends Component {
                         <Card.Text className="text-left" style={{ fontSize: '0.9em' }}>
                             Inserisci la tua matricola per entrare:
                         </Card.Text>
-                        {this.returnRenderError()}
                         <Form.Group>
                             <Form.Control
                                 type="number"
@@ -102,7 +99,7 @@ LoginComponent.propTypes = {
 }
 
 const mapStateToProps = state => ({
-    student: state.student,
+	student: state.student,
     assembly: state.assembly
 });
 

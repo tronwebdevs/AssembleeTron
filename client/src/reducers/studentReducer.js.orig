@@ -11,9 +11,15 @@ const initialState = {
     profile: {},
     labs: [],
     labs_available: [],
-    fetch_pending: {},
+<<<<<<< HEAD
+    errors: {},
+    fetch_pending: {}
+||||||| merged common ancestors
+    errors: {}
+=======
     errors: {},
     authed: false
+>>>>>>> 11c2aef6a568bed921955ce02e5ba3147e9eb90b
 }
 
 export default function(state = initialState, action) {
@@ -28,35 +34,50 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 profile: payload.student,
+<<<<<<< HEAD
                 labs_available: payload.labs,
                 fetch_pending: {
-					...state.fetch_pending,
                     profile: false
-                },
+                }
+||||||| merged common ancestors
+                labs_available: payload.labs
+=======
+                labs_available: payload.labs,
                 authed: true
+>>>>>>> 11c2aef6a568bed921955ce02e5ba3147e9eb90b
             };
         case STUDENT_IS_PART:
             return {
                 ...state,
                 profile: payload.student,
+<<<<<<< HEAD
                 labs: payload.labs,
                 fetch_pending: {
-					...state.fetch_pending,
                     profile: false
-                },
+                }
+||||||| merged common ancestors
+                labs: payload.labs
+=======
+                labs: payload.labs,
                 authed: true
+>>>>>>> 11c2aef6a568bed921955ce02e5ba3147e9eb90b
             }
         case STUDENT_NOT_PART:
         case STUDENT_WAS_PART:
             return {
                 ...state,
                 profile: payload.student,
+<<<<<<< HEAD
                 labs: [ -1, -1, -1, -1 ],
                 fetch_pending: {
-					...state.fetch_pending,
                     profile: false
-                },
+                }
+||||||| merged common ancestors
+                labs: [ -1, -1, -1, -1 ]
+=======
+                labs: [ -1, -1, -1, -1 ],
                 authed: true
+>>>>>>> 11c2aef6a568bed921955ce02e5ba3147e9eb90b
             };
         case ERROR_IN_STUDENT_AUTH:
             return {
