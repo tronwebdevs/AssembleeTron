@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { authStudent } from '../../../../actions/studentActions';
-import { fetchAssemblyInfo } from '../../../../actions/assemblyActions';
+import { authStudent } from '../../../actions/studentActions';
+import { fetchAssemblyInfo } from '../../../actions/assemblyActions';
 import { Form, Card, Button } from 'react-bootstrap';
 import moment from 'moment';
-import '../index.css';
+import './index.css';
 
 class LoginComponent extends Component {
     state = {
@@ -13,17 +13,17 @@ class LoginComponent extends Component {
         part: 1
     };
 
-    handleChange = (event) => {
+    handleChange = event => {
         this.setState({ [event.target.name]: +event.target.value });
     }
 
-    handleSubmit = (event) => {
+    handleSubmit = event => {
         event.preventDefault();
         this.props.authStudent(this.state.studentID, this.state.part);
     }
 
     render() {
-        const { info } = this.props;
+        const { info } = this.props.assembly;
         return (
             <Form className="form-signin" onSubmit={this.handleSubmit}>
                 <Card className="mb-4 shadow-sm">

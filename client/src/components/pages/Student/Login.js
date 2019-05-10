@@ -1,37 +1,38 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { fetchAssemblyInfo } from '../../../../actions/assemblyActions';
+import { fetchAssemblyInfo } from '../../../actions/assemblyActions';
 import { Redirect } from 'react-router-dom';
 
-import LoginComponent from './LoginComponent';
-import AssemblyClose from './AssemblyClose';
+import LoginForm from '../../Student/LoginForm/';
+import LoginCard from '../../Student/LoginCard/';
 
 class Login extends Component {
     componentDidMount() {
         this.props.fetchAssemblyInfo();
     }
 
-    renderLogin = () => {
+    renderCard = () => {
         const { info, error } = this.props.assembly;
-        if (info) {
-            return <LoginComponent info={info} />;
+        if (info.date) {
+            return <LoginForm info={info} />;
         } else {
-            return <AssemblyClose message={error.info} />
+            return <LoginCard title={error.info} />;
         }
     }
 
     render() {
-        if (this.props.student.profile.ID) {
-            const { from } = this.props.location.state || { from: { pathname: '/iscrizione' } };
+        const { authed } = this.props.student;
+
+        if (authed === true) {
             //TODO: check if student is alredy sub/wants unsub
-            return <Redirect to={from} />;
+            return <Redirect to={{ pathname: '/iscrizione' }} />;
         }
 
         return (
             <div className="fake-body">
                 <div className="login-wrapper">
-                    {this.renderLogin()}
+                    {this.renderCard()}
                 </div>
             </div>
         );

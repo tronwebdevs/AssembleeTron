@@ -10,7 +10,8 @@ const initialState = {
     profile: {},
     labs: [],
     labs_available: [],
-    errors: {}
+    errors: {},
+    authed: false
 }
 
 export default function(state = initialState, action) {
@@ -20,20 +21,23 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 profile: payload.student,
-                labs_available: payload.labs
+                labs_available: payload.labs,
+                authed: true
             };
         case STUDENT_IS_PART:
             return {
                 ...state,
                 profile: payload.student,
-                labs: payload.labs
+                labs: payload.labs,
+                authed: true
             }
         case STUDENT_NOT_PART:
         case STUDENT_WAS_PART:
             return {
                 ...state,
                 profile: payload.student,
-                labs: [ -1, -1, -1, -1 ]
+                labs: [ -1, -1, -1, -1 ],
+                authed: true
             };
         case ERROR_IN_STUDENT_AUTH:
             return {

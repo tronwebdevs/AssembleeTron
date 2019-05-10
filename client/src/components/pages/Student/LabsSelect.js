@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { fetchLabsAvabile } from '../../../../actions/assemblyActions';
-import { Container, Row, Col, Card, Badge, Form, Alert, Button } from 'react-bootstrap';
-import Footer from '../Footer';
+import { fetchLabsAvabile } from '../../../actions/assemblyActions';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
+import Footer from '../../Footer';
 
-import LabComponent from './LabComponent';
-import LabSelector from './LabSelector';
+import Badge from '../../Student/Badge';
+import LabSelector from '../../Student/LabSelector';
+import LabShow from '../../Student/LabShow';
+import ErrorAlert from '../../Student/ErrorAlert';
 
 class LabsSelect extends Component {
 
@@ -14,55 +17,38 @@ class LabsSelect extends Component {
         this.props.fetchLabsAvabile(this.props.student.profile.classLabel);
     }
 
-    showErrors = () => {
-        const { error } = this.props;
-        if (error) {
-            return (
-                <Col>
-                    <Alert variant="danger">{error}</Alert>
-                </Col>
-            );
-        }
-    }
-
     onSubmit = event => {
         event.preventDefault();
         console.log(event);
     }
 
-    renderLabs = () => {
-        const { avabile_labs } = this.props.assembly;
-        if (avabile_labs) {
-            return avabile_labs.map(lab => <LabComponent key={lab.ID} lab={lab} /> );
-        } else {
-            return;
-        }
-    }
-
     render() {
-        const { profile } = this.props.student;
+        const { profile, labs, authed } = this.props.student;
+
+        if (authed !== true) {
+            return <Redirect to={{ pathname: "/" }} />;
+        } else if (labs.length > 0) {
+            return <Redirect to={{ pathname: "/conferma" }} />;
+        }
+
+        const { avabile_labs, error } = this.props.assembly;
+
         return (
             <>
                 <Container className="std-page">
-                    <Row className="mt-4">{this.showErrors()}</Row>
+                    <ErrorAlert message={error.labs} />
                     <Row className="mt-1">
                         <Col>
                             <Card className="text-center shadow-sm">
                                 <Card.Body>
-                                    <Row className="mb-2">
-                                        <Col>
-                                            <Badge variant="primary">
-                                                <h6 className="mb-0">{profile.name} {profile.surname} - {profile.classLabel}</h6>
-                                            </Badge>
-                                        </Col>
-                                    </Row>
+                                    <Badge student={profile} />
                                     <Row className="mb-2">
                                         <Col>
                                             <Card.Title className="display-4">Laboratori</Card.Title>
                                         </Col>
                                     </Row>
                                     <Row className="mb-2 px-2">
-                                        {this.renderLabs()}
+                                        {avabile_labs.map((lab, index) => <LabShow key={index} title={lab.title} description={lab.description} /> )}
                                     </Row>
                                     <Row className="mb-3">
                                         <Col className="text-uppercase">
@@ -73,7 +59,7 @@ class LabsSelect extends Component {
                                     <Row className="mb-2">
                                         <Col>
                                             <Form validated={false} noValidate className="row">
-                                                {[1, 2, 3, 4].map(h => <LabSelector key={h} h={h} /> )}
+                                                {[1, 2, 3, 4].map(h => <LabSelector key={h} labs={avabile_labs} h={h} /> )}
                                                 <Col className="text-center">
                                                     <Form.Group className="mt-3 mb-0">
                                                         <Button type="submit" variant="primary">Iscriviti</Button>
