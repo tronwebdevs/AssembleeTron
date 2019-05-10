@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Table } from 'react-bootstrap';
+import { Table } from 'reactstrap';
 import LabTableRow from './LabTableRow';
 
-class StudentLabsTable extends Component {
+class LabsTable extends Component {
 
     generateLabRows = () => {
         return this.props.labs.map((lab, index) => <LabTableRow key={index + 1} lab={lab} index={index + 1} />);
@@ -36,4 +36,4 @@ class StudentLabsTable extends Component {
     }
 }
 
-export default StudentLabsTable;
+export default LabsTable;

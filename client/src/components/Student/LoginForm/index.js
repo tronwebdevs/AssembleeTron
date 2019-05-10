@@ -3,13 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { authStudent } from '../../../actions/studentActions';
 import { fetchAssemblyInfo } from '../../../actions/assemblyActions';
-import { Form, Card, Button, Spinner } from 'react-bootstrap';
-||||||| merged common ancestors
-import { authStudent } from '../../../../actions/studentActions';
-import { fetchAssemblyInfo } from '../../../../actions/assemblyActions';
-import { Form, Card, Button } from 'react-bootstrap';
+import { Form, FormGroup, Input, CustomInput, Card, CardBody, CardTitle, CardText, Button, Spinner } from 'reactstrap';
 import moment from 'moment';
-import '../index.css';
+import './index.css';
 
 
 class LoginComponent extends Component {
@@ -40,13 +36,13 @@ class LoginComponent extends Component {
         return (
             <Form className="form-signin" onSubmit={this.handleSubmit}>
                 <Card className="mb-4 shadow-sm">
-                    <Card.Body className="text-center">
-                        <Card.Title>Iscrizioni per l'Assemblea d'Istituto del {moment(info.date).format('DD/MM/YYYY')}</Card.Title>
-                        <Card.Text className="text-left" style={{ fontSize: '0.9em' }}>
+                    <CardBody className="text-center">
+                        <CardTitle>Iscrizioni per l'Assemblea d'Istituto del {moment(info.date).format('DD/MM/YYYY')}</CardTitle>
+                        <CardText className="text-left" style={{ fontSize: '0.9em' }}>
                             Inserisci la tua matricola per entrare:
-                        </Card.Text>
-                        <Form.Group>
-                            <Form.Control
+                        </CardText>
+                        <FormGroup>
+                            <Input
                                 type="number"
                                 className="login-input"
                                 name="studentID"
@@ -55,11 +51,10 @@ class LoginComponent extends Component {
                                 required
                                 autoFocus
                             />
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Check
+                        </FormGroup>
+                        <FormGroup>
+                            <CustomInput
                                 type="radio"
-                                custom
                                 className="custom-control-inline"
                                 label="Partecipo"
                                 id="partRadio"
@@ -68,9 +63,8 @@ class LoginComponent extends Component {
                                 onChange={this.handleChange}
                                 checked={this.state.part === 1}
                             />
-                            <Form.Check
+                            <CustomInput
                                 type="radio"
-                                custom
                                 className="custom-control-inline"
                                 label="Non partecipo"
                                 id="notPartRadio"
@@ -79,11 +73,11 @@ class LoginComponent extends Component {
                                 onChange={this.handleChange}
                                 checked={this.state.part === 0}
                             />
-                        </Form.Group>
-                        <Button variant="primary" type="submit" block>
+                        </FormGroup>
+                        <Button color="primary" type="submit" block>
                             {this.renderBtnText()}
                         </Button>
-                    </Card.Body>
+                    </CardBody>
                 </Card>
             </Form>
         );

@@ -23,7 +23,6 @@ class Login extends Component {
     }
 
     render() {
-<<<<<<< HEAD:client/src/components/pages/Student/Login/index.js
         const { student, assembly } = this.props;
 
         if (student.fetch_pending.profile === false) {
@@ -42,7 +41,7 @@ class Login extends Component {
                         return (
                             <div className="fake-body">
                                 <div className="login-wrapper">
-                                    {this.renderLogin()}
+                                    {this.renderCard()}
                                 </div>
                             </div>
                         );
@@ -54,22 +53,6 @@ class Login extends Component {
                 if (assembly.fetch_pending.avabile_labs !== true && assembly.fetch_pending.avabile_labs !== false) {
                     this.props.fetchLabsAvabile(student.profile.classLabel);
                 }
-||||||| merged common ancestors
-        if (this.props.student.profile.ID) {
-            const { from } = this.props.location.state || { from: { pathname: '/iscrizione' } };
-            //TODO: check if student is alredy sub/wants unsub
-            return <Redirect to={from} />;
-        }
-=======
-        const { authed } = this.props.student;
-
-        if (authed === true) {
-            //TODO: check if student is alredy sub/wants unsub
-            return <Redirect to={{ pathname: '/iscrizione' }} />;
-        }
->>>>>>> 11c2aef6a568bed921955ce02e5ba3147e9eb90b:client/src/components/pages/Student/Login.js
-
-<<<<<<< HEAD:client/src/components/pages/Student/Login/index.js
                 if (assembly.fetch_pending.avabile_labs === false) {
                     const { from } = this.props.location.state || { from: { pathname: '/iscrizione' } };
                     return <Redirect to={from} />;
@@ -77,7 +60,7 @@ class Login extends Component {
                     return (
                         <div className="fake-body">
                             <div className="login-wrapper">
-                                {this.renderLogin()}
+                                {this.renderCard()}
                             </div>
                         </div>
                     );
@@ -87,19 +70,8 @@ class Login extends Component {
             return (
                 <div className="fake-body">
                     <div className="login-wrapper">
-                        {this.renderLogin()}
+                        {this.renderCard()}
                     </div>
-||||||| merged common ancestors
-        return (
-            <div className="fake-body">
-                <div className="login-wrapper">
-                    {this.renderLogin()}
-=======
-        return (
-            <div className="fake-body">
-                <div className="login-wrapper">
-                    {this.renderCard()}
->>>>>>> 11c2aef6a568bed921955ce02e5ba3147e9eb90b:client/src/components/pages/Student/Login.js
                 </div>
             );
         }

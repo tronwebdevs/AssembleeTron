@@ -1,20 +1,18 @@
 import React from 'react';
-import { Col, Form } from 'react-bootstrap';
+import { Col, FormGroup, CustomInput, FormFeedback } from 'reactstrap';
 
-import Label from './Label';
+import DefaultOption from './DefaultOption';
 import Option from './Option';
 
-const LabSelector = ({ labs, h }) => (
+const LabSelector = ({ labs, h, onChange }) => (
     <Col sm={6} className="my-md-1">
-        <Form.Group className="mb-2">
-            <Form.Control as="select" className="select-lab" name={'h' + h}>
-                <option value="default" defaultChecked={true} disabled>
-                    <Label h={h} />
-                </option>
+        <FormGroup className="mb-2">
+            <CustomInput type="select" className="select-lab" name={'h' + h} id={'selectorH' + h} onChange={onChange} defaultValue="default" >
+                <DefaultOption h={h} />
                 {labs.map((lab, index) => <Option key={index} lab={lab} h={h} />)}
-            </Form.Control>
-            <Form.Control.Feedback className="text-left" id={'if-h' + h}></Form.Control.Feedback>
-        </Form.Group>
+            </CustomInput>
+            <FormFeedback className="text-left" id={'if-h' + h}></FormFeedback>
+        </FormGroup>
     </Col>
 );
 

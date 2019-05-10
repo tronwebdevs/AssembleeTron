@@ -1,13 +1,13 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
+import { Card, CardBody, CardTitle, CardText } from 'reactstrap';
 
 const LoginCard = ({ title, text }) => (
     <div className="form-signin">
         <Card className="mb-4 shadow-sm">
-            <Card.Body className="text-center">
-                <Card.Title>{title}</Card.Title>
-                <Card.Text className="text-left">{text}</Card.Text>
-            </Card.Body>
+            <CardBody className="text-center">
+                <CardTitle className="mb-0">{title}</CardTitle>
+                <CardText className="text-left">{text}</CardText>
+            </CardBody>
         </Card>
     </div>
 );

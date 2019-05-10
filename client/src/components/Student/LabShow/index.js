@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col } from 'reactstrap';
 
 const LabShow = ({ title, description }) => (
     <div className="col-12 mb-3 border-bottom">

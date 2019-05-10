@@ -1,10 +1,10 @@
 import React from 'react';
-import { Row, Col, Alert } from 'react-bootstrap';
+import { Row, Col, Alert } from 'reactstrap';
 
 const ErrorAlert = ({ message }) => (
     <Row className="mt-4">
         <Col>
-            <Alert variant="danger">{message}</Alert>
+            <Alert color="danger" className="mb-0" >{message}</Alert>
         </Col>
     </Row>
 );

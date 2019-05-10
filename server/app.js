@@ -20,7 +20,7 @@ app.use('/api/assembly', require('./routes/assembly'));
 app.use((err, req, res, next) => res.status(500).json({
     code: -1,
     message: err.message
-));
+}));
 
 app.listen(app.get('port'), () => {
    Student.sync()
