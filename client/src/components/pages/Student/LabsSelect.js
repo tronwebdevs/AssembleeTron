@@ -3,41 +3,25 @@ import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { fetchLabsAvabile } from '../../../actions/assemblyActions';
-import { Container, Row, Col, Card, CardBody, CardTitle, Form, FormGroup, Button, Collapse } from 'reactstrap';
+import { Container, Row, Col, Card, CardBody, CardTitle, Button, Collapse } from 'reactstrap';
 import Footer from '../../Footer';
 import Badge from '../../Student/Badge';
-import LabSelector from '../../Student/LabSelector';
+import LabsSelectorForm from '../../Student/LabsSelectorForm/';
 import LabShow from '../../Student/LabShow';
 import ErrorAlert from '../../Student/ErrorAlert';
 
 class LabsSelect extends Component {
 
     state = {
-        collapse: false,
-        h1: '',
-        h2: '',
-        h3: '',
-        h4: ''
+        collapse: false
     }
 
     toggleLabList = () => {
         this.setState(state => ({ collapse: !state.collapse }));
     }
 
-    onChange = event => {
-        console.log(event);
-        this.setState({
-            [event.target.name]: event.target.value
-        });
-    }
-
     componentDidMount() {
         this.props.fetchLabsAvabile(this.props.student.profile.classLabel);
-    }
-
-    onSubmit = event => {
-        event.preventDefault();
-        console.log(event);
     }
 
     render() {
@@ -81,18 +65,7 @@ class LabsSelect extends Component {
                                             <u style={{ fontSize: '0.9em' }}>Per i progetti da <b>due ore</b> seleziona la prima e la seconda ora o la terza e la quarta ora.</u>
                                         </Col>
                                     </Row>
-                                    <Row className="mb-2">
-                                        <Col>
-                                            <Form className="row" onSubmit={this.onSubmit}>
-                                                {[1, 2, 3, 4].map(h => <LabSelector key={h} labs={avabile_labs} h={h} onChange={this.onChange} />)}
-                                                <Col className="text-center">
-                                                    <FormGroup className="mt-3 mb-0">
-                                                        <Button type="submit" color="primary">Iscriviti</Button>
-                                                    </FormGroup>
-                                                </Col>
-                                            </Form>
-                                        </Col>
-                                    </Row>
+                                    <LabsSelectorForm labs={avabile_labs} />
                                 </CardBody>
                             </Card>
                         </Col>

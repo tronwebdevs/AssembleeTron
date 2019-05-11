@@ -45,8 +45,12 @@ class ConfirmSub extends Component {
         if (authed !== true || labs.length <= 0) {
             return <Redirect to={{ pathname: "/" }} />;
         }
+
         
-        const { date } = this.props.assembly.info;
+        const { assembly } = this.props;
+        const { date } = assembly.info;
+        
+        const showLabs = labs.map(labID => assembly.labs.find(lab => lab.ID === labID));
 
         return (
             <>
@@ -63,7 +67,7 @@ class ConfirmSub extends Component {
                                     <Badge student={profile} />
                                     <Row className="mb-2">
                                         <Col>
-                                            <LabsTable labs={labs} />
+                                            <LabsTable labs={showLabs} />
                                         </Col>
                                     </Row>
                                     {this.renderInfo()}

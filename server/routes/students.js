@@ -1,6 +1,8 @@
 "use strict";
 const express = require('express');
 const router = express.Router();
+const Sequleize = require('sequelize');
+const { Op } = Sequleize;
 
 const Student = require('../models/Student');
 const Sub = require('../models/Sub');
@@ -141,23 +143,34 @@ router.get('/', (req, res) => {
                             wasSubscribed: true
                         });
                     } else {
+                        res.status(200).json({
+                            code: 4,
+                            student,
+                            labs: [
+                                results.h1,
+                                results.h2,
+                                results.h3,
+                                results.h4,
+                            ],
+                            wasSubscribed: true
+                        });
                         // STUDENTE VUOLE VISUALIZZARE I LABORATORI
-                        Lab.findAndCountAll({
-                            where: {
-                                id: [ results.h1, results.h2, results.h3, results.h4 ]
-                            }
-                        }).then(result => {
-                            if (result.count <= 4 || result.count > 0) {
-                                res.status(200).json({
-                                    code: 4,
-                                    student,
-                                    labs: result.rows,
-                                    wasSubscribed: true,
-                                });
-                            } else {
-                                next(new Error('Errore inaspettato: numero di laboratori inaspettato (' + result.count + ')'));
-                            }
-                        }).catch(err => next(err));
+                        // Lab.findAndCountAll({
+                        //     where: {
+                        //         id: [ results.h1, results.h2, results.h3, results.h4 ]
+                        //     }
+                        // }).then(result => {
+                        //     if (result.count <= 4 || result.count > 0) {
+                        //         res.status(200).json({
+                        //             code: 4,
+                        //             student,
+                        //             labs: result.rows,
+                        //             wasSubscribed: true,
+                        //         });
+                        //     } else {
+                        //         next(new Error('Errore inaspettato: numero di laboratori inaspettato (' + result.count + ')'));
+                        //     }
+                        // }).catch(err => next(err));
                     }
                 } else {
                     // LO STUDENTE NON PARTECIPA ALL'ASSEMBLEA
@@ -191,7 +204,71 @@ router.get('/', (req, res) => {
 /**
  * @method post
  */
-router.post('/', (req, res) => res.status(200).end());
+router.post('/', (req, res, next) => {
+    const { ID, h1, h2, h3, h4 } = req.body;
+    let labs = [ h1, h2, h3, h4 ];
+
+    Lab.findAll({
+        where: {
+            ID: [ h1, h2, h3, h4 ]
+        }
+    }).then(fetchedLabs => {
+        labs = labs.map(labID => fetchedLabs.find(lab => lab.id === labID));
+        let error = new Error('Per i progetti da 2 ore seleziona la prima e la seconda ora o la terza e la quarta ora');
+        
+        let promiseArray = [];
+        labs.forEach((lab, index) => {
+
+            // Check lastsTwoH
+            if (lab.lastsTwoH === true) {
+                if (index % 2 == 0) {
+                    if (lab.id !== labs[index + 1].id) {
+                        throw error;
+                    }
+                } else {
+                    if (lab.id !== labs[index - 1].id) {
+                        throw error
+                    }
+                }
+            }
+
+            // Count sub to lab
+            promiseArray.push(
+                Sub.count({
+                    where: { ['h' + (index + 1)]: lab.id }
+                })
+            );
+        });
+        return Promise.all(promiseArray);
+    }).then(results => {
+        let error = new Error('Posti esauriti per uno dei laboratori scelti');
+
+        labs.forEach((lab, index) => {
+            if ( (lab['seatsH' + (index + 1)] - results[index] - 1 ) < 0) {
+                error.message += ' (' + lab.title + ')';
+                throw error;
+            }
+        });
+
+        return null;
+
+        // return Sub.create({
+        //     ID, h1, h2, h3, h4
+        // });
+    }).then(sub => res.status(200).json(sub))
+    .catch(err => next(err));
+});
+
+
+function check2HLabs(labs) {
+    for (let i = 0; i < 4; i++) {
+        if (i % 2 == 0 && lab[i].lastsTwoH === true) {
+            if (lab[i].id !== lab[i + 1].id) {
+                throw new Error('Laboratorio di 2 ore');
+            }
+        }
+    }
+}
 
 
 module.exports = router;
