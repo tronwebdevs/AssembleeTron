@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchAssemblyInfo, fetchLabsAvabile, fetchAllLabs } from '../../../actions/assemblyActions';
 import { Redirect } from 'react-router-dom';
+import { LoginPage as TablerLoginPage } from "tabler-react";
+import { Formik } from "formik";
 
 import LoginForm from '../../Student/LoginForm/';
 import LoginCard from '../../Student/LoginCard/';
@@ -25,56 +27,97 @@ class Login extends Component {
     render() {
         const { student, assembly } = this.props;
 
-        if (student.fetch_pending.profile === false) {
-            if (student.labs.length > 0) {
-                // studente e' iscritto/disiscritto
-                let notSub = student.labs.every(labID => labID === -1);
-                if (notSub === true) {
-                    return <Redirect to={{ pathname: '/conferma' }} />;
-                } else {
-                    if (assembly.fetch_pending.labs !== true && assembly.fetch_pending.labs !== false) {
-                        this.props.fetchAllLabs();
+        return (
+            <Formik
+                initialValues={{
+                    matricola: "",
+                }}
+                validate={values => {
+                    let errors = {};
+                    if (!values.matricola) {
+                        errors.matricola = "Matricola richiesta"
+                    }else if (isNaN(values.matricola)) {
+                        errors.matricola = "Questa non e' una matricola"
                     }
-                    if (assembly.fetch_pending.labs === false) {
-                        return <Redirect to={{ pathname: '/conferma' }} />;
-                    } else {
-                        return (
-                            <div className="fake-body">
-                                <div className="login-wrapper">
-                                    {this.renderCard()}
-                                </div>
-                            </div>
-                        );
-                    }
-                }
-            } else {
-                // studente non e' ancora iscritto/disiscritto
-                // fetch avabile labs to student
-                if (assembly.fetch_pending.avabile_labs !== true && assembly.fetch_pending.avabile_labs !== false) {
-                    this.props.fetchLabsAvabile(student.profile.classLabel);
-                }
-                if (assembly.fetch_pending.avabile_labs === false) {
-                    const { from } = this.props.location.state || { from: { pathname: '/iscrizione' } };
-                    return <Redirect to={from} />;
-                } else {
-                    return (
-                        <div className="fake-body">
-                            <div className="login-wrapper">
-                                {this.renderCard()}
-                            </div>
-                        </div>
-                    );
-                }
-            }
-        } else {
-            return (
-                <div className="fake-body">
-                    <div className="login-wrapper">
-                        {this.renderCard()}
-                    </div>
-                </div>
-            );
-        }
+                    return errors;
+                }}
+                onSubmit={(
+                    values,
+                    { setSubmitting, setErrors /* setValues and other goodies */ }
+                ) => {
+                    alert("Done!");
+                }}
+                render={({
+                    values,
+                    errors,
+                    touched,
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    isSubmitting,
+                }) => (
+                        <TablerLoginPage
+                            onSubmit={handleSubmit}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            values={values}
+                            errors={errors}
+                            touched={touched}
+                        />
+                    )}
+            />
+        );
+
+        // if (student.fetch_pending.profile === false) {
+        //     if (student.labs.length > 0) {
+        //         // studente e' iscritto/disiscritto
+        //         let notSub = student.labs.every(labID => labID === -1);
+        //         if (notSub === true) {
+        //             return <Redirect to={{ pathname: '/conferma' }} />;
+        //         } else {
+        //             if (assembly.fetch_pending.labs !== true && assembly.fetch_pending.labs !== false) {
+        //                 this.props.fetchAllLabs();
+        //             }
+        //             if (assembly.fetch_pending.labs === false) {
+        //                 return <Redirect to={{ pathname: '/conferma' }} />;
+        //             } else {
+        //                 return (
+        //                     <div className="fake-body">
+        //                         <div className="login-wrapper">
+        //                             {this.renderCard()}
+        //                         </div>
+        //                     </div>
+        //                 );
+        //             }
+        //         }
+        //     } else {
+        //         // studente non e' ancora iscritto/disiscritto
+        //         // fetch avabile labs to student
+        //         if (assembly.fetch_pending.avabile_labs !== true && assembly.fetch_pending.avabile_labs !== false) {
+        //             this.props.fetchLabsAvabile(student.profile.classLabel);
+        //         }
+        //         if (assembly.fetch_pending.avabile_labs === false) {
+        //             const { from } = this.props.location.state || { from: { pathname: '/iscrizione' } };
+        //             return <Redirect to={from} />;
+        //         } else {
+        //             return (
+        //                 <div className="fake-body">
+        //                     <div className="login-wrapper">
+        //                         {this.renderCard()}
+        //                     </div>
+        //                 </div>
+        //             );
+        //         }
+        //     }
+        // } else {
+        //     return (
+        //         <div className="fake-body">
+        //             <div className="login-wrapper">
+        //                 {this.renderCard()}
+        //             </div>
+        //         </div>
+        //     );
+        // }
     }
 }
 

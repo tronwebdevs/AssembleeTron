@@ -5,7 +5,7 @@ import './index.css';
 
 import store from '../../store';
 
-import Admin from '../pages/Admin';
+import Admin from '../pages/Admin/';
 import Student from '../pages/Student/';
 import Error from '../pages/Error/';
 

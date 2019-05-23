@@ -5,7 +5,7 @@ import { authStudent } from '../../../actions/studentActions';
 import { fetchAssemblyInfo } from '../../../actions/assemblyActions';
 import { Form, FormGroup, Input, CustomInput, Card, CardBody, CardTitle, CardText, Button, Spinner } from 'reactstrap';
 import moment from 'moment';
-import './index.css';
+// import './index.css';
 
 
 class LoginComponent extends Component {

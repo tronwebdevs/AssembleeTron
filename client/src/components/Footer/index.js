@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import './index.css';
+// import './index.css';
 
 const Footer = () => (
     <footer className="footer text-muted text-center text-small">
