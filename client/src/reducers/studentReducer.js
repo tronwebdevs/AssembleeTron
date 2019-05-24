@@ -3,22 +3,25 @@ import {
     STUDENT_IS_PART,
     STUDENT_NOT_PART,
     STUDENT_WAS_PART,
+    STUDENT_SUBED,
+    UPDATE_STUDENT_LABS,
     ERROR_IN_STUDENT_AUTH,
+    ERROR_IN_STUDENT_LABS_UPDATE,
     FETCH_STUDENT_PENDING
 } from '../actions/types.js';
 
 const initialState = {
     profile: {},
     labs: [],
-    labs_available: [],
+    labs_avabile: [],
     fetch_pending: {},
-    errors: {},
-    authed: false
+    errors: ''
 }
 
 export default function(state = initialState, action) {
     const { payload, type } = action;
     switch(type) {
+        case UPDATE_STUDENT_LABS:
         case FETCH_STUDENT_PENDING:
             return {
                 ...state,
@@ -28,12 +31,11 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 profile: payload.student,
-                labs_available: payload.labs,
+                labs_avabile: payload.labs,
                 fetch_pending: {
 					...state.fetch_pending,
                     profile: false
-                },
-                authed: true
+                }
             };
         case STUDENT_IS_PART:
             return {
@@ -43,8 +45,7 @@ export default function(state = initialState, action) {
                 fetch_pending: {
 					...state.fetch_pending,
                     profile: false
-                },
-                authed: true
+                }
             }
         case STUDENT_NOT_PART:
         case STUDENT_WAS_PART:
@@ -55,9 +56,18 @@ export default function(state = initialState, action) {
                 fetch_pending: {
 					...state.fetch_pending,
                     profile: false
-                },
-                authed: true
+                }
             };
+        case STUDENT_SUBED:
+            return {
+                ...state,
+                labs: payload.labs,
+                fetch_pending: {
+					...state.fetch_pending,
+                    subscribe: false
+                }
+            }
+        case ERROR_IN_STUDENT_LABS_UPDATE:
         case ERROR_IN_STUDENT_AUTH:
             return {
                 ...state,

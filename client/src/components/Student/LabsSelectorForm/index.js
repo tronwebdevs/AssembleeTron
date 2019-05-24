@@ -1,9 +1,13 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { subscribeLabs } from '../../../actions/studentActions';
+import { Redirect } from 'react-router-dom';
 import { Form, Button } from 'tabler-react';
 import { Formik } from 'formik';
 import LabSelectors from './LabSelectors';
 
-const LabsSelectorForm = ({ labs }) => (
+const LabsSelectorForm = ({ labs, subscribeLabs, student }) => (
     <Formik
         initialValues={{
             h1: 'default',
@@ -24,7 +28,17 @@ const LabsSelectorForm = ({ labs }) => (
             values,
             { setSubmitting, setErrors }
         ) => {
-            alert('Done.');
+            setSubmitting(true);
+            subscribeLabs(student.profile.ID, values, (err, data) => {
+                setSubmitting(false);
+                if (err) {
+                    setErrors({ h1: err.message });
+                } else if (data.code === -1) {
+                    setErrors({ h1: data.message });
+                } else {
+                    return <Redirect to={{ pathname: '/conferma' }} />;
+                }
+            });
         }}
         render={({
             values,
@@ -43,7 +57,7 @@ const LabsSelectorForm = ({ labs }) => (
                     errors={errors}
                 />
                 <Form.Footer>
-                    <Button color="primary" block={true}>
+                    <Button type="submit" color="primary" block={true}>
                         Iscriviti
                     </Button>
                 </Form.Footer>
@@ -52,4 +66,15 @@ const LabsSelectorForm = ({ labs }) => (
     />
 );
 
-export default LabsSelectorForm;
+LabsSelectorForm.propTypes = {
+    subscribeLabs: PropTypes.func.isRequired,
+    student: PropTypes.object.isRequired,
+    assembly: PropTypes.object.isRequired,
+}
+
+const mapStateToProps = state => ({
+	student: state.student,
+    assembly: state.assembly
+});
+
+export default connect(mapStateToProps, { subscribeLabs })(LabsSelectorForm);

@@ -2,6 +2,7 @@ import React from "react";
 import StandaloneFormPage from '../../Admin/StandaloneFormPage';
 import FormCard from '../../Admin/FormCard';
 import { Form, Button } from 'tabler-react';
+import { Spinner } from 'reactstrap';
 
 const LoginForm = ({
     onSubmit,
@@ -9,6 +10,7 @@ const LoginForm = ({
     onBlur,
     values,
     errors,
+    fetchPending
 }) => (
     <StandaloneFormPage imageURL={"https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png"}>
         <FormCard
@@ -50,7 +52,7 @@ const LoginForm = ({
             </Form.Group>
             <Form.Footer className="mt-1">
                 <Button type="submit" color="primary" block={true}>
-                    Entra
+                    {fetchPending ? <Spinner color="light" size="sm" /> : 'Entra'}
                 </Button>
             </Form.Footer>
         </FormCard>

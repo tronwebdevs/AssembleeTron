@@ -7,56 +7,101 @@ import LoginCard from '../../Student/LoginCard/';
 import LoginFormCard from '../../Student/LoginForm/LoginFormCard';
 
 class Login extends Component {
-    
-    componentDidMount() {
-        this.props.fetchAssemblyInfo();
+
+    renderAssemblyInfo = (assembly, fetchingProfile) => {
+        if (assembly.fetch_pending.info === false) {
+            // informazioni gia' ottenute
+            if (assembly.error) {
+                return <LoginCard title={assembly.error} />;
+            } else if (!assembly.info.date) {
+                return <LoginCard title={'Errore inaspettato'} />;
+            } else {
+                return <LoginFormCard info={assembly.info} fetchPending={fetchingProfile} />;
+            }
+        } else if (assembly.fetch_pending.info === true) {
+            // fetching in corso
+            return <div></div>;
+        } else {
+            // nulla fatto
+            this.props.fetchAssemblyInfo();
+            return <div></div>;
+        }
     }
 
-    renderCard = () => {
-        const { info, error } = this.props.assembly;
-        const { fetch_pending } = this.props.student;
-        if (info.date) {
-            return <LoginFormCard info={info} fetchPending={fetch_pending.profile || false} />;
+    redirectAuthedStudent = labsCount => {
+        if (labsCount === 0) {
+            return <Redirect to={{ pathname: '/iscrizione' }} />;
         } else {
-            return <LoginCard title={error.info} />;
+            return <Redirect to={{ pathname: '/conferma' }} />;
         }
     }
 
     render() {
         const { student, assembly } = this.props;
 
-        if (student.fetch_pending.profile === false) {
-            if (student.labs.length > 0) {
-                // studente e' iscritto/disiscritto
-                let notSub = student.labs.every(labID => labID === -1);
-                if (notSub === true) {
-                    return <Redirect to={{ pathname: '/conferma' }} />;
-                } else {
-                    if (assembly.fetch_pending.labs !== true && assembly.fetch_pending.labs !== false) {
-                        this.props.fetchAllLabs();
-                    }
-                    if (assembly.fetch_pending.labs === false) {
-                        return <Redirect to={{ pathname: '/conferma' }} />;
-                    } else {
-                        return this.renderCard();
-                    }
-                }
+        if (!student.profile.ID) {
+            if (student.fetch_pending.profile === false) {
+                return this.redirectAuthedStudent(student.labs.length);
+            } else if (student.fetch_pending.profile === true) {
+                return this.renderAssemblyInfo(assembly, true);
             } else {
-                // studente non e' ancora iscritto/disiscritto
-                // fetch avabile labs to student
-                if (assembly.fetch_pending.avabile_labs !== true && assembly.fetch_pending.avabile_labs !== false) {
-                    this.props.fetchLabsAvabile(student.profile.classLabel);
-                }
-                if (assembly.fetch_pending.avabile_labs === false) {
-                    const { from } = this.props.location.state || { from: { pathname: '/iscrizione' } };
-                    return <Redirect to={from} />;
-                } else {
-                    return this.renderCard();
-                }
+                return this.renderAssemblyInfo(assembly, false);
             }
         } else {
-            return this.renderCard();
+            return this.redirectAuthedStudent(student.labs.length);
         }
+
+
+
+        
+        // this.fetchAssemblyInfo((err, data) => {
+        //     if (err) {
+        //         return <LoginCard title={error.info} />;
+        //     } else if (data.code !== 2) {
+        //         return <LoginCard title={error.info} />;
+        //     } else {
+
+        //     }
+        // });
+
+        // if (!student.profile.ID) {
+        //     this.fetc
+        // } else {
+        //     // redirect to (?)
+        // }
+
+        // if (student.fetch_pending.profile === false) {
+        //     if (student.labs.length > 0) {
+        //         // studente e' iscritto/disiscritto
+        //         let notSub = student.labs.every(labID => labID === -1);
+        //         if (notSub === true) {
+        //             return <Redirect to={{ pathname: '/conferma' }} />;
+        //         } else {
+        //             if (assembly.fetch_pending.labs !== true && assembly.fetch_pending.labs !== false) {
+        //                 this.props.fetchAllLabs();
+        //             }
+        //             if (assembly.fetch_pending.labs === false) {
+        //                 return <Redirect to={{ pathname: '/conferma' }} />;
+        //             } else {
+        //                 return this.renderCard();
+        //             }
+        //         }
+        //     } else {
+        //         // studente non e' ancora iscritto/disiscritto
+        //         // fetch avabile labs to student
+        //         if (assembly.fetch_pending.avabile_labs !== true && assembly.fetch_pending.avabile_labs !== false) {
+        //             this.props.fetchLabsAvabile(student.profile.classLabel);
+        //         }
+        //         if (assembly.fetch_pending.avabile_labs === false) {
+        //             const { from } = this.props.location.state || { from: { pathname: '/iscrizione' } };
+        //             return <Redirect to={from} />;
+        //         } else {
+        //             return this.renderCard();
+        //         }
+        //     }
+        // } else {
+        //     return this.renderCard();
+        // }
     }
 }
 

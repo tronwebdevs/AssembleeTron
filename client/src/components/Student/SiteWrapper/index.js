@@ -12,17 +12,17 @@ import "tabler-react/dist/Tabler.css";
 const SiteWrapper = ({ children }) => (
     <Site.Wrapper
         headerProps={{
+            className: "student",
             href: "./",
             alt: "TronWeb Logo",
             imageURL: "https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png"
         }}
-        navProps={{ itemsObjects: [] }}
+        navProps={{ itemsObjects: []}}
         routerContextComponentType={withRouter(RouterContextProvider)}
         footerProps={{
             copyright: (
                 <Fragment>
-                    Copyright © {moment().format('YYYY') } <a href="https://www.tronweb.it"> TronWeb</a>. Theme by Davide Testolin.
-                    All rights reserved.
+                    Copyright © {moment().format('YYYY') } <a href="https://www.tronweb.it"> TronWeb</a> | Made by Davide Testolin
                 </Fragment>
             ),
             nav: (

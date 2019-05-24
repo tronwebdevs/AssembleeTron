@@ -75,8 +75,7 @@ const SiteWrapper = ({ children }) => (
         footerProps={{
             copyright: (
                 <Fragment>
-                    Copyright © {moment().format('YYYY') } <a href="https://www.tronweb.it"> TronWeb</a>. Theme by Davide Testolin.
-                    All rights reserved.
+                    Copyright © {moment().format('YYYY') } <a href="https://www.tronweb.it"> TronWeb</a> | Made by Davide Testolin
                 </Fragment>
             ),
             nav: (

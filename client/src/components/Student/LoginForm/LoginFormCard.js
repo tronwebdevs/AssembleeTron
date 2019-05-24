@@ -7,7 +7,7 @@ import { Redirect } from 'react-router-dom';
 import { Formik } from 'formik';
 import LoginForm from './LoginForm';
 
-const LoginFormCard = props => (
+const LoginFormCard = ({ fetchPending, student, ...props }) => (
     <Formik
         initialValues={{
             studentID: "",
@@ -35,7 +35,11 @@ const LoginFormCard = props => (
                 } else if(data.code === -1) {
                     setErrors({ studentID: data.message });
                 } else {
-                    return <Redirect to={{ pathname: '/laboratori' }} />;
+                    if (student.labs.lenght === 0) {
+                        return <Redirect to={{ pathname: '/laboratori' }} />;
+                    } else {
+                        return <Redirect to={{ pathname: '/conferma' }} />;
+                    }
                 }
             });
         }}
@@ -55,6 +59,7 @@ const LoginFormCard = props => (
                 values={values}
                 errors={errors}
                 touched={touched}
+                fetchPending={fetchPending}
             />
         )}
     />

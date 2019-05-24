@@ -1,14 +1,12 @@
 import React from 'react';
-import { Row, Col, Badge } from 'reactstrap';
+import { Grid, Card } from 'tabler-react';
 
-const StudentBadge = ({ student }) => (
-    <Row className="mb-4">
-        <Col>
-            <Badge color="primary">
-                <h5 className="mb-0">{student.name} {student.surname} - {student.classLabel}</h5>
-            </Badge>
-        </Col>
-    </Row>
+const StudentBadge = ({ student, ...rest }) => (
+    <Grid.Col width={12} {...rest}>
+        <Card className="text-center bg-primary text-white">
+            <h6 className="my-4">{student.name} {student.surname} - {student.classLabel}</h6>
+        </Card>
+    </Grid.Col>
 );
 
 export default StudentBadge;

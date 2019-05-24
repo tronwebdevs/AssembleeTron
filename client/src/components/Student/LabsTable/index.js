@@ -1,39 +1,36 @@
-import React, { Component } from 'react';
-import { Table } from 'reactstrap';
-import LabTableRow from './LabTableRow';
+import React from 'react';
+import { Grid, Table, Card } from 'tabler-react';
+import InfoBox from '../InfoBox/';
 
-class LabsTable extends Component {
-
-    generateLabRows = () => {
-        return this.props.labs.map((lab, index) => <LabTableRow key={index + 1} lab={lab} index={index + 1} />);
-    }
-
-    render() {
-        const { labs } = this.props;
-
-        if (labs.length > 0) {
-            return (
-                <Table responsive>
-                    <thead>
-                        <tr>
-                            <th scope="col">Ora</th>
-                            <th scope="col">Attività</th>
-                            <th scope="col">Aula</th>
-                        </tr>
-                    </thead>
-                    <tbody className="text-left">
-                        {this.generateLabRows()}
-                    </tbody>
-                </Table>
-            );
-        } else {
-            return (
-                <div className="text-center font-weight-bold text-uppercase">
-                    <span className="text-danger">Non partecipi all'assemblea</span>
-                </div>
-            );
-        }
-    }
-}
-
+const LabsTable = ({ labs }) => (
+    <>
+        <Grid.Row>
+            <Grid.Col width={12}>
+                <Card>
+                    <Table
+                        responsive
+                        className="card-table table-vcenter text-nowrap"
+                        style={{
+                            fontSize: '0.75rem'
+                        }}
+                        headerItems={[
+                            { content: "Ora", className: "w-1" },
+                            { content: "Attività" },
+                            { content: "Aula" }
+                        ]}
+                        bodyItems={labs.map((lab, index) => ({
+                            key: (index + 1),
+                            item: [
+                                { content: (index + 1) },
+                                { content: lab.title },
+                                { content: lab.room }
+                            ]
+                        }))}
+                    />
+                </Card>
+            </Grid.Col>
+        </Grid.Row>
+        <InfoBox />
+    </>
+);
 export default LabsTable;

@@ -12,8 +12,7 @@ import {
 const initialState = {
     info: {},
     labs: [],
-    avabile_labs: [],
-    error: {},
+    error: '',
     fetch_pending: {}
 };
 
@@ -34,9 +33,7 @@ export default function (state = initialState, action) {
         case FETCH_ASSEMBLY_NOT_AVABILE:
             return {
                 ...state,
-                error: {
-                    info: payload.message
-                },
+                error: payload.message,
                 fetch_pending: {
                     ...state.fetch_pending,
                     info: false

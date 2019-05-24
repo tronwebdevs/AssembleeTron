@@ -1,12 +1,12 @@
 import React from 'react';
-import { Row, Col, Alert } from 'reactstrap';
+import { Grid, Alert } from 'tabler-react';
 
 const ErrorAlert = ({ message }) => (
-    <Row className="mt-4">
-        <Col>
-            <Alert color="danger" className="mb-0" >{message}</Alert>
-        </Col>
-    </Row>
+    <Grid.Row>
+        <Grid.Col>
+            <Alert type="danger" className="mb-0" >{message}</Alert>
+        </Grid.Col>
+    </Grid.Row>
 );
 
 export default ErrorAlert;
