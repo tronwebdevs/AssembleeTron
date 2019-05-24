@@ -1,14 +1,10 @@
 import React from 'react';
-import { Card, CardBody, CardTitle, CardText } from 'reactstrap';
+import StandaloneFormPage from '../../Admin/StandaloneFormPage/';
+import FormCard from '../../Admin/FormCard/';
 
 const LoginCard = ({ title, text }) => (
-    <div className="form-signin">
-        <Card className="mb-4 shadow-sm">
-            <CardBody className="text-center">
-                <CardTitle className="mb-0">{title}</CardTitle>
-                <CardText className="text-left">{text}</CardText>
-            </CardBody>
-        </Card>
-    </div>
+    <StandaloneFormPage imageURL={"https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png"}>
+        <FormCard RootComponent="div" title={title} text={text} className="mb-4 shadow-sm" />
+    </StandaloneFormPage>
 );
 export default LoginCard;

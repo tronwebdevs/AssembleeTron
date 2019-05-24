@@ -61,7 +61,16 @@ const SiteWrapper = ({ children }) => (
             imageURL: "https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png",
             accountDropdown: accountDropdownProps,
         }}
-        navProps={{ itemsObjects: navBarItems }}
+        navProps={{
+            itemsObjects: navBarItems,
+            rightColumnComponent: (
+                <NavLink to='/gestore/assemblea?elimina'>
+                    <Button color="outline-danger" size="sm">
+                        Elimina
+                    </Button>
+                </NavLink>
+            )
+        }}
         routerContextComponentType={withRouter(RouterContextProvider)}
         footerProps={{
             copyright: (

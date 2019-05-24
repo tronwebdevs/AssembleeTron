@@ -7,7 +7,7 @@ import {
     FETCH_STUDENT_PENDING
 } from '../actions/types.js';
 
-export const authStudent = (studentID, part) => dispatch => {
+export const authStudent = (studentID, part, callback) => dispatch => {
     dispatch({
         type: FETCH_STUDENT_PENDING,
         payload: {
@@ -17,6 +17,7 @@ export const authStudent = (studentID, part) => dispatch => {
     fetch('api/students?studentID=' + studentID + '&part=' + part)
     .then(res => res.json())
     .then(data => {
+        callback(null, data);
         switch (data.code) {
             case -1:
                 dispatch({
@@ -67,6 +68,7 @@ export const authStudent = (studentID, part) => dispatch => {
                 fetch_error: error.message
             }
         });
+        callback(error, null);
     });
 }
 
