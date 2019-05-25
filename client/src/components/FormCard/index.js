@@ -9,7 +9,7 @@ const FormCard = ({
     method, 
     title, 
     text, 
-    RootComponent 
+    RootComponent
 }) => (
     <Form className="card" RootComponent={RootComponent || 'form'} onSubmit={onSubmit} action={action} method={method}>
         <Card.Body className="p-6">

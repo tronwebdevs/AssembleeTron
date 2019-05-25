@@ -5,8 +5,10 @@ import {
     STUDENT_WAS_PART,
     STUDENT_SUBED,
     UPDATE_STUDENT_LABS,
+    FETCH_STUDENT_LABS,
     ERROR_IN_STUDENT_AUTH,
     ERROR_IN_STUDENT_LABS_UPDATE,
+    ERROR_IN_STUDENT_LABS_FETCH,
     FETCH_STUDENT_PENDING
 } from '../actions/types.js';
 
@@ -25,9 +27,7 @@ export const authStudent = (studentID, part, callback) => dispatch => {
             case -1:
                 dispatch({
                     type: ERROR_IN_STUDENT_AUTH,
-                    payload: {
-                        auth_error: data.message
-                    }
+                    payload: data.message
                 });
                 break;
             case 1:
@@ -57,9 +57,7 @@ export const authStudent = (studentID, part, callback) => dispatch => {
             default:
                 dispatch({
                     type: ERROR_IN_STUDENT_AUTH,
-                    payload: {
-                        gen_error: 'Errore non riconosciuto (student)'
-                    }
+                    payload: 'Errore non riconosciuto (student)'
                 });
                 break;
         }
@@ -73,6 +71,41 @@ export const authStudent = (studentID, part, callback) => dispatch => {
         });
         callback(error, null);
     });
+}
+
+export const fetchAvabileLabs = classLabel => dispatch => {
+    dispatch({
+        type: FETCH_STUDENT_PENDING,
+        payload: {
+            labs_avabile: true
+        }
+    });
+    fetch('api/students/labs?classLabel=' + classLabel)
+    .then(res => res.json())
+    .then(data => {
+        if (data.code === -1) {
+            dispatch({
+                type: ERROR_IN_STUDENT_LABS_FETCH,
+                payload: data.message
+            });
+        } else if (data.code === 1) {
+            dispatch({
+                type: FETCH_STUDENT_LABS,
+                payload: data
+            });
+        } else {
+            dispatch({
+                type: ERROR_IN_STUDENT_LABS_FETCH,
+                payload: 'Errore non riconosciuto (laboratori disponibili)'
+            });
+        }
+    })
+    .catch(error => dispatch({
+        type: ERROR_IN_STUDENT_LABS_FETCH,
+        payload: {
+            fetch_error: error.message
+        }
+    }));
 }
 
 export const subscribeLabs = (studentID, labs, callback) => dispatch => {
@@ -95,9 +128,7 @@ export const subscribeLabs = (studentID, labs, callback) => dispatch => {
         if (data.code === -1) {
             dispatch({
                 type: ERROR_IN_STUDENT_LABS_UPDATE,
-                payload: {
-                    auth_error: data.message
-                }
+                payload: data.message
             });
         } else if (data.code === 1) {
             dispatch({
@@ -107,9 +138,7 @@ export const subscribeLabs = (studentID, labs, callback) => dispatch => {
         } else {
             dispatch({
                 type: ERROR_IN_STUDENT_LABS_UPDATE,
-                payload: {
-                    gen_error: 'Errore non riconosciuto (student)'
-                }
+                payload: 'Errore non riconosciuto (student)'
             });
         }
     })

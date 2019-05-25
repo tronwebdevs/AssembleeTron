@@ -11,6 +11,25 @@ const LabClass = require('../models/LabClass');
 
 /**
  * @method get
+ * @param {string} classLabel
+ */
+router.get('/labs', (req, res, next) => {
+    const classLabel = req.query.classLabel;
+
+    if (typeof classLabel === 'string') {
+        fetchAvabileLabs(classLabel).then(result => {
+            res.status(200).json({
+                code: 1,
+                labs: result.labList
+            });
+        }).catch(err => next(err));
+    } else {
+        next(new Error('Parametri non validi'));
+    }
+});
+
+/**
+ * @method get
  * @param {string} studentID
  * @param {string} part
  */
@@ -64,61 +83,7 @@ router.get('/:studentID', (req, res) => {
                 }
             } else {
                 if (part === 1) {
-                    let classes;
-                    let labList = [];
-
-                    return LabClass.findAll({
-                        where: {
-                            classLabel: student.classLabel
-                        },
-                        order: [
-                            ['labID', 'ASC']
-                        ]
-                    }).then(labClasses => {
-                        classes = labClasses || [];
-                        return Lab.findAll({
-                            order: [
-                                ['id', 'ASC']
-                            ]
-                        });
-                    }).then(fetchedLabs => {
-                        fetchedLabs = fetchedLabs || [];
-                        let labClass;
-                        let promiseArray = [];
-                        fetchedLabs.forEach(lab => {
-                            labClass = classes.find(cl => cl.labID === lab.id);
-                            if (labClass) {
-                                labList.push({
-                                    ID: lab.id,
-                                    title: lab.title,
-                                    description: lab.description,
-                                    seatsH1: lab.seatsH1,
-                                    seatsH2: lab.seatsH2,
-                                    seatsH3: lab.seatsH3,
-                                    seatsH4: lab.seatsH4,
-                                    lastsTwoH: lab.lastsTwoH,
-                                });
-                                for (let i = 1; i <= 4; i++) {
-                                    promiseArray.push(Sub.count({
-                                        where: {
-                                            ['h' + i]: lab.id
-                                        }
-                                    }));
-                                }
-                            }
-                        });
-                        return Promise.all(promiseArray);
-                    }).then(results => {
-                        labList.map((lab, index) => {
-                            for (let i = 1; i <= 4; i++) {
-                                if ( (lab['seatsH' + i] - results[index * 4 + (i - 1)]) > 0 && classes[index]['allowedH' + i] == 1) {
-                                    lab['seatsH' + i] -= results[index * 4 + (i - 1)];
-                                }
-                            }
-                            return lab;
-                        });
-                        return new Promise(resolve => resolve({ labList }));
-                    });
+                    return fetchAvabileLabs(student.classLabel);
                 } else if (part === 0) {
                     return Sub.create({
                         ID: student.ID,
@@ -205,6 +170,11 @@ router.get('/:studentID', (req, res) => {
 
 /**
  * @method post
+ * @param {string} studentID
+ * @param {string} h1
+ * @param {string} h2
+ * @param {string} h3
+ * @param {string} h4
  */
 router.post('/:studentID/labs', (req, res, next) => {
     const studentID = +req.params.studentID || -1;
@@ -283,15 +253,64 @@ router.post('/:studentID/labs', (req, res, next) => {
     }
 });
 
+function fetchAvabileLabs(classLabel) {
+    return new Promise((resolve, reject) => {
+        let classes;
+        let labList = [];
 
-function check2HLabs(labs) {
-    for (let i = 0; i < 4; i++) {
-        if (i % 2 == 0 && lab[i].lastsTwoH === true) {
-            if (lab[i].id !== lab[i + 1].id) {
-                throw new Error('Laboratorio di 2 ore');
-            }
-        }
-    }
+        LabClass.findAll({
+            where: {
+                classLabel
+            },
+            order: [
+                ['labID', 'ASC']
+            ]
+        }).then(labClasses => {
+            classes = labClasses || [];
+            return Lab.findAll({
+                order: [
+                    ['id', 'ASC']
+                ]
+            });
+        }).then(fetchedLabs => {
+            fetchedLabs = fetchedLabs || [];
+            let labClass;
+            let promiseArray = [];
+            fetchedLabs.forEach(lab => {
+                labClass = classes.find(cl => cl.labID === lab.id);
+                if (labClass) {
+                    labList.push({
+                        ID: lab.id,
+                        title: lab.title,
+                        description: lab.description,
+                        seatsH1: lab.seatsH1,
+                        seatsH2: lab.seatsH2,
+                        seatsH3: lab.seatsH3,
+                        seatsH4: lab.seatsH4,
+                        lastsTwoH: lab.lastsTwoH,
+                    });
+                    for (let i = 1; i <= 4; i++) {
+                        promiseArray.push(Sub.count({
+                            where: {
+                                ['h' + i]: lab.id
+                            }
+                        }));
+                    }
+                }
+            });
+            return Promise.all(promiseArray);
+        }).then(results => {
+            labList.map((lab, index) => {
+                for (let i = 1; i <= 4; i++) {
+                    if ( (lab['seatsH' + i] - results[index * 4 + (i - 1)]) > 0 && classes[index]['allowedH' + i] == 1) {
+                        lab['seatsH' + i] -= results[index * 4 + (i - 1)];
+                    }
+                }
+                return lab;
+            });
+            resolve({ labList });
+        }).catch(err => reject(err));
+    });
 }
 
 

@@ -5,8 +5,10 @@ import {
     STUDENT_WAS_PART,
     STUDENT_SUBED,
     UPDATE_STUDENT_LABS,
+    FETCH_STUDENT_LABS,
     ERROR_IN_STUDENT_AUTH,
     ERROR_IN_STUDENT_LABS_UPDATE,
+    ERROR_IN_STUDENT_LABS_FETCH,
     FETCH_STUDENT_PENDING
 } from '../actions/types.js';
 
@@ -15,7 +17,7 @@ const initialState = {
     labs: [],
     labs_avabile: [],
     fetch_pending: {},
-    errors: ''
+    error: ''
 }
 
 export default function(state = initialState, action) {
@@ -26,6 +28,15 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 fetch_pending: payload
+            }
+        case FETCH_STUDENT_LABS:
+            return {
+                ...state,
+                labs_avabile: payload.labs,
+                fetch_pending: {
+                    ...state.fetch_pending,
+                    labs_avabile: false
+                }
             }
         case STUDENT_SUBS:
             return {
@@ -67,11 +78,12 @@ export default function(state = initialState, action) {
                     subscribe: false
                 }
             }
+        case ERROR_IN_STUDENT_LABS_FETCH:
         case ERROR_IN_STUDENT_LABS_UPDATE:
         case ERROR_IN_STUDENT_AUTH:
             return {
                 ...state,
-                errors: payload.error,
+                error: payload,
                 fetch_pending: {}
             }
         default:
