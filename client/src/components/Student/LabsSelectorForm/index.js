@@ -4,10 +4,12 @@ import { connect } from 'react-redux';
 import { subscribeLabs } from '../../../actions/studentActions';
 import { Redirect } from 'react-router-dom';
 import { Form, Button } from 'tabler-react';
+import { Spinner } from 'reactstrap';
 import { Formik } from 'formik';
-import LabSelectors from './LabSelectors';
 
-const LabsSelectorForm = ({ labs, subscribeLabs, student }) => (
+import LabSelector from './LabSelector/';
+
+const LabsSelectorForm = ({ labs, subscribeLabs, student, setGlobalError }) => (
     <Formik
         initialValues={{
             h1: 'default',
@@ -28,13 +30,16 @@ const LabsSelectorForm = ({ labs, subscribeLabs, student }) => (
             values,
             { setSubmitting, setErrors }
         ) => {
-            setSubmitting(true);
             subscribeLabs(student.profile.ID, values, (err, data) => {
                 setSubmitting(false);
                 if (err) {
-                    setErrors({ h1: err.message });
+                    setGlobalError(err.message);
                 } else if (data.code === -1) {
-                    setErrors({ h1: data.message });
+                    if (!data.target || data.target === 0) {
+                        setGlobalError(data.message);
+                    } else {
+                        setErrors({ ['h' + data.target]: data.message });
+                    }
                 } else {
                     return <Redirect to={{ pathname: '/conferma' }} />;
                 }
@@ -47,18 +52,13 @@ const LabsSelectorForm = ({ labs, subscribeLabs, student }) => (
             handleChange,
             handleBlur,
             handleSubmit,
-            isSubmitting,
+            isSubmitting
         }) => (
             <Form onSubmit={handleSubmit} className="pt-2">
-                <LabSelectors
-                    handleChange={handleChange}
-                    labs={labs}
-                    values={values}
-                    errors={errors}
-                />
+                {[1, 2, 3, 4].map(h => <LabSelector key={h} labs={labs} h={h} onChange={handleChange} error={errors['h' + h]} value={values['h' + h]} />)}
                 <Form.Footer>
                     <Button type="submit" color="primary" block={true}>
-                        Iscriviti
+                        {isSubmitting ? <Spinner color="light" size="sm" /> : 'Iscriviti'}
                     </Button>
                 </Form.Footer>
             </Form>
@@ -67,10 +67,12 @@ const LabsSelectorForm = ({ labs, subscribeLabs, student }) => (
 );
 
 LabsSelectorForm.propTypes = {
-    subscribeLabs: PropTypes.func.isRequired,
+    labs: PropTypes.array.isRequired,
     student: PropTypes.object.isRequired,
     assembly: PropTypes.object.isRequired,
-}
+    subscribeLabs: PropTypes.func.isRequired,
+    setGlobalError: PropTypes.func.isRequired
+};
 
 const mapStateToProps = state => ({
 	student: state.student,

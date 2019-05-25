@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const DefaultOption = ({ h }) => {
     let label;
@@ -24,6 +25,10 @@ const DefaultOption = ({ h }) => {
     return (
         <option value="default" disabled>{label}</option>
     );
+};
+
+DefaultOption.propTypes = {
+    h: PropTypes.number.isRequired
 };
 
 export default DefaultOption;

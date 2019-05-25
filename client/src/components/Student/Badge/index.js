@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Grid, Card } from 'tabler-react';
 
 const StudentBadge = ({ student, ...rest }) => (
@@ -8,5 +9,9 @@ const StudentBadge = ({ student, ...rest }) => (
         </Card>
     </Grid.Col>
 );
+
+StudentBadge.propTypes = {
+    student: PropTypes.object.isRequired
+};
 
 export default StudentBadge;

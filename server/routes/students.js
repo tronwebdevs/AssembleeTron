@@ -218,7 +218,9 @@ router.post('/:studentID/labs', (req, res, next) => {
             }
         }).then(fetchedLabs => {
             labs = labs.map(labID => fetchedLabs.find(lab => lab.id === +labID));
-            let error = new Error('Per i progetti da 2 ore seleziona la prima e la seconda ora o la terza e la quarta ora');
+            // Per i progetti da 2 ore seleziona la prima e la seconda ora o la terza e la quarta ora
+            let error = new Error('Questo laboratori deve essere uguale a quello dell\'ora ');
+            error.status = 410;
 
             let promiseArray = [];
             labs.forEach((lab, index) => {
@@ -227,10 +229,14 @@ router.post('/:studentID/labs', (req, res, next) => {
                 if (lab.lastsTwoH === true) {
                     if (index % 2 == 0) {
                         if (lab.id !== labs[index + 1].id) {
+                            error.message += 'precedente (2H)';
+                            error.target = (index + 2);
                             throw error;
                         }
                     } else {
                         if (lab.id !== labs[index - 1].id) {
+                            error.message += 'successiva (2H)';
+                            error.target = index;
                             throw error
                         }
                     }

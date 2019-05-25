@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Row, Col } from 'reactstrap';
 
 const LabShow = ({ title, description }) => (
@@ -13,5 +14,10 @@ const LabShow = ({ title, description }) => (
         </Row>
     </div>
 );
+
+LabShow.propTypes = {
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired
+};
 
 export default LabShow;

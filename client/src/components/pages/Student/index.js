@@ -1,27 +1,22 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { Error404Page } from "tabler-react";
 
-import Login from './Login';
+import Home from './Home';
 import LabsSelect from './LabsSelect';
-import ConfirmSub from './ConfirmSub';
-import Error from '../Error/';
+import ShowSub from './ShowSub';
 
-class Student extends Component {
-    render() {
-        return (
-            <BrowserRouter>
-                <>
-                    <Switch>
-                        <Route path="/" component={Login} exact />
-                        <Route path="/iscrizione" component={LabsSelect} exact />
-                        <Route path="/conferma" component={ConfirmSub} exact />
-                        <Route component={Error} />
-                    </Switch>
-                </>
-            </BrowserRouter>
-        );
-    }
-}
-
+const Student = props => (
+    <BrowserRouter>
+        <>
+            <Switch>
+                <Route path="/" component={Home} exact />
+                <Route path="/iscrizione" component={LabsSelect} exact />
+                <Route path="/conferma" component={ShowSub} exact />
+                <Route component={props => <Error404Page action={'Indietro'} subtitle={'Oof... Pagina non trovata...'} details={'La pagina che stai cercando non è stata trovata'} {...props} />} />
+            </Switch>
+        </>
+    </BrowserRouter>
+);
 
 export default Student;

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Grid, Table, Card } from 'tabler-react';
 import InfoBox from '../InfoBox/';
 
@@ -33,4 +34,9 @@ const LabsTable = ({ labs }) => (
         <InfoBox />
     </>
 );
+
+LabsTable.propTypes = {
+    labs: PropTypes.array.isRequired
+};
+
 export default LabsTable;

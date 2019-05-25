@@ -24,7 +24,7 @@ const Sub = sequelize.define('subscribers', {
         type: Sequelize.SMALLINT,
         allowNull: false
     },
-}, { timestamps: false });
+});
 Sub.removeAttribute('id');
 
 module.exports = Sub;

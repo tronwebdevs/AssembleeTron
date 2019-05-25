@@ -1,10 +1,17 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Form } from 'tabler-react';
 
 import DefaultOption from './DefaultOption';
 import Option from './Option';
 
-const LabSelector = ({ labs, h, onChange, error, value }) => (
+const LabSelector = ({
+    labs,
+    h, 
+    onChange, 
+    value,
+    error 
+}) => (
     <Form.Group className="mb-3">
         <Form.Select
             className="select-lab"
@@ -28,5 +35,13 @@ const LabSelector = ({ labs, h, onChange, error, value }) => (
         </Form.Select>
     </Form.Group>
 );
+
+LabSelector.propTypes = {
+    labs: PropTypes.array.isRequired,
+    h: PropTypes.number.isRequired,
+    onChange: PropTypes.func.isRequired, 
+    value: PropTypes.string.isRequired,
+    error: PropTypes.string
+};
 
 export default LabSelector;
