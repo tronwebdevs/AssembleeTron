@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { fetchLabsAvabile } from '../../../actions/assemblyActions';
 import { Page, Grid, Card } from 'tabler-react';
 import Badge from '../../Student/Badge';
 import LabsSelectorForm from '../../Student/LabsSelectorForm/';
