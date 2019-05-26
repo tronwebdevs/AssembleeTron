@@ -131,9 +131,3 @@ export const fetchAllLabs = () => dispatch => {
         }
     }))
 };
-
-export const clearFetchPending = () => dispatch => {
-    dispatch({
-        type: ASSEMBLY_CLEAR_PENDING
-    });
-}

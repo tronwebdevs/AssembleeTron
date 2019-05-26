@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Table, Card } from 'tabler-react';
-import InfoBox from '../InfoBox/';
+import InfoBox from './InfoBox';
 
 const LabsTable = ({ labs }) => (
     <>

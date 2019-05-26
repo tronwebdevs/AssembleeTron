@@ -31,26 +31,28 @@ const LoginForm = ({
                     error={errors.studentID}
                 />
             </Form.Group>
-            <Form.Group>
-                <Form.Radio
-                    label="Partecipo"
-                    name="part"
-                    value="1"
-                    checked={values.part === '1'}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    isInline
+            <span className="text-center">
+                <Form.Group>
+                    <Form.Radio
+                        label="Partecipo"
+                        name="part"
+                        value="1"
+                        checked={values.part === '1'}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        isInline
+                        />
+                    <Form.Radio
+                        label="Non partecipo"
+                        name="part"
+                        value="0"
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        checked={values.part === '0'}
+                        isInline
                     />
-                <Form.Radio
-                    label="Non partecipo"
-                    name="part"
-                    value="0"
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    checked={values.part === '0'}
-                    isInline
-                />
-            </Form.Group>
+                </Form.Group>
+            </span>
             <Form.Footer className="mt-1">
                 <Button type="submit" color="primary" block={true}>
                     {isSubmitting ? <Spinner color="light" size="sm" /> : 'Entra'}

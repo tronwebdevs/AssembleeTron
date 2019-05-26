@@ -4,8 +4,7 @@ import { connect } from 'react-redux';
 import { fetchAssemblyInfo } from '../../../actions/assemblyActions';
 import { Redirect } from 'react-router-dom';
 
-import LoginCard from '../../Student/LoginCard/';
-import LoginFormCard from '../../Student/LoginFormCard/';
+import { LoginCard, LoginFormCard } from '../../Student/';
 
 class Home extends Component {
 

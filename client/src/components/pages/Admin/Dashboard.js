@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import {
     Page,
     Grid,
@@ -8,10 +11,15 @@ import {
     StampCard,
     Badge,
 } from "tabler-react";
-import SiteWrapper from './SiteWrapper';
+import SiteWrapper from '../../Admin/SiteWrapper/';
 
 class Dashboard extends Component {
     render() {
+        
+        if (this.props.admin.id === -1) {
+            return <Redirect to={{ pathname: '/gestore/login' }} />;
+        }
+
         return (
             <SiteWrapper>
                 <Page.Content title="Dashboard">
@@ -122,4 +130,12 @@ class Dashboard extends Component {
     }
 }
 
-export default Dashboard;
+Dashboard.propTypes = {
+    admin: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+    admin: state.admin
+});
+
+export default connect(mapStateToProps)(Dashboard);

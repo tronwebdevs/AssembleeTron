@@ -2,12 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import LabsTable from '../../Student/LabsTable';
-import Badge from '../../Student/Badge';
 import { Page, Grid } from 'tabler-react';
-import SiteWrapper from '../../Student/SiteWrapper';
-import NotPartCard from '../../Student/NotPartCard';
 import moment from 'moment';
+
+import { LabsTable, Badge, SiteWrapper, NotPartCard } from '../../Student/';
 
 const ConfirmSub = ({
     student,

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import StandaloneFormPage from '../../StandaloneFormPage';
-import FormCard from '../../FormCard';
+import StandaloneFormPage from '../StandaloneFormPage';
+import FormCard from '../FormCard';
 
 const LoginCard = ({ title, text }) => (
     <StandaloneFormPage imageURL={"https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png"}>

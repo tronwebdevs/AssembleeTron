@@ -44,9 +44,11 @@ const LabsSelectorForm = ({
                         if (!data.target || data.target === 0) {
                             setGlobalError(data.message);
                         } else {
+                            setGlobalError(null);
                             setErrors({ ['h' + data.target]: data.message });
                         }
                     } else {
+                        setGlobalError(null);
                         return <Redirect to={{ pathname: '/conferma' }} />;
                     }
                 });
