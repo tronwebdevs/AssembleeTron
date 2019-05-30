@@ -5,8 +5,7 @@ import {
 } from '../actions/types';
 
 const initialState = {
-    id: -1,
-    username: '',
+    authed: false,
     isSudoer: false,
     fetch_pending: {},
     error: ''
@@ -23,9 +22,7 @@ export default function (state = initialState, action) {
         case ADMIN_AUTHED:
             return {
                 ...state,
-                id: payload.id,
-                username: payload.username,
-                isSudoer: payload.isSudoer,
+                authed: true,
                 fetch_pending: {
                     auth: false
                 }

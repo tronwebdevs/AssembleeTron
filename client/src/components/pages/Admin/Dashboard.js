@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
     Page,
     Grid,
@@ -15,51 +15,46 @@ import SiteWrapper from '../../Admin/SiteWrapper/';
 
 class Dashboard extends Component {
     render() {
-        
-        if (this.props.admin.id === -1) {
-            return <Redirect to={{ pathname: '/gestore/login' }} />;
-        }
-
         return (
             <SiteWrapper>
                 <Page.Content title="Dashboard">
                     <Grid.Row cards={true}>
-                        <Grid.Col sm={6} lg={3}>
+                        <Grid.Col width={12} md={4}>
                             <StampCard
                                 color="blue"
                                 icon="list"
                                 header={
-                                    <a href="/gestore/laboratori">
+                                    <Link to="/gestore/laboratori">
                                         30 <small>Laboratori</small>
-                                    </a>
+                                    </Link>
                                 }
                             />
                         </Grid.Col>
-                        <Grid.Col sm={6} lg={3}>
+                        <Grid.Col width={12} md={4}>
                             <StampCard
                                 color="green"
                                 icon="users"
                                 header={
-                                    <a href="#">
+                                    <Link to="/gestore/studenti">
                                         621 <small>Partecipanti</small>
-                                    </a>
+                                    </Link>
                                 }
                             />
                         </Grid.Col>
-                        <Grid.Col sm={6} lg={3}>
+                        <Grid.Col width={12} md={4}>
                             <StampCard
                                 color="red"
                                 icon="users"
                                 header={
-                                    <a href="/gestore/studenti">
+                                    <Link to="/gestore/studenti">
                                         1,562 <small>Studenti</small>
-                                    </a>
+                                    </Link>
                                 }
                             />
                         </Grid.Col>
                     </Grid.Row>
                     <Grid.Row>
-                        <Grid.Col sm={6} lg={4}>
+                        <Grid.Col width={12} md={4}>
                             <Card title="Informazioni">
                                 <Card.Body>
                                     <ul className="list-unstyled">
@@ -82,30 +77,28 @@ class Dashboard extends Component {
                                 </Card.Body>
                                 <Card.Footer>
                                     <Button.List align="center">
-                                        <Button
-                                            color="info"
-                                            RootComponent="a"
-                                            href="/gestore/informazioni"
+                                        <Link 
+                                            to="/gestore/informazioni"
+                                            className="btn btn-info"
                                         >
                                             Vedi
-                                        </Button>
-                                        <Button
-                                            color="secondary"
-                                            RootComponent="a"
-                                            href="/gestore/informazioni?modifica"
+                                        </Link>
+                                        <Link
+                                            to="/gestore/informazioni?modifica" 
+                                            className="btn btn-secondary"
                                         >
                                             Modifica
-                                        </Button>
+                                        </Link>
                                     </Button.List>
                                 </Card.Footer>
                             </Card>
                         </Grid.Col>
-                        <Grid.Col sm={6} lg={4}>
+                        <Grid.Col width={12} md={4}>
                             <Card title="Empty">
                                 <Card.Body className="text-muted">Empty</Card.Body>
                             </Card>
                         </Grid.Col>
-                        <Grid.Col sm={6} lg={4}>
+                        <Grid.Col width={12} md={4}>
                             <Card title="Stato del sistema">
                                 <Table cards>
                                     <Table.Row>

@@ -5,8 +5,7 @@ import {
     FETCH_ASSEMBLY_ERROR,
     FETCH_ASSEMBLY_LABS,
     FETCH_ASSEMBLY_AVABILE_LABS,
-    FETCH_ASSEMBLY_PENDING,
-    ASSEMBLY_CLEAR_PENDING
+    FETCH_ASSEMBLY_PENDING
 } from '../actions/types.js';
 
 export const fetchAssemblyInfo = () => dispatch => {

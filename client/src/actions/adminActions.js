@@ -4,7 +4,7 @@ import {
     ERROR_IN_ADMIN_AUTH
 } from '../actions/types';
 
-export const authAdmin = (username, password, callback) => dispatch => {
+export const authAdmin = (password, callback) => dispatch => {
     dispatch({
         type: AUTH_ADMIN_PENDING,
         payload: {
@@ -16,9 +16,7 @@ export const authAdmin = (username, password, callback) => dispatch => {
         headers: new Headers({
             "Content-Type": "application/json",
         }),
-        body: JSON.stringify({
-            username, password
-        })
+        body: JSON.stringify({ password })
     })
     .then(res => res.json())
     .then(data => {

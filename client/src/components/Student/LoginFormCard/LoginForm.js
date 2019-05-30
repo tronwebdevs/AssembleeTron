@@ -1,6 +1,6 @@
 import React from "react";
 import StandaloneFormPage from '../../StandaloneFormPage';
-import { Form, Button } from 'tabler-react';
+import { Form, Button, Card, Grid, Icon } from 'tabler-react';
 import { Spinner } from 'reactstrap';
 
 import FormCard from '../../FormCard';
@@ -16,9 +16,27 @@ const LoginForm = ({
     <StandaloneFormPage imageURL={"https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png"}>
         <FormCard
             title="Iscrizioni per l'Assemblea d'Istituto del 23/12/2020"
-            text="Inserisci la tua matricola per entrare:"
+            text={true ? "Inserisci la tua matricola per entrare:" : ''}
             onSubmit={onSubmit}
         >
+            {/* <Form.Group>
+                <Card.Alert color="primary">
+                    <Grid.Row>
+                        <Grid.Col width={8}>
+                            Sei gia' loggato come:
+                            <br />
+                            <b>Davide Testolin</b>
+                        </Grid.Col>
+                        <Grid.Col width={4}>
+                            <span className="float-right">
+                                <Button color="outline-primary">
+                                    <Icon name="log-out" />
+                                </Button>
+                            </span>
+                        </Grid.Col>
+                    </Grid.Row>
+                </Card.Alert>
+            </Form.Group> */}
             <Form.Group>
                 <Form.Input
                     type='text'

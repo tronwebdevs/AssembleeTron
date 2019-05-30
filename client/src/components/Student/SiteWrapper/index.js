@@ -12,7 +12,8 @@ const SiteWrapper = ({ children }) => (
                 className: "student",
                 href: "./",
                 alt: "TronWeb Logo",
-                imageURL: "https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png"
+                imageURL: "https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png",
+                align: 'center'
             }}
             navProps={{ itemsObjects: []}}
             routerContextComponentType={withRouter(RouterContextProvider)}

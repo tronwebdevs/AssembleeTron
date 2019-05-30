@@ -1,12 +1,11 @@
 import React, { Fragment } from "react";
 import { NavLink, withRouter } from "react-router-dom";
-import { Site, Grid, Button, RouterContextProvider } from "tabler-react";
+import { Site, Grid, Button, Icon, RouterContextProvider } from "tabler-react";
 import moment from 'moment';
 import "tabler-react/dist/Tabler.css";
 import './c3jscustom.css';
 
 import NavBarItems from './NavBarItems';
-import AccountDropdown from './AccountDropdown';
 
 const SiteWrapper = ({ children }) => (
     <Site.Wrapper
@@ -14,7 +13,14 @@ const SiteWrapper = ({ children }) => (
             href: "/gestore",
             alt: "TronWeb Logo",
             imageURL: "https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png",
-            accountDropdown: AccountDropdown,
+            navItems: (
+                <a href="/gestore/">
+                    <Button color="outline-primary" size="sm">
+                        Esci {" "}
+                        <Icon name="log-out" />
+                    </Button>
+                </a>
+            )
         }}
         navProps={{
             itemsObjects: NavBarItems,

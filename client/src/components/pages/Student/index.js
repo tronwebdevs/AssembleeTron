@@ -6,16 +6,16 @@ import Home from './Home';
 import LabsSelect from './LabsSelect';
 import ShowSub from './ShowSub';
 
-const Student = props => (
+const Student = () => (
     <BrowserRouter>
-        <>
+        <React.Fragment>
             <Switch>
                 <Route path="/" component={Home} exact />
                 <Route path="/iscrizione" component={LabsSelect} exact />
                 <Route path="/conferma" component={ShowSub} exact />
                 <Route component={props => <Error404Page action={'Indietro'} subtitle={'Oof... Pagina non trovata...'} details={'La pagina che stai cercando non è stata trovata'} {...props} />} />
             </Switch>
-        </>
+        </React.Fragment>
     </BrowserRouter>
 );
 

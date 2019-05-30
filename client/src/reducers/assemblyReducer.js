@@ -5,8 +5,7 @@ import {
     FETCH_ASSEMBLY_ERROR,
     FETCH_ASSEMBLY_LABS,
     FETCH_ASSEMBLY_AVABILE_LABS,
-    FETCH_ASSEMBLY_PENDING,
-    ASSEMBLY_CLEAR_PENDING
+    FETCH_ASSEMBLY_PENDING
 } from '../actions/types.js';
 
 const initialState = {
@@ -65,11 +64,6 @@ export default function (state = initialState, action) {
                     ...state.fetch_pending,
                     avabile_labs: false
                 }
-            };
-        case ASSEMBLY_CLEAR_PENDING:
-            return {
-                ...state,
-                fetch_pending: {}
             };
         default:
             return state;

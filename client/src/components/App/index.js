@@ -9,16 +9,23 @@ import store from '../../store';
 import Admin from '../pages/Admin/';
 import Student from '../pages/Student/';
 
-const App = props => (
+const App = () => (
     <Provider store={store}>
         <BrowserRouter>
-            <>
+            <React.Fragment>
                 <Switch>
                     <Route path="/gestore" component={Admin} />
                     <Route path="/" component={Student} />
-                    <Route component={props => <Error404Page action={'Indietro'} subtitle={'Oof... Pagina non trovata...'} details={'La pagina che stai cercando non è stata trovata'} {...props} />} />
+                    <Route component={props => (
+                        <Error404Page 
+                            action={'Indietro'} 
+                            subtitle={'Oof... Pagina non trovata...'} 
+                            details={'La pagina che stai cercando non è stata trovata'} 
+                            {...props} 
+                        />
+                    )} />
                 </Switch>
-            </>
+            </React.Fragment>
         </BrowserRouter>
     </Provider>
 );

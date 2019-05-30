@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchAssemblyInfo } from '../../../actions/assemblyActions';
@@ -6,46 +6,40 @@ import { Redirect } from 'react-router-dom';
 
 import { LoginCard, LoginFormCard } from '../../Student/';
 
-class Home extends Component {
+const Home = ({
+    student,
+    assembly,
+    fetchAssemblyInfo
+}) => {
 
-    renderAssemblyInfo = assembly => {
-        if (assembly.fetch_pending.info === false) {
-            if (assembly.error) {
-                return <LoginCard title={assembly.error} />;
-            } else if (!assembly.info.date) {
-                return <LoginCard title={'Errore inaspettato'} />;
-            } else {
-                return <LoginFormCard info={assembly.info}/>;
-            }
-        } else if (assembly.fetch_pending.info === true) {
-            return <></>;
+    const redirectAuthedStudent = labsCount => (
+        <Redirect to={{
+            pathname: (labsCount === 0 ? '/iscrizione' : '/conferma')
+        }} />
+    );
+
+    if (!student.profile.ID) {
+        if (student.fetch_pending.profile === false) {
+            return redirectAuthedStudent(student.labs.length);
         } else {
-            this.props.fetchAssemblyInfo();
-            return <></>;
-        }
-    }
-
-    redirectAuthedStudent = labsCount => {
-        let pathname = '/conferma';
-        if (labsCount === 0) {
-            pathname = '/iscrizione';
-        }
-        return <Redirect to={{ pathname }} />;
-    }
-
-    render() {
-        const { student, assembly } = this.props;
-
-        if (!student.profile.ID) {
-            if (student.fetch_pending.profile === false) {
-                return this.redirectAuthedStudent(student.labs.length);
+            if (assembly.fetch_pending.info === false) {
+                if (assembly.error) {
+                    return <LoginCard title={assembly.error} />;
+                } else if (!assembly.info.date) {
+                    return <LoginCard title={'Errore inaspettato'} />;
+                } else {
+                    return <LoginFormCard info={assembly.info}/>;
+                }
+            } else if (assembly.fetch_pending.info === true) {
+                return <React.Fragment></React.Fragment>;
             } else {
-                return this.renderAssemblyInfo(assembly);
+                fetchAssemblyInfo();
+                return <React.Fragment></React.Fragment>;
             }
-        } else {
-            return this.redirectAuthedStudent(student.labs.length);
         }
-    }
+    } else {
+        return redirectAuthedStudent(student.labs.length);
+    } 
 }
 
 Home.propTypes = {

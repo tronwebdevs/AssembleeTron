@@ -2,20 +2,36 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Error404Page } from "tabler-react";
 
+import AuthRequired from '../../Admin/AuthRequired/';
 import Login from './Login';
 import Dashboard from './Dashboard';
+import Info from './Info';
+import Labs from './Labs';
+import Students from './Students';
+import Stats from './Stats';
 
 const rootPath = '/gestore';
 
-const Admin = props => (
+const Admin = () => (
     <BrowserRouter>
-        <>
+        <React.Fragment>
             <Switch>
-                <Route path={rootPath + "/"} component={Dashboard} exact />
-                <Route path={rootPath + "/login"} component={Login} exact />
-                <Route component={props => <Error404Page action={'Indietro'} subtitle={'Oof... Pagina non trovata...'} details={'La pagina che stai cercando non è stata trovata'} {...props} />} />
+                <AuthRequired path={rootPath + "/"} component={Dashboard} exact />
+                <AuthRequired path={rootPath + "/informazioni"} component={Info} exact />
+                <AuthRequired path={rootPath + "/laboratori"} component={Labs} exact />
+                <AuthRequired path={rootPath + "/studenti"} component={Students} exact />
+                <AuthRequired path={rootPath + "/statistiche"} component={Stats} exact />
+                <Route path={rootPath + "/login"} component={Login} exact /> 
+                <AuthRequired component={props => (
+                    <Error404Page 
+                        action={'Indietro'} 
+                        subtitle={'Oof... Pagina non trovata...'} 
+                        details={'La pagina che stai cercando non è stata trovata'} 
+                        {...props}
+                    />
+                )} />
             </Switch>
-        </>
+        </React.Fragment>
     </BrowserRouter>
 );
 

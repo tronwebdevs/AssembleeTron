@@ -1,8 +1,6 @@
 "use strict";
 const express = require('express');
 const router = express.Router();
-const Sequleize = require('sequelize');
-const { Op } = Sequleize;
 
 /**
  * @method post
@@ -10,13 +8,17 @@ const { Op } = Sequleize;
  * @param {string} password
  */
 router.post('/auth', (req, res, next) => {
-    if (req.body.username && req.body.password) {
-        res.status(200).json({
-            code: 1,
-            id: 1,
-            username: req.body.username,
-            isSudoer: true
-        });
+    if (req.body.password) {
+        if (req.body.password === 'admin') {
+            res.status(200).json({
+                code: 1
+            });
+        } else {
+            res.status(200).json({
+                code: -1,
+                message: 'Password errata'
+            });
+        }
     } else {
         next(new Error('Parametri non validi'));
     }
