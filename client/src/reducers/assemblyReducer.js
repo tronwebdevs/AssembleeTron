@@ -5,12 +5,18 @@ import {
     FETCH_ASSEMBLY_ERROR,
     FETCH_ASSEMBLY_LABS,
     FETCH_ASSEMBLY_AVABILE_LABS,
+    FETCH_ASSEMBLY_DONE,
     FETCH_ASSEMBLY_PENDING
 } from '../actions/types.js';
 
 const initialState = {
     info: {},
     labs: [],
+    stats: {
+        labs: 0,
+        students: 0,
+        subs: 0
+    },
     error: '',
     fetch_pending: {}
 };
@@ -56,6 +62,21 @@ export default function (state = initialState, action) {
                     labs: false
                 }
             };
+        case FETCH_ASSEMBLY_DONE:
+            return {
+                ...state,
+                info: payload.info,
+                stats: {
+                    labs: payload.labsCount,
+                    students: payload.stdCount,
+                    subs: payload.subsCount
+                },
+                fetch_pending: {
+                    ...state.fetch_pending,
+                    admin_dashboard: false
+                }
+            }
+            break;
         case FETCH_ASSEMBLY_AVABILE_LABS: 
             return {
                 ...state,

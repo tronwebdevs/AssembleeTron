@@ -19,7 +19,7 @@ app.use('/api/assembly', require('./routes/assembly'));
 app.use('/api/admins', require('./routes/admins'));
 
 app.use((err, req, res, next) => res.status(500).json({
-    code: -1,
+    code: err.code || -1,
     message: err.message
 }));
 
