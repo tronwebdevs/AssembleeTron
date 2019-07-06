@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { authStudent } from '../../../actions/studentActions';
-import { Redirect } from 'react-router-dom';
 import { Formik } from 'formik';
 
 import LoginForm from './LoginForm';

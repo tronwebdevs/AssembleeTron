@@ -20,8 +20,7 @@ const initialState = {
     error: ''
 }
 
-export default function(state = initialState, action) {
-    const { payload, type } = action;
+export default function(state = initialState, { payload, type }) {
     switch(type) {
         case UPDATE_STUDENT_LABS:
         case FETCH_STUDENT_PENDING:

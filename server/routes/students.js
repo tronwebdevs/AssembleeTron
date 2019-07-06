@@ -122,12 +122,12 @@ router.get('/:studentID', (req, res) => {
                         // STUDENTE VUOLE VISUALIZZARE I LABORATORI
                         Lab.findAndCountAll({
                             where: {
-                                id: [ results.h1, results.h2, results.h3, results.h4 ]
+                                ID: [ results.h1, results.h2, results.h3, results.h4 ]
                             }
                         }).then(result => {
                             if (result.count <= 4 || result.count > 0) {
                                 let labs = [ results.h1, results.h2, results.h3, results.h4 ];
-                                labs = labs.map(labID => result.rows.find(lab => lab.id === labID));
+                                labs = labs.map(labID => result.rows.find(lab => lab.ID === labID));
                                 res.status(200).json({
                                     code: 4,
                                     student,
@@ -187,7 +187,7 @@ router.post('/:studentID/labs', (req, res, next) => {
                 ID: [ h1, h2, h3, h4 ]
             }
         }).then(fetchedLabs => {
-            labs = labs.map(labID => fetchedLabs.find(lab => lab.id === +labID));
+            labs = labs.map(labID => fetchedLabs.find(lab => lab.ID === +labID));
             // Per i progetti da 2 ore seleziona la prima e la seconda ora o la terza e la quarta ora
             let error = new Error('Questo laboratori deve essere uguale a quello dell\'ora ');
             error.status = 410;
@@ -198,13 +198,13 @@ router.post('/:studentID/labs', (req, res, next) => {
                 // Check lastsTwoH
                 if (lab.lastsTwoH === true) {
                     if (index % 2 == 0) {
-                        if (lab.id !== labs[index + 1].id) {
+                        if (lab.ID !== labs[index + 1].ID) {
                             error.message += 'precedente (2H)';
                             error.target = (index + 2);
                             throw error;
                         }
                     } else {
-                        if (lab.id !== labs[index - 1].id) {
+                        if (lab.ID !== labs[index - 1].ID) {
                             error.message += 'successiva (2H)';
                             error.target = index;
                             throw error
@@ -215,7 +215,7 @@ router.post('/:studentID/labs', (req, res, next) => {
                 // Count sub to lab
                 promiseArray.push(
                     Sub.count({
-                        where: { ['h' + (index + 1)]: lab.id }
+                        where: { ['h' + (index + 1)]: lab.ID }
                     })
                 );
             });
@@ -269,7 +269,7 @@ function fetchAvabileLabs(classLabel) {
             classes = labClasses || [];
             return Lab.findAll({
                 order: [
-                    ['id', 'ASC']
+                    ['ID', 'ASC']
                 ]
             });
         }).then(fetchedLabs => {
@@ -277,10 +277,10 @@ function fetchAvabileLabs(classLabel) {
             let labClass;
             let promiseArray = [];
             fetchedLabs.forEach(lab => {
-                labClass = classes.find(cl => cl.labID === lab.id);
+                labClass = classes.find(cl => cl.labID === lab.ID);
                 if (labClass) {
                     labList.push({
-                        ID: lab.id,
+                        ID: lab.ID,
                         title: lab.title,
                         description: lab.description,
                         seatsH1: lab.seatsH1,
@@ -292,7 +292,7 @@ function fetchAvabileLabs(classLabel) {
                     for (let i = 1; i <= 4; i++) {
                         promiseArray.push(Sub.count({
                             where: {
-                                ['h' + i]: lab.id
+                                ['h' + i]: lab.ID
                             }
                         }));
                     }

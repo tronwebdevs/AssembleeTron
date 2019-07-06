@@ -1,15 +1,20 @@
 import {
     AUTH_ADMIN_PENDING,
     ADMIN_AUTHED, 
-    ERROR_IN_ADMIN_AUTH
+    ERROR_IN_ADMIN_AUTH,
+    ADMIN_LOGOUT
 } from '../actions/types';
 
+/**
+ * Authenticate user
+ * @param {string} password 
+ * @param {function} callback 
+ * @public
+ */
 export const authAdmin = (password, callback) => dispatch => {
     dispatch({
         type: AUTH_ADMIN_PENDING,
-        payload: {
-            auth: true
-        }
+        payload: 'auth'
     });
     fetch('/api/admins/auth', {
         method: 'POST',
@@ -46,9 +51,19 @@ export const authAdmin = (password, callback) => dispatch => {
         dispatch({
             type: ERROR_IN_ADMIN_AUTH,
             payload: {
-                fetch_error: error.message
+                message: error.message,
+                fetch: 'auth'
             }
         });
         callback(error, null);
     });
 }
+
+/**
+ * Logout
+ * @public
+ */
+export const logout = () => dispatch => dispatch({
+    type: ADMIN_LOGOUT,
+    payload: null
+});

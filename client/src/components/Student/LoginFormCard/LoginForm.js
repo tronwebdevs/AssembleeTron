@@ -1,6 +1,6 @@
 import React from "react";
 import StandaloneFormPage from '../../StandaloneFormPage';
-import { Form, Button, Card, Grid, Icon } from 'tabler-react';
+import { Form, Button, /*Card, Grid, Icon*/ } from 'tabler-react';
 import { Spinner } from 'reactstrap';
 
 import FormCard from '../../FormCard';

@@ -3,27 +3,19 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchAssemblyGeneral } from '../../../actions/assemblyActions';
 import { Link } from 'react-router-dom';
-import {
-    Page,
-    Grid,
-    Card,
-    Table,
-    Button,
-    StampCard,
-    Badge,
-} from "tabler-react";
+import { Page, Grid, Card, Badge } from "tabler-react";
 import moment from 'moment';
 import SiteWrapper from '../../Admin/SiteWrapper/';
 import SmallCard from '../../Admin/Dashboard/SmallCard';
+import { Spinner } from "reactstrap";
 
 const Dashboard = ({
     assembly,
-    admin,
     fetchAssemblyGeneral
 }) => {
     const { stats, info, fetch_pending } = assembly;
     const { admin_dashboard } = fetch_pending;
-    if (admin_dashboard !== false && admin_dashboard !== true) {
+    if (admin_dashboard === undefined) {
         fetchAssemblyGeneral();
     }
 
@@ -61,6 +53,24 @@ const Dashboard = ({
         },
     ];
 
+    const renderSubState = () => {
+        if (moment(info.subOpen).diff(moment()) < 0 && moment(info.subClose).diff(moment()) > 0) {
+            return (
+                <Badge color="success">Aperte</Badge>
+            );
+        } else {
+            return (
+                <Badge color="danger">Chiuse</Badge>
+            );
+        }
+    }
+
+    const renderOnFetchDone = component => admin_dashboard === false ? component : (
+        <div className="text-center">
+            <Spinner color="primary" style={{ width: '4rem', height: '4rem' }}/>
+        </div>
+    );
+
     return (
         <SiteWrapper>
             <Page.Content title="Dashboard">
@@ -71,63 +81,77 @@ const Dashboard = ({
                     <Grid.Col width={12} md={4}>
                         <Card title="Informazioni">
                             <Card.Body>
-                                <ul className="list-unstyled">
-                                    <li>
-                                        <Grid.Row className="align-items-center">
-                                            <Grid.Col sm={3} md={3} lg={3}>Nome</Grid.Col>
-                                            <Grid.Col auto>{info.name || 'Assemblea Senza Nome'}</Grid.Col>
-                                        </Grid.Row>
-                                    </li>
-                                    <li>
-                                        <Grid.Row className="align-items-center">
-                                            <Grid.Col sm={3} md={3} lg={3}>Data</Grid.Col>
-                                            <Grid.Col auto>
-                                                {moment(info.date).format('DD/MM/YYYY')} {"  "}
-                                                <small className="text-muted">({displayDaysLeft(moment(info.date).diff(moment(), 'days'))})</small>
-                                            </Grid.Col>
-                                        </Grid.Row>
-                                    </li>
-                                </ul>
+                                {renderOnFetchDone(
+                                    <React.Fragment>
+                                        <ul className="list-unstyled">
+                                            <li>
+                                                <Grid.Row className="align-items-center">
+                                                    <Grid.Col sm={3} md={3} lg={3}>Nome</Grid.Col>
+                                                    <Grid.Col auto>{info.title || 'Assemblea Senza Nome'}</Grid.Col>
+                                                </Grid.Row>
+                                            </li>
+                                            <li>
+                                                <Grid.Row className="align-items-center">
+                                                    <Grid.Col sm={3} md={3} lg={3}>Data</Grid.Col>
+                                                    <Grid.Col auto>
+                                                        {moment(info.date).format('DD/MM/YYYY')} {"  "}
+                                                        <small className="text-muted">({displayDaysLeft(moment(info.date).diff(moment(), 'days'))})</small>
+                                                    </Grid.Col>
+                                                </Grid.Row>
+                                            </li>
+                                        </ul>
+                                        <Link
+                                            to="/gestore/informazioni"
+                                            className="btn btn-block btn-outline-primary"
+                                        >
+                                            Vedi
+                                        </Link>
+                                    </React.Fragment>
+                                )}
                             </Card.Body>
-                            <Card.Footer>
-                                <Button.List align="center">
-                                    <Link 
-                                        to="/gestore/informazioni"
-                                        className="btn btn-info"
-                                    >
-                                        Vedi
-                                    </Link>
-                                    <Link
-                                        to="/gestore/informazioni?modifica" 
-                                        className="btn btn-secondary"
-                                    >
-                                        Modifica
-                                    </Link>
-                                </Button.List>
-                            </Card.Footer>
                         </Card>
                     </Grid.Col>
                     <Grid.Col width={12} md={4}>
-                        <Card title="Empty">
-                            <Card.Body className="text-muted">Empty</Card.Body>
+                        <Card title="Isctizioni">
+                            <Card.Body>
+                                {renderOnFetchDone(
+                                    <ul className="list-unstyled">
+                                        <li>
+                                            <Grid.Row className="align-items-center">
+                                                <Grid.Col sm={3} md={3} lg={3}>Stato</Grid.Col>
+                                                <Grid.Col auto>
+                                                    {renderSubState()}
+                                                </Grid.Col>
+                                            </Grid.Row>
+                                        </li>
+                                        <li>
+                                            <Grid.Row className="align-items-center">
+                                                <Grid.Col sm={3} md={3} lg={3}>Apertura</Grid.Col>
+                                                <Grid.Col auto>{moment(info.subOpen).format('HH:mm DD/MM/YYYY')}</Grid.Col>
+                                            </Grid.Row>
+                                        </li>
+                                        <li>
+                                            <Grid.Row className="align-items-center">
+                                                <Grid.Col sm={3} md={3} lg={3}>Chiusura</Grid.Col>
+                                                <Grid.Col auto>{moment(info.subClose).format('HH:mm DD/MM/YYYY')}</Grid.Col>
+                                            </Grid.Row>
+                                        </li>
+                                    </ul>
+                                )}
+                            </Card.Body>
                         </Card>
                     </Grid.Col>
                     <Grid.Col width={12} md={4}>
-                        <Card title="Stato del sistema">
-                            <Table cards>
-                                <Table.Row>
-                                    <Table.Col>Errori</Table.Col>
-                                    <Table.Col alignContent="right">
-                                        <Badge color="danger">0</Badge>
-                                    </Table.Col>
-                                </Table.Row>
-                                <Table.Row>
-                                    <Table.Col>Avvertimenti</Table.Col>
-                                    <Table.Col alignContent="right">
-                                        <Badge color="warning">0</Badge>
-                                    </Table.Col>
-                                </Table.Row>
-                            </Table>
+                        <Card title="Elimina assemblea">
+                            <Card.Body>
+                                <p>Rimuovi tutti i laboratori ed elimina l'assemblea</p>
+                                <Link
+                                    to="/gestore/elimina"
+                                    className="btn btn-block btn-outline-danger"
+                                >
+                                    Elimina
+                                </Link>
+                            </Card.Body>
                         </Card>
                     </Grid.Col>
                 </Grid.Row>
@@ -137,12 +161,10 @@ const Dashboard = ({
 };
 
 Dashboard.propTypes = {
-    admin: PropTypes.object.isRequired,
     assembly: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-    admin: state.admin,
     assembly: state.assembly
 });
 

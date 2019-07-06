@@ -2,14 +2,16 @@
 const express = require('express');
 const router = express.Router();
 
+const { adminPassword } = require('../config');
+
 /**
  * @method post
- * @param {string} username
  * @param {string} password
  */
 router.post('/auth', (req, res, next) => {
-    if (req.body.password) {
-        if (req.body.password === 'admin') {
+    const { password } = req.body;
+    if (password) {
+        if (password === adminPassword) {
             res.status(200).json({
                 code: 1
             });

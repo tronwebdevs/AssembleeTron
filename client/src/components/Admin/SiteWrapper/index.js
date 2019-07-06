@@ -1,5 +1,8 @@
 import React, { Fragment } from "react";
-import { NavLink, withRouter } from "react-router-dom";
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { logout } from '../../../actions/adminActions';
+import { withRouter } from "react-router-dom";
 import { Site, Grid, Button, Icon, RouterContextProvider } from "tabler-react";
 import moment from 'moment';
 import "tabler-react/dist/Tabler.css";
@@ -7,31 +10,24 @@ import './c3jscustom.css';
 
 import NavBarItems from './NavBarItems';
 
-const SiteWrapper = ({ children }) => (
+const SiteWrapper = ({ logout, children }) => (
     <Site.Wrapper
         headerProps={{
             href: "/gestore",
             alt: "TronWeb Logo",
             imageURL: "https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png",
             navItems: (
-                <a href="/gestore/">
-                    <Button color="outline-primary" size="sm">
-                        Esci {" "}
-                        <Icon name="log-out" />
-                    </Button>
-                </a>
+                <Button 
+                    color="outline-primary" 
+                    size="sm" 
+                    onClick={logout}
+                >
+                    Esci {" "}
+                    <Icon name="log-out" />
+                </Button>
             )
         }}
-        navProps={{
-            itemsObjects: NavBarItems,
-            rightColumnComponent: (
-                <NavLink to='/gestore/assemblea?elimina'>
-                    <Button color="outline-danger" size="sm">
-                        Elimina
-                    </Button>
-                </NavLink>
-            )
-        }}
+        navProps={{ itemsObjects: NavBarItems }}
         routerContextComponentType={withRouter(RouterContextProvider)}
         footerProps={{
             copyright: (
@@ -60,4 +56,8 @@ const SiteWrapper = ({ children }) => (
     </Site.Wrapper>
 );
 
-export default SiteWrapper;
+SiteWrapper.propTypes = {
+    logout: PropTypes.func.isRequired
+};
+
+export default connect(() => ({}), { logout })(SiteWrapper);

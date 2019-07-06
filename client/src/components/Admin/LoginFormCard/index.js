@@ -2,14 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { authAdmin } from '../../../actions/adminActions';
-import { Redirect } from 'react-router-dom';
 import { Formik } from 'formik';
 
 import LoginForm from './LoginForm';
 
 const LoginFormCard = ({ 
-    authAdmin,
-    ...rest
+    authAdmin
 }) => (
     <Formik
         initialValues={{
@@ -61,4 +59,4 @@ LoginFormCard.propTypes = {
     authAdmin: PropTypes.func.isRequired
 }
 
-export default connect(state => ({}), { authAdmin })(LoginFormCard);
+export default connect(() => ({}), { authAdmin })(LoginFormCard);

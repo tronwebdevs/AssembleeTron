@@ -8,9 +8,9 @@ const Stats = ({
     <SiteWrapper>
         <Page.Content title="Statistiche">
             <Grid.Row>
-                <Grid.Col width={12} md={4}>
+                <Grid.Col width={12}>
                     <Card title="Empty">
-                        <Card.Body className="text-muted">Empty</Card.Body>
+                        <Card.Body className="text-muted text-center">Page under construction</Card.Body>
                     </Card>
                 </Grid.Col>
             </Grid.Row>

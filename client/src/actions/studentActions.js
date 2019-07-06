@@ -19,7 +19,7 @@ export const authStudent = (studentID, part, callback) => dispatch => {
             profile: true
         }
     });
-    fetch('api/students/' + studentID + '?part=' + part)
+    fetch('/api/students/' + studentID + '?part=' + part)
     .then(res => res.json())
     .then(data => {
         callback(null, data);
@@ -80,7 +80,7 @@ export const fetchAvabileLabs = classLabel => dispatch => {
             labs_avabile: true
         }
     });
-    fetch('api/students/labs?classLabel=' + classLabel)
+    fetch('/api/students/labs?classLabel=' + classLabel)
     .then(res => res.json())
     .then(data => {
         if (data.code === -1) {
@@ -115,7 +115,7 @@ export const subscribeLabs = (studentID, labs, callback) => dispatch => {
             subscribe: true
         }
     });
-    fetch('api/students/' + studentID + '/labs', {
+    fetch('/api/students/' + studentID + '/labs', {
         method: 'POST',
         headers: new Headers({
             "Content-Type": "application/json",
