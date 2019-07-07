@@ -13,6 +13,10 @@ import {
     ASSEMBLY_STUDENTS_FETCHED,
     ERROR_IN_STUDENTS_FETCH,
 
+    CREATE_ASSEMBLY_INFO,
+    ASSEMBLY_INFO_CREATED,
+    ERROR_IN_ASSEMBLY_INFO_CREATE,
+
     UPDATE_ASSEMBLY_INFO,
     ASSEMBLY_INFO_UPDATED,
     ERROR_IN_ASSEMBLY_INFO_UPDATE,
@@ -85,6 +89,45 @@ export const fetchAssemblyInfo = () => dispatch => {
         }
     }))
 };
+
+/**
+ * Create assembly info
+ * @param {object} info 
+ * @public
+ */
+export const createAssemblyInfo = info => dispatch => {
+    dispatch({
+        type: CREATE_ASSEMBLY_INFO,
+        payload: 'create_info'
+    });
+    fetch('/api/assembly/info', {
+        method: 'POST',
+        headers: new Headers({
+            "Content-Type": "application/json",
+        }),
+        body: JSON.stringify(info)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.code === 1) {
+            dispatch({
+                type: ASSEMBLY_INFO_CREATED,
+                payload: data.info
+            });
+        } else {
+            throw new Error(data.message || 'Errore inaspettato');
+        }
+    })
+    .catch(err => {
+        dispatch({
+            type: ERROR_IN_ASSEMBLY_INFO_CREATE,
+            payload: {
+                message: err.message,
+                fetch: 'create_info'
+            }
+        });
+    });
+}
 
 /**
  * Update assembly info
@@ -285,9 +328,7 @@ export const fetchAssemblyGeneral = () => dispatch => {
             case 0:
                 dispatch({
                     type: ASSEMBLY_NOT_AVABILE,
-                    payload: {
-                        message: data.message
-                    }
+                    payload: data
                 });
                 break;
             case 1:

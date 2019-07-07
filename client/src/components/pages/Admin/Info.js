@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Page, Grid, Card, Alert } from "tabler-react";
+import { Page, Grid, Card, Alert, Button } from "tabler-react";
 import SiteWrapper from '../../Admin/SiteWrapper/';
 import { fetchAssemblyInfo, updateAssemblyInfo } from '../../../actions/assemblyActions';
 import InfoForm from '../../Admin/InfoForm';
@@ -23,19 +23,63 @@ const Info = ({
     const [edit, setEdit] = useState(false);
     const [displayError, setDisplayError] = useState('');
 
-    const renderInfo = info => {
-        if (edit) {
-            return <InfoForm info={info} edit={() => setEdit(false)} updateInfo={updateAssemblyInfo} displayError={message => setDisplayError(message)} />;
-        } else {
-            return <InfoCard info={info} edit={() => {
-                if (moment().diff(moment(info.subOpen)) < 0) {
-                    setEdit(true);
-                } else {
-                    setDisplayError('Non puoi modificare le informazioni dell\'assemblea dato che le iscrizioni hanno gia\' inizato')
+    const renderInfo = info => edit === true ? (
+        <InfoForm 
+            info={info} 
+            onSubmit={
+                (
+                    values, 
+                    { setSubmitting, setErrors }
+                ) => {
+                    updateAssemblyInfo({
+                        uuid: values.uuid,
+                        title: values.title,
+                        date: values.date,
+                        subOpen: moment(values.subOpenDate + ' ' + values.subOpenTime).format(),
+                        subClose: moment(values.subCloseDate + ' ' + values.subCloseTime).format()
+                    }, (err, info) => {
+                        setSubmitting(false);
+                        if (err) {
+                            displayError(err.message);
+                        } else {
+                            setEdit(false);
+                        }
+                    });
                 }
-            }} />
-        }
-    }
+            }
+            buttons={[
+                (
+                    <Button 
+                        type="button"
+                        block 
+                        onClick={() => {
+                            setEdit(false);
+                            setDisplayError('');
+                        }} 
+                        color="outline-danger"
+                    >Annulla</Button>
+                ),
+                (
+                    <Button 
+                        type="submit" 
+                        block 
+                        color="primary"
+                    >Salva</Button>
+                )
+            ]}
+        />
+    ) : (
+        <InfoCard 
+            info={info} 
+            edit={() => {
+                    setEdit(true);
+                // if (moment().diff(moment(info.subOpen)) < 0) {
+                // } else {
+                //     setDisplayError('Non puoi modificare le informazioni dell\'assemblea dato che le iscrizioni hanno gia\' inizato')
+                // }
+            }} 
+        />
+    );
 
     return (
         <SiteWrapper>

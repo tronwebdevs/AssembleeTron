@@ -4,36 +4,22 @@ import { Formik } from 'formik';
 import { Grid, Form, Button } from 'tabler-react';
 import moment from 'moment';
 
-const InfoForm = ({ info, edit, updateInfo, displayError }) => (
+const InfoForm = ({ 
+    info,
+    onSubmit,
+    buttons
+}) => (
     <Formik
         initialValues={{
             uuid: info.uuid,
-            title: info.title || 'Assemblea Senza Nome',
+            title: info.title,
             date: info.date,
             subOpenTime: moment(info.subOpen).format('HH:mm'),
             subOpenDate: moment(info.subOpen).format('YYYY-MM-DD'),
             subCloseTime: moment(info.subClose).format('HH:mm'),
             subCloseDate: moment(info.subClose).format('YYYY-MM-DD')
         }}
-        onSubmit={(
-            values, 
-            { setSubmitting, setErrors }
-        ) => {
-            updateInfo({
-                uuid: values.uuid,
-                title: values.title,
-                date: values.date,
-                subOpen: moment(values.subOpenDate + ' ' + values.subOpenTime).format(),
-                subClose: moment(values.subCloseDate + ' ' + values.subCloseTime).format()
-            }, (err, info) => {
-                setSubmitting(false);
-                if (err) {
-                    displayError(err.message);
-                } else {
-                    edit();
-                }
-            });
-        }}
+        onSubmit={onSubmit}
         render={({
             values,
             errors,
@@ -53,6 +39,7 @@ const InfoForm = ({ info, edit, updateInfo, displayError }) => (
                                     touched={touched.title} 
                                     onChange={handleChange} 
                                     onBlur={handleBlur} 
+                                    placeholder="Nome assemblea"
                                 />
                             </Form.Group>
                             <Form.Group label="Identificativo">
@@ -77,7 +64,7 @@ const InfoForm = ({ info, edit, updateInfo, displayError }) => (
                                     touched={touched.date} 
                                     onChange={handleChange} 
                                     onBlur={handleBlur} 
-                                    className="mb-2" 
+                                    className="mb-2"
                                 />
                             </Form.Group>
                         </Grid.Col>
@@ -137,15 +124,11 @@ const InfoForm = ({ info, edit, updateInfo, displayError }) => (
                         </Grid.Col>
                     </Grid.Row>
                     <Grid.Row className="mt-4">
-                        <Grid.Col md={2} className="offset-md-4">
-                            <Button block onClick={() => {
-                                edit();
-                                displayError('');
-                            }} color="outline-danger">Annulla</Button>
-                        </Grid.Col>
-                        <Grid.Col md={2}>
-                            <Button type="submit" block color="primary">Salva</Button>
-                        </Grid.Col>
+                        {buttons.map((button, index) => (
+                            <Grid.Col md={2} className={index === 0 ? "offset-md-4" : null}>
+                                {button}
+                            </Grid.Col>
+                        ))}
                     </Grid.Row>
                 </Form>
             )}
@@ -154,8 +137,8 @@ const InfoForm = ({ info, edit, updateInfo, displayError }) => (
 
 InfoForm.propTypes = {
     info: PropTypes.object.isRequired,
-    edit: PropTypes.func.isRequired,
-    updateInfo: PropTypes.func.isRequired
+    onSubmit: PropTypes.func.isRequired,
+    buttons: PropTypes.array.isRequired
 };
 
 export default InfoForm;

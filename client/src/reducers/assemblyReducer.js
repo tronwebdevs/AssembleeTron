@@ -13,6 +13,10 @@ import {
     ASSEMBLY_STUDENTS_FETCHED,
     ERROR_IN_STUDENTS_FETCH,
 
+    CREATE_ASSEMBLY_INFO,
+    ASSEMBLY_INFO_CREATED,
+    ERROR_IN_ASSEMBLY_INFO_CREATE,
+
     UPDATE_ASSEMBLY_INFO,
     ASSEMBLY_INFO_UPDATED,
     ERROR_IN_ASSEMBLY_INFO_UPDATE,
@@ -39,6 +43,7 @@ import {
 
 
 const initialState = {
+    exists: false,
     info: {},
     labs: [],
     stats: {
@@ -56,6 +61,7 @@ export default function (state = initialState, { payload, type }) {
         case FETCH_ASSEMBLY_STUDENTS:
         case FETCH_ASSEMBLY_INFO:
         case FETCH_ASSEMBLY_LABS:
+        case CREATE_ASSEMBLY_INFO:
         case UPDATE_ASSEMBLY_INFO:
         case CREATE_ASSEMBLY_LAB:
         case UPDATE_ASSEMBLY_LAB:
@@ -69,20 +75,10 @@ export default function (state = initialState, { payload, type }) {
                     [payload]: true
                 }
             };
-        case ASSEMBLY_SUBS_CLOSE:
-        case ASSEMBLY_NOT_AVABILE:
-        case ERROR_IN_ASSEMBLY_FETCH:
-            return {
-                ...state,
-                error: payload.message,
-                fetch_pending: {
-                    ...state.fetch_pending,
-                    info: false
-                }
-            };
         case ASSEMBLY_SUBS_OPEN:
             return {
                 ...state,
+                exists: true,
                 info: payload,
                 fetch_pending: {
                     ...state.fetch_pending,
@@ -107,6 +103,16 @@ export default function (state = initialState, { payload, type }) {
                     labs: false
                 }
             };
+        case ASSEMBLY_INFO_CREATED:
+            return {
+                ...state,
+                exists: true,
+                info: payload,
+                fetch_pending: {
+                    ...state.fetch_pending,
+                    create_info: false
+                }
+            }
         case ASSEMBLY_INFO_UPDATED:
             return {
                 ...state,
@@ -128,6 +134,7 @@ export default function (state = initialState, { payload, type }) {
         case FETCH_ASSEMBLY_DONE:
             return {
                 ...state,
+                exists: true,
                 info: payload.info,
                 stats: {
                     labs: payload.labsCount,
@@ -169,12 +176,34 @@ export default function (state = initialState, { payload, type }) {
                     students: state.stats.students
                 },
                 fetch_pending: {
+                    ...state.fetch_pending,
                     delete_assembly: false
                 }
             };
+        case ASSEMBLY_SUBS_CLOSE:
+        case ASSEMBLY_NOT_AVABILE:
+        case ERROR_IN_ASSEMBLY_FETCH:
+            return {
+                ...state,
+                info: payload.info || {},
+                labs: payload.labs || [],
+                students: payload.students || [],
+                stats: {
+                    labs: payload.labs.length || 0,
+                    students: payload.students.length || 0,
+                    subs: payload.students.filter(std => std.subscribed !== null).length
+                },
+                error: payload.message,
+                fetch_pending: {
+                    ...state.fetch_pending,
+                    admin_dashboard: false
+                }
+            }
+
         case ERROR_IN_STUDENTS_FETCH:
         case ERROR_IN_ASSEMBLY_INFO_UPDATE:
         case ERROR_IN_ASSEMBLY_LAB_CREATE:
+        case ERROR_IN_ASSEMBLY_INFO_CREATE:
         case ERROR_IN_ASSEMBLY_LAB_UPDATE:
         case ERROR_IN_ASSEMBLY_LAB_DELETE:
         case ERROR_IN_LABS_FETCH:

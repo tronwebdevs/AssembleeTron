@@ -5,12 +5,10 @@ import { Redirect } from 'react-router-dom';
 
 import LoginFormCard from '../../Admin/LoginFormCard/';
 
-const Login = ({ admin, location }) => (
-    admin.authed ? (
-        <Redirect to={{ pathname: location.state.from.pathname || '/gestore/' }} />
-    ) : (
-        <LoginFormCard />
-    )
+const Login = ({ admin, location }) => admin.authed ? (
+    <Redirect to={{ pathname: location.state.from.pathname || '/gestore/' }} />
+) : (
+    <LoginFormCard />
 );
 
 Login.protoTypes = {
