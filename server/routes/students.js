@@ -105,6 +105,7 @@ router.get('/:studentID', (req, res) => {
                         res.status(200).json({
                             code: 3,
                             student,
+                            subscribed: false,
                             wasSubscribed: true
                         });
                     } else {
@@ -132,6 +133,7 @@ router.get('/:studentID', (req, res) => {
                                     code: 4,
                                     student,
                                     labs,
+                                    subscribed: true,
                                     wasSubscribed: true,
                                 });
                             } else {
@@ -144,6 +146,7 @@ router.get('/:studentID', (req, res) => {
                     res.status(200).json({
                         code: 2,
                         student,
+                        subscribed: false,
                         wasSubscribed: false
                     });
                 }

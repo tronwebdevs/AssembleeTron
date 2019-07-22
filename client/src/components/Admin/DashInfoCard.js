@@ -12,8 +12,8 @@ const DashInfoCard = ({
             <Card.Body>
                 <React.Fragment>
                     <ul className="list-unstyled">
-                        {listItems.map(item => (
-                            <li>
+                        {listItems.map((item, index) => (
+                            <li key={index}>
                                 <Grid.Row className="align-items-center">
                                     <Grid.Col sm={3} md={3} lg={3}>{item.title}</Grid.Col>
                                     <Grid.Col auto>{item.text}</Grid.Col>

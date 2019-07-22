@@ -1,44 +1,45 @@
 import {
-    FETCH_ASSEMBLY_INFO,
-    ASSEMBLY_SUBS_CLOSE,
-    ASSEMBLY_SUBS_OPEN,
-    ASSEMBLY_NOT_AVABILE,
-    ERROR_IN_ASSEMBLY_FETCH,
-
-    FETCH_ASSEMBLY_LABS,
-    ASSEMBLY_LABS_FETCHED,
-    ERROR_IN_LABS_FETCH,
-
-    FETCH_ASSEMBLY_STUDENTS,
-    ASSEMBLY_STUDENTS_FETCHED,
-    ERROR_IN_STUDENTS_FETCH,
-
-    CREATE_ASSEMBLY_INFO,
-    ASSEMBLY_INFO_CREATED,
-    ERROR_IN_ASSEMBLY_INFO_CREATE,
-
-    UPDATE_ASSEMBLY_INFO,
-    ASSEMBLY_INFO_UPDATED,
-    ERROR_IN_ASSEMBLY_INFO_UPDATE,
-
-    CREATE_ASSEMBLY_LAB,
-    ASSEMBLY_LAB_CREATED,
-    ERROR_IN_ASSEMBLY_LAB_CREATE,
-    
-    UPDATE_ASSEMBLY_LAB,
-    ASSEMBLY_LAB_UPDATED,
-    ERROR_IN_ASSEMBLY_LAB_UPDATE,
-
-    DELETE_ASSEMBLY_LAB,
-    ASSEMBLY_LAB_DELETED,
-    ERROR_IN_ASSEMBLY_LAB_DELETE,
-    
     FETCH_ASSEMBLY_PENDING,
-    FETCH_ASSEMBLY_DONE,
+	ASSEMBLY_FETCHED,
+	ERROR_IN_ASSEMBLY_FETCH,
 
-    DELETE_ASSEMBLY,
-    ASSEMBLY_DELETED,
-    ERROR_IN_ASSEMBLY_DELETE
+	DELETE_ASSEMBLY_PENDING,
+	ASSEMBLY_DELETED,
+	ERROR_IN_ASSEMBLY_DELETE,
+
+	FETCH_INFO_PENDING,
+	ASSEMBLY_SUBS_CLOSE,
+	ASSEMBLY_SUBS_OPEN,
+	ASSEMBLY_NOT_AVABILE,
+	ERROR_IN_INFO_FETCH,
+
+	CREATE_INFO_PENDING,
+	INFO_CREATED,
+	ERROR_IN_INFO_CREATE,
+
+	UPDATE_INFO_PENDING,
+	INFO_UPDATED,
+	ERROR_IN_INFO_UPDATE,
+
+	FETCH_LABS_PENDING,
+	LABS_FETCHED,
+	ERROR_IN_LABS_FETCH,
+
+	CREATE_LAB_PENDING,
+	LAB_CREATED,
+	ERROR_IN_LAB_CREATE,
+
+	UPDATE_LAB_PENDING,
+	LAB_UPDATED,
+	ERROR_IN_LAB_UPDATE,
+
+	DELETE_LAB_PENDING,
+	LAB_DELETED,
+	ERROR_IN_LAB_DELETE,
+
+	FETCH_STUDENTS_PENDING,
+	STUDENTS_FETCHED,
+	ERROR_IN_STUDENTS_FETCH,
 } from '../actions/types.js';
 
 
@@ -51,172 +52,190 @@ const initialState = {
         students: 0,
         subs: 0
     },
-    students: [],
-    error: '',
-    fetch_pending: {}
+	students: [],
+	message: {
+		display: false,
+		type: null,
+		className: null,
+		msg: null
+	},
+    error: null,
+    pendings: {}
 };
 
 export default function (state = initialState, { payload, type }) {
     switch (type) {
-        case FETCH_ASSEMBLY_STUDENTS:
-        case FETCH_ASSEMBLY_INFO:
-        case FETCH_ASSEMBLY_LABS:
-        case CREATE_ASSEMBLY_INFO:
-        case UPDATE_ASSEMBLY_INFO:
-        case CREATE_ASSEMBLY_LAB:
-        case UPDATE_ASSEMBLY_LAB:
-        case DELETE_ASSEMBLY_LAB:
         case FETCH_ASSEMBLY_PENDING:
-        case DELETE_ASSEMBLY:
+        case DELETE_ASSEMBLY_PENDING:
+        case FETCH_INFO_PENDING:
+        case CREATE_INFO_PENDING:
+        case UPDATE_INFO_PENDING:
+        case FETCH_LABS_PENDING:
+        case CREATE_LAB_PENDING:
+        case UPDATE_LAB_PENDING:
+        case DELETE_LAB_PENDING:
+        case FETCH_STUDENTS_PENDING:
             return {
                 ...state,
-                fetch_pending: {
-                    ...state.fetch_pending,
+                pendings: {
+                    ...state.pendings,
                     [payload]: true
                 }
-            };
-        case ASSEMBLY_SUBS_OPEN:
-            return {
-                ...state,
+			};
+		case ASSEMBLY_FETCHED:
+		case ERROR_IN_ASSEMBLY_FETCH:
+			return {
+				...state,
+				exists: payload.exists,
+				info: payload.info || {},
+				labs: payload.labs || [],
+				students: payload.students || [],
+				stats: {
+					labs: (payload.labs || []).length,
+					students: (payload.students || []).length,
+					subs: (payload.students || []).filter(std => std.subscribed !== null).length
+				},
+				error: payload.message || null,
+				pendings: {
+					...state.pendings,
+					assembly: false
+				}
+			};
+		case ASSEMBLY_DELETED:
+			return {
+				...initialState,
+				exists: false,
+				info: {
+					deleted: true
+				},
+				students: state.students,
+				stats: {
+					...initialState.stats,
+					students: state.stats.students
+				},
+				pendings: {
+					...state.pendings,
+					delete_assembly: false
+				}
+			};
+		case ASSEMBLY_SUBS_CLOSE:
+		case ASSEMBLY_SUBS_OPEN:
+			return {
+				...state,
                 exists: true,
                 info: payload,
-                fetch_pending: {
-                    ...state.fetch_pending,
+                pendings: {
+                    ...state.pendings,
                     info: false
                 }
-            };
-        case ASSEMBLY_LAB_DELETED:
-            return {
-                ...state,
-                labs: payload,
-                fetch_pending: {
-                    ...state.fetch_pending,
-                    delete_lab: false
+			};
+		case ASSEMBLY_NOT_AVABILE:
+			return {
+				...state,
+				exists: false,
+				pendings: {
+                    ...state.pendings,
+                    info: false
                 }
-            };
-        case ASSEMBLY_LABS_FETCHED:
-            return {
-                ...state,
-                labs: payload,
-                fetch_pending: {
-                    ...state.fetch_pending,
-                    labs: false
-                }
-            };
-        case ASSEMBLY_INFO_CREATED:
-            return {
-                ...state,
-                exists: true,
-                info: payload,
-                fetch_pending: {
-                    ...state.fetch_pending,
-                    create_info: false
-                }
-            }
-        case ASSEMBLY_INFO_UPDATED:
-            return {
-                ...state,
-                info: payload,
-                fetch_pending: {
-                    ...state.fetch_pending,
-                    update_info: false
-                }
-            };
-        case ASSEMBLY_STUDENTS_FETCHED:
-            return {
-                ...state,
-                students: payload,
-                fetch_pending: {
-                    ...state.fetch_pending,
-                    students: false
-                }
-            };
-        case FETCH_ASSEMBLY_DONE:
-            return {
-                ...state,
-                exists: true,
-                info: payload.info,
-                stats: {
-                    labs: payload.labsCount,
-                    students: payload.stdCount,
-                    subs: payload.subsCount
-                },
-                fetch_pending: {
-                    ...state.fetch_pending,
-                    admin_dashboard: false
-                }
-            };
-        case ASSEMBLY_LAB_CREATED:
-            return {
-                ...state,
-                labs: payload,
-                fetch_pending: {
-                    ...state.fetch_pending,
+			};
+		case INFO_CREATED:
+			return {
+				...state,
+				exists: true,
+				info: payload,
+				pendings: {
+					...state.pendings,
+					create_info: false
+				}
+			};
+		case INFO_UPDATED:
+			return {
+				...state,
+				info: payload,
+				pendings: {
+					...state.pendings,
+					update_info: false
+				}
+			};
+		case LABS_FETCHED:
+			return {
+				...state,
+				labs: payload,
+				stats: {
+					...state.stats,
+					labs: payload.length
+				},
+				pendings: {
+					...state.pendings,
+					labs: false
+				}
+			};
+		case LAB_CREATED:
+			return {
+				...state,
+				labs: payload,
+				stats: {
+					...state.stats,
+					labs: payload.length
+				},
+                pendings: {
+                    ...state.pendings,
                     create_lab: false
                 }
-            };
-        case ASSEMBLY_LAB_UPDATED:
-            return {
-                ...state,
-                labs: payload,
-                fetch_pending: {
-                    ...state.fetch_pending,
+			};
+		case LAB_UPDATED:
+			return {
+				...state,
+				labs: payload,
+                pendings: {
+                    ...state.pendings,
                     update_lab: false
                 }
-            };
-        case ASSEMBLY_DELETED:
-            return {
-                ...initialState,
-                info: {
-                    deleted: true
-                },
-                students: state.students,
-                stats: {
-                    ...initialState.stats,
-                    students: state.stats.students
-                },
-                fetch_pending: {
-                    ...state.fetch_pending,
-                    delete_assembly: false
+			};
+		case LAB_DELETED:
+			return {
+				...state,
+				labs: payload,
+				stats: {
+					...state.stats,
+					labs: payload.length
+				},
+                pendings: {
+                    ...state.pendings,
+                    delete_lab: false
                 }
-            };
-        case ASSEMBLY_SUBS_CLOSE:
-        case ASSEMBLY_NOT_AVABILE:
-        case ERROR_IN_ASSEMBLY_FETCH:
-            return {
+			};
+		case STUDENTS_FETCHED:
+			return {
                 ...state,
-                info: payload.info || {},
-                labs: payload.labs || [],
-                students: payload.students || [],
-                stats: {
-                    labs: payload.labs.length || 0,
-                    students: payload.students.length || 0,
-                    subs: payload.students.filter(std => std.subscribed !== null).length
-                },
-                error: payload.message,
-                fetch_pending: {
-                    ...state.fetch_pending,
-                    admin_dashboard: false
+				students: payload,
+				stats: {
+					...state.stats,
+					students: payload.length
+				},
+                pendings: {
+                    ...state.pendings,
+                    students: false
                 }
-            }
-
-        case ERROR_IN_STUDENTS_FETCH:
-        case ERROR_IN_ASSEMBLY_INFO_UPDATE:
-        case ERROR_IN_ASSEMBLY_LAB_CREATE:
-        case ERROR_IN_ASSEMBLY_INFO_CREATE:
-        case ERROR_IN_ASSEMBLY_LAB_UPDATE:
-        case ERROR_IN_ASSEMBLY_LAB_DELETE:
-        case ERROR_IN_LABS_FETCH:
+			};
         case ERROR_IN_ASSEMBLY_DELETE:
+		case ERROR_IN_INFO_FETCH:
+		case ERROR_IN_INFO_CREATE:
+		case ERROR_IN_INFO_UPDATE:
+		case ERROR_IN_LABS_FETCH:
+		case ERROR_IN_LAB_CREATE:
+		case ERROR_IN_LAB_UPDATE:
+		case ERROR_IN_LAB_DELETE:
+		case ERROR_IN_STUDENTS_FETCH:
             return {
                 ...state,
                 error: payload.message,
-                fetch_pending: {
-                    ...state.fetch_pending,
+                pendings: {
+                    ...state.pendings,
                     [payload.fetch]: false
                 }
-            };
+			};
         default:
             return state;
     }
-}
+};

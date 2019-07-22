@@ -1,22 +1,15 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { fetchStudents } from '../../../actions/assemblyActions';
 import { Page, Grid, Card, Alert, Form } from "tabler-react";
 import SiteWrapper from '../../Admin/SiteWrapper';
 import StudentsTable from '../../Admin/StudentsTable';
 
 const Students = ({
-    assembly,
-    fetchStudents,
-    ...props
+    assembly
 }) => {
 
-    const { fetch_pending, students } = assembly;
-
-    if (fetch_pending.students === undefined) {
-        fetchStudents();
-    }
+    const { students } = assembly;
 
     const [scrollToIndex, setScrollToIndex] = useState(undefined);
 
@@ -26,7 +19,7 @@ const Students = ({
         <SiteWrapper>
             <Page.Content title="Studenti">
                 <Grid.Row>
-                    {assembly.error !== '' ? (
+                    {assembly.error ? (
                         <Grid.Col width={12}>
                             <Alert type="danger">{assembly.error}</Alert>
                         </Grid.Col>
@@ -100,11 +93,11 @@ const Students = ({
 };
 
 Students.propTypes = {
-    fetchStudents: PropTypes.func.isRequired
-}
+	assembly: PropTypes.object.isRequired
+};
 
 const mapStateToProps = state => ({
     assembly: state.assembly
 });
 
-export default connect(mapStateToProps, { fetchStudents })(Students);
+export default connect(mapStateToProps)(Students);

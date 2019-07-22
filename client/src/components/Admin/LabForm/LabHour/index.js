@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form } from 'tabler-react';
+import { Grid, Form } from 'tabler-react';
 import Selector from './Selector';
 
 const LabHour = ({
@@ -10,7 +10,8 @@ const LabHour = ({
     handleChange,
     setFieldValue
 }) => (
-    <Form.Group label={"Ora " + h}>
+    <Grid.Col width={12} md={6}>
+        <span className="text-muted">Ora {h}</span>
         <Form.InputGroup className="mb-2">
             <Form.InputGroupPrepend>
                 <Form.InputGroupText>Posti: </Form.InputGroupText>
@@ -18,7 +19,7 @@ const LabHour = ({
             <Form.Input type="number" name={"seatsH" + h} value={values.seats} error={errors.seats} onChange={handleChange} />
         </Form.InputGroup>
         <Selector name={"classesH" + h} value={values.classes} classes={classes} setValue={value => setFieldValue('classesH' + h, value)} />
-    </Form.Group>
+    </Grid.Col>
 );
 
 export default LabHour;

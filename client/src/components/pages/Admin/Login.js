@@ -12,7 +12,8 @@ const Login = ({ admin, location }) => admin.authed ? (
 );
 
 Login.protoTypes = {
-    admin: PropTypes.object.isRequired
+	admin: PropTypes.object.isRequired,
+	location: PropTypes.object
 };
 
 const mapStateToProps = state => ({

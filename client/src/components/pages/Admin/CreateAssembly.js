@@ -85,6 +85,7 @@ const CreateAssembly = ({
 };
 
 CreateAssembly.propTypes = {
+	assembly: PropTypes.object.isRequired,
     createAssemblyInfo: PropTypes.func.isRequired
 };
 

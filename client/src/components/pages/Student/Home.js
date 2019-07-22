@@ -22,7 +22,7 @@ const Home = ({
         if (student.fetch_pending.profile === false) {
             return redirectAuthedStudent(student.labs.length);
         } else {
-            if (assembly.fetch_pending.info === false) {
+            if (assembly.pendings.info === false) {
                 if (assembly.error) {
                     return <LoginCard title={assembly.error} />;
                 } else if (!assembly.info.date) {
@@ -30,12 +30,10 @@ const Home = ({
                 } else {
                     return <LoginFormCard info={assembly.info}/>;
                 }
-            } else if (assembly.fetch_pending.info === true) {
-                return <React.Fragment></React.Fragment>;
-            } else {
+            } else if (assembly.pendings.info === undefined) {
                 fetchAssemblyInfo();
-                return <React.Fragment></React.Fragment>;
             }
+            return <React.Fragment></React.Fragment>;
         }
     } else {
         return redirectAuthedStudent(student.labs.length);

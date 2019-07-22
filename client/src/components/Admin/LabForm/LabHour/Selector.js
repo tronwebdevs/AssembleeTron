@@ -10,12 +10,12 @@ const Selector = ({ name, value, setValue, classes }) => {
     }];
 
     const customStyle = {
-        control: (provided, state) => ({
+        control: provided => ({
             ...provided,
             borderColor: '#ced4da',
-            borderRadius: '3px'
+            borderRadius: '3px',
         }),
-        indicatorSeparator: (provided, state) => ({
+        indicatorSeparator: provided => ({
             ...provided,
             borderColor: '#ced4da',
             backgroundColor: '#ced4da'
@@ -108,7 +108,8 @@ const Selector = ({ name, value, setValue, classes }) => {
             className="basic-multi-select"
             closeMenuOnSelect={false}
             onChange={setValue}
-            noOptionsMessage={({ inputValue }) => 'Nessun risultato trovato'}
+			noOptionsMessage={() => 'Nessun risultato trovato'}
+			hideSelectedOptions={false}
         />
     );
 };

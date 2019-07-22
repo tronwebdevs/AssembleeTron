@@ -3,25 +3,23 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Page, Grid, Card, Alert, Button } from "tabler-react";
 import SiteWrapper from '../../Admin/SiteWrapper/';
-import { fetchAssemblyInfo, updateAssemblyInfo } from '../../../actions/assemblyActions';
+import { updateAssemblyInfo } from '../../../actions/assemblyActions';
 import InfoForm from '../../Admin/InfoForm';
 import InfoCard from '../../Admin/InfoCard';
 import moment from 'moment';
 
 const Info = ({
     assembly,
-    fetchAssemblyInfo,
     updateAssemblyInfo
 }) => {
 
-    const { fetch_pending, info } = assembly;
+    const { pendings, info, error } = assembly;
 
-    if (fetch_pending.admin_dashboard === undefined && fetch_pending.info === undefined) {
-        fetchAssemblyInfo();
-    }
-
-    const [edit, setEdit] = useState(false);
-    const [displayError, setDisplayError] = useState('');
+	const [edit, setEdit] = useState(false);
+	
+	if (pendings.update_info === false && edit === true) {
+		setEdit(false);
+	}
 
     const renderInfo = info => edit === true ? (
         <InfoForm 
@@ -31,20 +29,16 @@ const Info = ({
                     values, 
                     { setSubmitting, setErrors }
                 ) => {
-                    updateAssemblyInfo({
-                        uuid: values.uuid,
-                        title: values.title,
-                        date: values.date,
-                        subOpen: moment(values.subOpenDate + ' ' + values.subOpenTime).format(),
-                        subClose: moment(values.subCloseDate + ' ' + values.subCloseTime).format()
-                    }, (err, info) => {
-                        setSubmitting(false);
-                        if (err) {
-                            displayError(err.message);
-                        } else {
-                            setEdit(false);
-                        }
-                    });
+					setSubmitting(false);
+					if (pendings.update_info !== true) {
+						updateAssemblyInfo({
+							uuid: values.uuid,
+							title: values.title,
+							date: values.date,
+							subOpen: moment(values.subOpenDate + ' ' + values.subOpenTime).format(),
+							subClose: moment(values.subCloseDate + ' ' + values.subCloseTime).format()
+						});
+					}
                 }
             }
             buttons={[
@@ -54,7 +48,6 @@ const Info = ({
                         block 
                         onClick={() => {
                             setEdit(false);
-                            setDisplayError('');
                         }} 
                         color="outline-danger"
                     >Annulla</Button>
@@ -72,11 +65,11 @@ const Info = ({
         <InfoCard 
             info={info} 
             edit={() => {
-                    setEdit(true);
-                // if (moment().diff(moment(info.subOpen)) < 0) {
-                // } else {
-                //     setDisplayError('Non puoi modificare le informazioni dell\'assemblea dato che le iscrizioni hanno gia\' inizato')
-                // }
+				setEdit(true);
+				// if (moment().diff(moment(info.subOpen)) < 0) {
+				// } else {
+				//     setDisplayError('Non puoi modificare le informazioni dell\'assemblea dato che le iscrizioni hanno gia\' inizato')
+				// }
             }} 
         />
     );
@@ -85,9 +78,9 @@ const Info = ({
         <SiteWrapper>
             <Page.Content title="Informazioni">
                 <Grid.Row>
-                    {displayError ? (
+                    {error ? (
                         <Grid.Col width={12}>
-                            <Alert type="danger">{displayError}</Alert>
+                            <Alert type="danger">{error}</Alert>
                         </Grid.Col>
                     ) : ''}
                 </Grid.Row>
@@ -95,7 +88,7 @@ const Info = ({
                     <Grid.Col width={12}>
                         <Card>
                             <Card.Body>
-                                {fetch_pending.admin_dashboard === false || fetch_pending.info === false ? renderInfo(info) : ''}
+                                {pendings.assembly === false || pendings.info === false ? renderInfo(info) : ''}
                             </Card.Body>
                         </Card>
                     </Grid.Col>
@@ -107,7 +100,6 @@ const Info = ({
 
 Info.propTypes = {
     assembly: PropTypes.object.isRequired,
-    fetchAssemblyInfo: PropTypes.func.isRequired,
     updateAssemblyInfo: PropTypes.func.isRequired
 };
 
@@ -115,4 +107,4 @@ const mapStateToProps = state => ({
     assembly: state.assembly
 });
 
-export default connect(mapStateToProps, { fetchAssemblyInfo, updateAssemblyInfo })(Info);
+export default connect(mapStateToProps, { updateAssemblyInfo })(Info);

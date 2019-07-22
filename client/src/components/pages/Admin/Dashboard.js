@@ -1,23 +1,16 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { fetchAssemblyGeneral } from '../../../actions/assemblyActions';
-import { Page, Grid, Card, Button } from "tabler-react";
+import { Page, Grid, Card, Button, Alert } from "tabler-react";
 import SiteWrapper from '../../Admin/SiteWrapper/';
 import SmallCard from '../../Admin/Dashboard/SmallCard';
 import DashAssemblyRow from '../../Admin/DashAssemblyRow';
 
 const Dashboard = ({
-    assembly,
-    fetchAssemblyGeneral
+    assembly
 }) => {
 
-    const { stats, info, fetch_pending } = assembly;
-    const { admin_dashboard } = fetch_pending;
-
-    if (admin_dashboard === undefined) {
-        fetchAssemblyGeneral();
-    }
+    const { stats, info, pendings, error } = assembly;
 
     const cards = [
         {
@@ -64,22 +57,28 @@ const Dashboard = ({
     return (
         <SiteWrapper>
             <Page.Content title="Dashboard">
-                <Grid.Row cards={true}>
-                    {cards.map(card => <SmallCard {...card} />)}
+				<Grid.Row>
+                    {error ? (
+                        <Grid.Col width={12}>
+                            <Alert type="danger">{error}</Alert>
+                        </Grid.Col>
+                    ) : ''}
                 </Grid.Row>
-                {admin_dashboard === false ? renderAssemblyInfo() : null}
+                <Grid.Row cards={true}>
+                    {cards.map((card, index) => <SmallCard key={index} {...card} />)}
+                </Grid.Row>
+                {pendings.assembly === false ? renderAssemblyInfo() : null}
             </Page.Content>
         </SiteWrapper>
     );
 };
 
 Dashboard.propTypes = {
-    assembly: PropTypes.object.isRequired,
-    fetchAssemblyGeneral: PropTypes.func.isRequired
+    assembly: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
     assembly: state.assembly
 });
 
-export default connect(mapStateToProps, { fetchAssemblyGeneral })(Dashboard);
+export default connect(mapStateToProps)(Dashboard);

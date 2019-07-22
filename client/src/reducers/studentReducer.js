@@ -14,6 +14,7 @@ import {
 
 const initialState = {
     profile: {},
+    subscribed: false,
     labs: [],
     labs_avabile: [],
     fetch_pending: {},
@@ -37,10 +38,12 @@ export default function(state = initialState, { payload, type }) {
                     labs_avabile: false
                 }
             }
+
         case STUDENT_SUBS:
             return {
                 ...state,
                 profile: payload.student,
+                subscribed: false,
                 labs_avabile: payload.labs,
                 fetch_pending: {
 					...state.fetch_pending,
@@ -51,6 +54,7 @@ export default function(state = initialState, { payload, type }) {
             return {
                 ...state,
                 profile: payload.student,
+                subscribed: true,
                 labs: payload.labs,
                 fetch_pending: {
 					...state.fetch_pending,
@@ -62,12 +66,14 @@ export default function(state = initialState, { payload, type }) {
             return {
                 ...state,
                 profile: payload.student,
+                subscribed: false,
                 labs: [ -1, -1, -1, -1 ],
                 fetch_pending: {
 					...state.fetch_pending,
                     profile: false
                 }
             };
+
         case STUDENT_SUBED:
             return {
                 ...state,

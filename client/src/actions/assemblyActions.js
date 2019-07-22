@@ -1,44 +1,45 @@
 import {
-    FETCH_ASSEMBLY_INFO,
-    ASSEMBLY_SUBS_CLOSE,
-    ASSEMBLY_SUBS_OPEN,
-    ASSEMBLY_NOT_AVABILE,
-    ERROR_IN_ASSEMBLY_FETCH,
-
-    FETCH_ASSEMBLY_LABS,
-    ASSEMBLY_LABS_FETCHED,
-    ERROR_IN_LABS_FETCH,
-
-    FETCH_ASSEMBLY_STUDENTS,
-    ASSEMBLY_STUDENTS_FETCHED,
-    ERROR_IN_STUDENTS_FETCH,
-
-    CREATE_ASSEMBLY_INFO,
-    ASSEMBLY_INFO_CREATED,
-    ERROR_IN_ASSEMBLY_INFO_CREATE,
-
-    UPDATE_ASSEMBLY_INFO,
-    ASSEMBLY_INFO_UPDATED,
-    ERROR_IN_ASSEMBLY_INFO_UPDATE,
-
-    CREATE_ASSEMBLY_LAB,
-    ASSEMBLY_LAB_CREATED,
-    ERROR_IN_ASSEMBLY_LAB_CREATE,
-    
-    UPDATE_ASSEMBLY_LAB,
-    ASSEMBLY_LAB_UPDATED,
-    ERROR_IN_ASSEMBLY_LAB_UPDATE,
-
-    DELETE_ASSEMBLY_LAB,
-    ASSEMBLY_LAB_DELETED,
-    ERROR_IN_ASSEMBLY_LAB_DELETE,
-    
     FETCH_ASSEMBLY_PENDING,
-    FETCH_ASSEMBLY_DONE,
+	ASSEMBLY_FETCHED,
+	ERROR_IN_ASSEMBLY_FETCH,
 
-    DELETE_ASSEMBLY,
-    ASSEMBLY_DELETED,
-    ERROR_IN_ASSEMBLY_DELETE
+	DELETE_ASSEMBLY_PENDING,
+	ASSEMBLY_DELETED,
+	ERROR_IN_ASSEMBLY_DELETE,
+
+	FETCH_INFO_PENDING,
+	ASSEMBLY_SUBS_CLOSE,
+	ASSEMBLY_SUBS_OPEN,
+	ASSEMBLY_NOT_AVABILE,
+	ERROR_IN_INFO_FETCH,
+
+	CREATE_INFO_PENDING,
+	INFO_CREATED,
+	ERROR_IN_INFO_CREATE,
+
+	UPDATE_INFO_PENDING,
+	INFO_UPDATED,
+	ERROR_IN_INFO_UPDATE,
+
+	FETCH_LABS_PENDING,
+	LABS_FETCHED,
+	ERROR_IN_LABS_FETCH,
+
+	CREATE_LAB_PENDING,
+	LAB_CREATED,
+	ERROR_IN_LAB_CREATE,
+
+	UPDATE_LAB_PENDING,
+	LAB_UPDATED,
+	ERROR_IN_LAB_UPDATE,
+
+	DELETE_LAB_PENDING,
+	LAB_DELETED,
+	ERROR_IN_LAB_DELETE,
+
+	FETCH_STUDENTS_PENDING,
+	STUDENTS_FETCHED,
+	ERROR_IN_STUDENTS_FETCH,
 } from '../actions/types.js';
 
 /**
@@ -47,7 +48,7 @@ import {
  */
 export const fetchAssemblyInfo = () => dispatch => {
     dispatch({
-        type: FETCH_ASSEMBLY_INFO,
+        type: FETCH_INFO_PENDING,
         payload: 'info'
     });
     fetch('/api/assembly/info')
@@ -82,7 +83,7 @@ export const fetchAssemblyInfo = () => dispatch => {
         }
     })
     .catch(err => dispatch({
-        type: ERROR_IN_ASSEMBLY_FETCH,
+        type: ERROR_IN_INFO_FETCH,
         payload: {
             message: err.message,
             fetch: 'info'
@@ -97,7 +98,7 @@ export const fetchAssemblyInfo = () => dispatch => {
  */
 export const createAssemblyInfo = info => dispatch => {
     dispatch({
-        type: CREATE_ASSEMBLY_INFO,
+        type: CREATE_INFO_PENDING,
         payload: 'create_info'
     });
     fetch('/api/assembly/info', {
@@ -111,7 +112,7 @@ export const createAssemblyInfo = info => dispatch => {
     .then(data => {
         if (data.code === 1) {
             dispatch({
-                type: ASSEMBLY_INFO_CREATED,
+                type: INFO_CREATED,
                 payload: data.info
             });
         } else {
@@ -120,7 +121,7 @@ export const createAssemblyInfo = info => dispatch => {
     })
     .catch(err => {
         dispatch({
-            type: ERROR_IN_ASSEMBLY_INFO_CREATE,
+            type: ERROR_IN_INFO_CREATE,
             payload: {
                 message: err.message,
                 fetch: 'create_info'
@@ -131,13 +132,12 @@ export const createAssemblyInfo = info => dispatch => {
 
 /**
  * Update assembly info
- * @param {object} info 
- * @param {function} callback 
+ * @param {object} info
  * @public
  */
-export const updateAssemblyInfo = (info, callback) => dispatch => {
+export const updateAssemblyInfo = info => dispatch => {
     dispatch({
-        type: UPDATE_ASSEMBLY_INFO,
+        type: UPDATE_INFO_PENDING,
         payload: 'update_info'
     });
     fetch('/api/assembly/info', {
@@ -151,23 +151,21 @@ export const updateAssemblyInfo = (info, callback) => dispatch => {
     .then(data => {
         if (data.code === 1) {
             dispatch({
-                type: ASSEMBLY_INFO_UPDATED,
+                type: INFO_UPDATED,
                 payload: data.info
             });
-            callback(null, data.info);
         } else {
             throw new Error(data.message || 'Errore inaspettato');
         }
     })
     .catch(err => {
         dispatch({
-            type: ERROR_IN_ASSEMBLY_INFO_UPDATE,
+            type: ERROR_IN_INFO_UPDATE,
             payload: {
                 message: err.message,
                 fetch: 'update_info'
             }
         });
-        callback(err, null);
     });
 };
 
@@ -181,7 +179,7 @@ export const createAssemblyLab = (lab, callback) => (dispatch, getState) => {
     const { assembly } = getState();
     const { labs } = assembly;
     dispatch({
-        type: CREATE_ASSEMBLY_LAB,
+        type: CREATE_LAB_PENDING,
         payload: 'create_lab'
     });
     fetch('/api/assembly/labs', {
@@ -195,7 +193,7 @@ export const createAssemblyLab = (lab, callback) => (dispatch, getState) => {
     .then(data => {
         if (data.code === 1) {
             dispatch({
-                type: ASSEMBLY_LAB_CREATED,
+                type: LAB_CREATED,
                 payload: [ ...labs, data.lab ]
             });
             callback(null, data.lab);
@@ -207,7 +205,7 @@ export const createAssemblyLab = (lab, callback) => (dispatch, getState) => {
     })
     .catch(err => {
         dispatch({
-            type: ERROR_IN_ASSEMBLY_LAB_CREATE,
+            type: ERROR_IN_LAB_CREATE,
             payload: {
                 message: err.message,
                 fetch: 'create_lab'
@@ -227,7 +225,7 @@ export const updateAssemblyLab = (lab, callback) => (dispatch, getState) => {
     const { assembly } = getState();
     const { labs } = assembly;
     dispatch({
-        type: UPDATE_ASSEMBLY_LAB,
+        type: UPDATE_LAB_PENDING,
         payload: 'update_lab'
     });
     fetch('/api/assembly/labs', {
@@ -241,7 +239,7 @@ export const updateAssemblyLab = (lab, callback) => (dispatch, getState) => {
     .then(data => {
         if (data.code === 1) {
             dispatch({
-                type: ASSEMBLY_LAB_UPDATED,
+                type: LAB_UPDATED,
                 payload: labs.map(lab => {
                     if (lab.ID === data.lab.ID) {
                         return data.lab;
@@ -256,7 +254,7 @@ export const updateAssemblyLab = (lab, callback) => (dispatch, getState) => {
     })
     .catch(err => {
         dispatch({
-            type: ERROR_IN_ASSEMBLY_LAB_UPDATE,
+            type: ERROR_IN_LAB_UPDATE,
             payload: {
                 message: err.message,
                 fetch: 'update_lab'
@@ -276,7 +274,7 @@ export const deleteAssemblyLab = (labID, callback) => (dispatch, getState) => {
     const { assembly } = getState();
     const { labs } = assembly;
     dispatch({
-        type: DELETE_ASSEMBLY_LAB,
+        type: DELETE_LAB_PENDING,
         payload: 'delete_lab'
     });
     fetch('/api/assembly/labs', {
@@ -290,7 +288,7 @@ export const deleteAssemblyLab = (labID, callback) => (dispatch, getState) => {
     .then(data => {
         if (data.code === 1) {
             dispatch({
-                type: ASSEMBLY_LAB_DELETED,
+                type: LAB_DELETED,
                 payload: labs.filter(lab => lab.ID !== data.labID)
             });
             callback(null, data.labID);
@@ -302,7 +300,7 @@ export const deleteAssemblyLab = (labID, callback) => (dispatch, getState) => {
     })
     .catch(err => {
         dispatch({
-            type: ERROR_IN_ASSEMBLY_LAB_DELETE,
+            type: ERROR_IN_LAB_DELETE,
             payload: {
                 message: err.message,
                 fetch: 'delete_lab'
@@ -319,35 +317,33 @@ export const deleteAssemblyLab = (labID, callback) => (dispatch, getState) => {
 export const fetchAssemblyGeneral = () => dispatch => {
     dispatch({
         type: FETCH_ASSEMBLY_PENDING,
-        payload: 'admin_dashboard'
+        payload: 'assembly'
     });
     fetch('/api/assembly/')
     .then(resp => resp.json())
     .then(data => {
         switch (data.code) {
-            case 0:
-                dispatch({
-                    type: ASSEMBLY_NOT_AVABILE,
-                    payload: data
-                });
-                break;
+			case 0:
             case 1:
             case 2:
             case 3:
                 dispatch({
-                    type: FETCH_ASSEMBLY_DONE,
-                    payload: data
+                    type: ASSEMBLY_FETCHED,
+                    payload: {
+						...data,
+						exists: data.code === 0 ? false : true
+					}
                 });
                 break;
             default:
-                    throw new Error(data.message || 'Errore inaspettato');
+				throw new Error(data.message || 'Errore inaspettato');
         }
     })
     .catch(err => dispatch({
         type: ERROR_IN_ASSEMBLY_FETCH,
         payload: {
             message: err.message,
-            fetch: 'admin_dashboard'
+            fetch: 'assembly'
         }
     }))
 };
@@ -358,7 +354,7 @@ export const fetchAssemblyGeneral = () => dispatch => {
  */
 export const fetchAllLabs = () => dispatch => {
     dispatch({
-        type: FETCH_ASSEMBLY_LABS,
+        type: FETCH_LABS_PENDING,
         payload: 'labs'
     });
     fetch('/api/assembly/labs?action=getAll')
@@ -366,7 +362,7 @@ export const fetchAllLabs = () => dispatch => {
     .then(data => {
         if (data.code === 1) {
             dispatch({
-                type: ASSEMBLY_LABS_FETCHED,
+                type: LABS_FETCHED,
                 payload: data.labList
             })
         } else {
@@ -388,7 +384,7 @@ export const fetchAllLabs = () => dispatch => {
  */
 export const fetchStudents = () => dispatch => {
     dispatch({
-        type: FETCH_ASSEMBLY_STUDENTS,
+        type: FETCH_STUDENTS_PENDING,
         payload: 'students'
     });
     fetch('/api/assembly/students?action=getAll')
@@ -396,7 +392,7 @@ export const fetchStudents = () => dispatch => {
     .then(data => {
         if (data.code === 1) {
             dispatch({
-                type: ASSEMBLY_STUDENTS_FETCHED,
+                type: STUDENTS_FETCHED,
                 payload: data.students
             })
         } else {
@@ -418,7 +414,7 @@ export const fetchStudents = () => dispatch => {
  */
 export const deleteAssembly = () => dispatch => {
     dispatch({
-        type: DELETE_ASSEMBLY,
+        type: DELETE_ASSEMBLY_PENDING,
         payload: 'delete_assembly'
     });
     const password = prompt('Conferma la password');

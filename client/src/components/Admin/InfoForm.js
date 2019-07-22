@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Formik } from 'formik';
-import { Grid, Form, Button } from 'tabler-react';
+import { Grid, Form } from 'tabler-react';
 import moment from 'moment';
 
 const InfoForm = ({ 

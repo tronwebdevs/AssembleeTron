@@ -20,8 +20,7 @@ router.get('/', (req, res, next) => {
     let labs;
     let students;
 
-    Lab
-        .findAll()
+    getAllLabs()
         .then(result => {
             labs = result;
             return Student.findAll();
