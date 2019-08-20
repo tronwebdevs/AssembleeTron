@@ -4,8 +4,8 @@ import {
     STUDENT_NOT_PART,
     STUDENT_WAS_PART,
     STUDENT_SUBED,
-    UPDATE_STUDENT_LABS,
-    FETCH_STUDENT_LABS,
+    UPDATE_STUDENT_LABS_PENDING,
+    FETCH_STUDENT_LABS_PENDING,
     ERROR_IN_STUDENT_AUTH,
     ERROR_IN_STUDENT_LABS_UPDATE,
     ERROR_IN_STUDENT_LABS_FETCH,
@@ -23,13 +23,13 @@ const initialState = {
 
 export default function(state = initialState, { payload, type }) {
     switch(type) {
-        case UPDATE_STUDENT_LABS:
+        case UPDATE_STUDENT_LABS_PENDING:
         case FETCH_STUDENT_PENDING:
             return {
                 ...state,
                 fetch_pending: payload
             }
-        case FETCH_STUDENT_LABS:
+        case FETCH_STUDENT_LABS_PENDING:
             return {
                 ...state,
                 labs_avabile: payload.labs,

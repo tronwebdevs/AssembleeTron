@@ -41,6 +41,7 @@ import {
 	STUDENTS_FETCHED,
 	ERROR_IN_STUDENTS_FETCH,
 } from '../actions/types.js';
+import { safeFetch } from './utils';
 
 /**
  * Fetch assembly info
@@ -51,8 +52,7 @@ export const fetchAssemblyInfo = () => dispatch => {
         type: FETCH_INFO_PENDING,
         payload: 'info'
     });
-    fetch('/api/assembly/info')
-    .then(resp => resp.json())
+    safeFetch('/api/assembly/info')
     .then(data => {
         switch (data.code) {
             case 0:
@@ -101,14 +101,13 @@ export const createAssemblyInfo = info => dispatch => {
         type: CREATE_INFO_PENDING,
         payload: 'create_info'
     });
-    fetch('/api/assembly/info', {
+    safeFetch('/api/assembly/info', {
         method: 'POST',
         headers: new Headers({
             "Content-Type": "application/json",
         }),
         body: JSON.stringify(info)
     })
-    .then(res => res.json())
     .then(data => {
         if (data.code === 1) {
             dispatch({
@@ -140,14 +139,13 @@ export const updateAssemblyInfo = info => dispatch => {
         type: UPDATE_INFO_PENDING,
         payload: 'update_info'
     });
-    fetch('/api/assembly/info', {
+    safeFetch('/api/assembly/info', {
         method: 'PUT',
         headers: new Headers({
             "Content-Type": "application/json",
         }),
         body: JSON.stringify(info)
     })
-    .then(res => res.json())
     .then(data => {
         if (data.code === 1) {
             dispatch({
@@ -182,14 +180,13 @@ export const createAssemblyLab = (lab, callback) => (dispatch, getState) => {
         type: CREATE_LAB_PENDING,
         payload: 'create_lab'
     });
-    fetch('/api/assembly/labs', {
+    safeFetch('/api/assembly/labs', {
         method: 'POST',
         headers: new Headers({
             "Content-Type": "application/json",
         }),
         body: JSON.stringify({ lab })
     })
-    .then(res => res.json())
     .then(data => {
         if (data.code === 1) {
             dispatch({
@@ -228,14 +225,13 @@ export const updateAssemblyLab = (lab, callback) => (dispatch, getState) => {
         type: UPDATE_LAB_PENDING,
         payload: 'update_lab'
     });
-    fetch('/api/assembly/labs', {
+    safeFetch('/api/assembly/labs', {
         method: 'PUT',
         headers: new Headers({
             "Content-Type": "application/json",
         }),
         body: JSON.stringify({ lab })
     })
-    .then(res => res.json())
     .then(data => {
         if (data.code === 1) {
             dispatch({
@@ -277,14 +273,13 @@ export const deleteAssemblyLab = (labID, callback) => (dispatch, getState) => {
         type: DELETE_LAB_PENDING,
         payload: 'delete_lab'
     });
-    fetch('/api/assembly/labs', {
+    safeFetch('/api/assembly/labs', {
         method: 'DELETE',
         headers: new Headers({
             "Content-Type": "application/json",
         }),
         body: JSON.stringify({ ID: labID })
     })
-    .then(res => res.json())
     .then(data => {
         if (data.code === 1) {
             dispatch({
@@ -319,8 +314,7 @@ export const fetchAssemblyGeneral = () => dispatch => {
         type: FETCH_ASSEMBLY_PENDING,
         payload: 'assembly'
     });
-    fetch('/api/assembly/')
-    .then(resp => resp.json())
+    safeFetch('/api/assembly/')
     .then(data => {
         switch (data.code) {
 			case 0:
@@ -357,8 +351,7 @@ export const fetchAllLabs = () => dispatch => {
         type: FETCH_LABS_PENDING,
         payload: 'labs'
     });
-    fetch('/api/assembly/labs?action=getAll')
-    .then(resp => resp.json())
+    safeFetch('/api/assembly/labs?action=getAll')
     .then(data => {
         if (data.code === 1) {
             dispatch({
@@ -387,8 +380,7 @@ export const fetchStudents = () => dispatch => {
         type: FETCH_STUDENTS_PENDING,
         payload: 'students'
     });
-    fetch('/api/assembly/students?action=getAll')
-    .then(resp => resp.json())
+    safeFetch('/api/assembly/students?action=getAll')
     .then(data => {
         if (data.code === 1) {
             dispatch({
@@ -418,14 +410,13 @@ export const deleteAssembly = () => dispatch => {
         payload: 'delete_assembly'
     });
     const password = prompt('Conferma la password');
-    fetch('/api/assembly', {
+    safeFetch('/api/assembly', {
         method: 'DELETE',
         headers: new Headers({
             "Content-Type": "application/json",
         }),
         body: JSON.stringify({ password })
     })
-    .then(res => res.json())
     .then(data => {
         if (data.code === 1) {
             dispatch({

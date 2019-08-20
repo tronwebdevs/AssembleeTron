@@ -4,8 +4,8 @@ import {
     STUDENT_NOT_PART,
     STUDENT_WAS_PART,
     STUDENT_SUBED,
-    UPDATE_STUDENT_LABS,
-    FETCH_STUDENT_LABS,
+    UPDATE_STUDENT_LABS_PENDING,
+    FETCH_STUDENT_LABS_PENDING,
     ERROR_IN_STUDENT_AUTH,
     ERROR_IN_STUDENT_LABS_UPDATE,
     ERROR_IN_STUDENT_LABS_FETCH,
@@ -90,7 +90,7 @@ export const fetchAvabileLabs = classLabel => dispatch => {
             });
         } else if (data.code === 1) {
             dispatch({
-                type: FETCH_STUDENT_LABS,
+                type: FETCH_STUDENT_LABS_PENDING,
                 payload: data
             });
         } else {
@@ -110,7 +110,7 @@ export const fetchAvabileLabs = classLabel => dispatch => {
 
 export const subscribeLabs = (studentID, labs, callback) => dispatch => {
     dispatch({
-        type: UPDATE_STUDENT_LABS,
+        type: UPDATE_STUDENT_LABS_PENDING,
         payload: {
             subscribe: true
         }

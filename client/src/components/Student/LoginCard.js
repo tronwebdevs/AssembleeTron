@@ -12,7 +12,7 @@ const LoginCard = ({ title, text }) => (
 
 LoginCard.propTypes = {
     title: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired
+    text: PropTypes.string
 };
 
 export default LoginCard;
