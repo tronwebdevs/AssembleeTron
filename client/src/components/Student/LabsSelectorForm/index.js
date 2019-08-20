@@ -66,7 +66,7 @@ const LabsSelectorForm = ({
             handleSubmit,
             isSubmitting
         }) => (
-            <Form onSubmit={handleSubmit} className="pt-2" autoComplete={false}>
+            <Form onSubmit={handleSubmit} className="pt-2">
                 {[1, 2, 3, 4].map(h => <LabSelector key={h} labs={labs} h={h} onChange={handleChange} error={errors['h' + h]} value={values['h' + h]} />)}
                 <Form.Footer>
                     <Button type="submit" color="primary" block={true}>

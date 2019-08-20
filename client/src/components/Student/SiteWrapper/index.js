@@ -4,6 +4,7 @@ import { Site, RouterContextProvider } from "tabler-react";
 import moment from 'moment';
 import "tabler-react/dist/Tabler.css";
 import "./index.css";
+import TWIcon from './tw-icon.png';
 
 const SiteWrapper = ({ children }) => (
     <span className="student-wrapper">
@@ -12,10 +13,13 @@ const SiteWrapper = ({ children }) => (
                 className: "student",
                 href: "./",
                 alt: "TronWeb Logo",
-                // imageURL: "https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png", BUG: Site currently down
+                imageURL: TWIcon,
                 align: 'center'
             }}
-            navProps={{ itemsObjects: []}}
+            navProps={{ 
+                itemsObjects: [],
+                style: { display: 'none' }
+            }}
             routerContextComponentType={withRouter(RouterContextProvider)}
             footerProps={{
                 copyright: (

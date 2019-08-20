@@ -8,13 +8,13 @@ const FormCard = ({
     action, 
     method, 
     title, 
-    text, 
-    RootComponent
+    text,
+    pAlign
 }) => (
-    <Form className="card" RootComponent={RootComponent || 'form'} onSubmit={onSubmit} action={action} method={method}>
+    <Form className="card" onSubmit={onSubmit} action={action} method={method}>
         <Card.Body className="p-6">
-            <Card.Title RootComponent="h6" className="text-center mb-0">{title}</Card.Title>
-            <p className="card-text text-left login-subtitle">
+            <Card.Title style={{ fontSize: '1.3rem' }} className="text-center mb-0">{title}</Card.Title>
+            <p className="card-text login-subtitle" style={{ textAlign: pAlign || 'left' }}>
                 {text}
             </p>
             {children}

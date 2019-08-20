@@ -22,6 +22,11 @@ const LabsSelect = ({ student }) => {
                 {/* {error ? <ErrorAlert message={error}/> : ''} */}
                 <Grid.Row>
                     <Grid.Col width={12} sm={12} lg={8}>
+                        {window.innerWidth <= 999 ? (
+                            <Grid.Row>
+                                <Badge student={profile} />
+                            </Grid.Row>
+                        ) : null}
                         <Card title="Lista dei laboratori" isCollapsible={true} isCollapsed={window.innerWidth < 400} className="w-100">
                             <Card.Body>
                             {labs_avabile.map((lab, index) => <LabShow key={index} title={lab.title} description={lab.description} />)}
@@ -31,7 +36,7 @@ const LabsSelect = ({ student }) => {
                     <Grid.Col width={12} sm={12} lg={4}>
                         <div style={{ position: 'sticky', top: '1.5rem' }}>
                             <Grid.Row>
-                                <Badge student={profile} />
+                                {window.innerWidth > 999 ? <Badge student={profile} /> : null}
                                 <Grid.Col width={12}>
                                     <Card title="Scegli i laboratori">
                                         {globalError ? (

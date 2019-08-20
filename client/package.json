@@ -20,8 +20,7 @@
     "rect": "^1.2.1",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
-    "sass": "^1.19.0",
-    "tabler-react": "^1.29.0"
+    "tabler-react": "^2.0.0-alpha.1"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -19,7 +19,6 @@ const LabSelector = ({
             id={'selectorH' + h}
             onChange={onChange}
             value={value}
-            defaultValue="default"
             error={error}
         >
             <DefaultOption h={h} />

@@ -2,6 +2,7 @@ import React from "react";
 import StandaloneFormPage from '../../StandaloneFormPage';
 import { Form, Button } from 'tabler-react';
 import { Spinner } from 'reactstrap';
+import TWIcon from './tw-icon.png';
 
 import FormCard from '../../FormCard';
 
@@ -13,11 +14,12 @@ const LoginForm = ({
     errors,
     isSubmitting
 }) => (
-    <StandaloneFormPage imageURL={"https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png"}>
+    <StandaloneFormPage imageURL={TWIcon}>
         <FormCard
             title="Gestione"
-            text={<div className="text-center">Zona riservata</div>}
+            text="Zona riservata"
             onSubmit={onSubmit}
+            pAlign="center"
         >
             <Form.Group>
                 <Form.Input

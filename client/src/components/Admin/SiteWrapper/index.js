@@ -8,6 +8,7 @@ import moment from 'moment';
 import "tabler-react/dist/Tabler.css";
 import './c3jscustom.css';
 
+import TWIcon from './tw-icon.png';
 import NavBarItems from './NavBarItems';
 
 const SiteWrapper = ({ logout, children }) => (
@@ -15,7 +16,7 @@ const SiteWrapper = ({ logout, children }) => (
         headerProps={{
             href: "/gestore",
             alt: "TronWeb Logo",
-            // imageURL: "https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png", # Site currently down
+            imageURL: TWIcon,
             navItems: (
                 <Button 
                     color="outline-primary" 

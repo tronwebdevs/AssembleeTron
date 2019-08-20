@@ -125,7 +125,7 @@ const InfoForm = ({
                     </Grid.Row>
                     <Grid.Row className="mt-4">
                         {buttons.map((button, index) => (
-                            <Grid.Col md={2} className={index === 0 ? "offset-md-4" : null}>
+                            <Grid.Col md={2} className={index === 0 ? "offset-md-4" : null} key={index}>
                                 {button}
                             </Grid.Col>
                         ))}

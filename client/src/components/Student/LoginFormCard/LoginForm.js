@@ -2,6 +2,7 @@ import React from "react";
 import StandaloneFormPage from '../../StandaloneFormPage';
 import { Form, Button, /*Card, Grid, Icon*/ } from 'tabler-react';
 import { Spinner } from 'reactstrap';
+import TWIcon from '../SiteWrapper/tw-icon.png';
 
 import FormCard from '../../FormCard';
 
@@ -13,7 +14,7 @@ const LoginForm = ({
     errors,
     isSubmitting
 }) => (
-    <StandaloneFormPage imageURL={"https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png"}>
+    <StandaloneFormPage imageURL={TWIcon}>
         <FormCard
             title="Iscrizioni per l'Assemblea d'Istituto del 23/12/2020"
             text={true ? "Inserisci la tua matricola per entrare:" : ''}

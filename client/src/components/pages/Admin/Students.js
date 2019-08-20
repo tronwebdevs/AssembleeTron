@@ -11,7 +11,7 @@ const Students = ({
 
     const { students } = assembly;
 
-    const [scrollToIndex, setScrollToIndex] = useState(undefined);
+    const [scrollToIndex, /*setScrollToIndex*/] = useState(undefined);
 
     const tableHeight = 400;
 

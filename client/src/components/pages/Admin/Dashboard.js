@@ -17,21 +17,21 @@ const Dashboard = ({
             color: 'blue',
             icon: 'list',
             link: '/gestore/laboratori',
-            title: stats.labs,
+            title: stats.labs.toString(),
             subtitle: 'Laboratori'
         },
         {
             color: 'green',
             icon: 'users',
             link: '/gestore/studenti',
-            title: stats.subs,
+            title: stats.subs.toString(),
             subtitle: 'Partecipanti'
         },
         {
             color: 'red',
             icon: 'users',
             link: '/gestore/studenti',
-            title: stats.students,
+            title: stats.students.toString(),
             subtitle: 'Studenti'
         },
     ];
