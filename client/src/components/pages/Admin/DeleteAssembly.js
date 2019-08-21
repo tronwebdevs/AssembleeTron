@@ -13,8 +13,8 @@ const DeleteAssembly = ({
     deleteAssembly
 }) => {
 
-    const { fetch_pending, info } = assembly;
-    if (fetch_pending.delete_assembly === false && info.deleted === true) {
+    const { pendings, info, error } = assembly;
+    if (pendings.delete_assembly === false && info.deleted === true) {
         return <Redirect to={{ pathname: "/gestore/" }} />;
     }
 
@@ -22,9 +22,9 @@ const DeleteAssembly = ({
         <SiteWrapper>
             <Page.Content title="Elimina Assemblea">
                 <Grid.Row>
-                    {assembly.error !== '' ? (
+                    {error !== null ? (
                         <Grid.Col width={12}>
-                            <Alert type="danger">{assembly.error}</Alert>
+                            <Alert type="danger">{error}</Alert>
                         </Grid.Col>
                     ) : null}
                 </Grid.Row>

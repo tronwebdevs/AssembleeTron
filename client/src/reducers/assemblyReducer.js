@@ -146,7 +146,8 @@ export default function (state = initialState, { payload, type }) {
 				pendings: {
 					...state.pendings,
 					create_info: false
-				}
+                },
+                error: null
 			};
 		case INFO_UPDATED:
 			return {

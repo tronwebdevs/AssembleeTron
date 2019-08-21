@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { Page, Grid, Card, Button, Alert } from "tabler-react";
 import SiteWrapper from '../../Admin/SiteWrapper/';
 import SmallCard from '../../Admin/Dashboard/SmallCard';
@@ -45,7 +46,10 @@ const Dashboard = ({
                     <Card.Body>
                         <p>Nessuna assemblea trovata sul database, procedi per crearne una nuova</p>
                         <span className="mr-3">
-                            <Button color="outline-success">Crea nuova assemblea</Button>
+                            <Link to="/gestore/crea" className="btn btn-outline-success">
+                                Crea nuova assemblea
+                            </Link>
+                            {/* <Button color="outline-success">Crea nuova assemblea</Button> */}
                         </span>
                         <Button color="outline-info">Crea assemblea da template</Button>
                     </Card.Body>

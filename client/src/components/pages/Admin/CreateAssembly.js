@@ -15,9 +15,9 @@ const CreateAssembly = ({
     createAssemblyInfo
 }) => {
 
-    const { error, exists, fetch_pending } = assembly;
+    const { error, exists, pendings } = assembly;
 
-    if (fetch_pending.create_info === false && exists === true && !error) {
+    if (pendings.create_info === false && exists === true && error === null) {
         return <Redirect to={{ pathname: '/gestore/laboratori' }}/>
     } else if (exists === true) {   
         return <Redirect to={{ pathname: '/gestore/' }}/>
@@ -40,23 +40,60 @@ const CreateAssembly = ({
                                 <InfoForm
                                     info={{
                                         uuid: uuid(),
-                                        date: '2000-01-01',
-                                        subOpen: '2000-01-01 14:00',
-                                        subClose: '2000-01-01 20:00',
+                                        title: '',
+                                        date: moment().format('YYYY') + '-01-01',
+                                        subOpen: moment().format('YYYY') + '-01-01 14:00',
+                                        subClose: moment().format('YYYY') + '-01-01 20:00',
                                     }}
                                     onSubmit={
                                         (
-                                            values,
+                                            { 
+                                                uuid, title, date, 
+                                                subOpenDate, subOpenTime, 
+                                                subCloseDate, subCloseTime 
+                                            },
                                             { setSubmitting, setErrors }
                                         ) => {
-                                            setSubmitting(false);
-                                            createAssemblyInfo({
-                                                uuid: values.uuid,
-                                                title: values.title,
-                                                date: values.date,
-                                                subOpen: moment(values.subOpenDate + ' ' + values.subOpenTime).format(),
-                                                subClose: moment(values.subCloseDate + ' ' + values.subCloseTime).format()
-                                            });
+                                            if (pendings.create_info === undefined) {
+                                                let errors = {};
+                                                if (title === null || title.trim() === '') {
+                                                    errors.title = 'Il titolo non puo\' restare vuoto';
+                                                }
+                                                let dateMoment = moment(date);
+                                                let subOpenMoment = moment(subOpenDate + ' ' + subOpenTime);
+                                                let subCloseMoment = moment(subCloseDate + ' ' + subCloseTime);
+    
+                                                if (dateMoment.diff(moment()) < 0) {
+                                                    errors.date = 'La data dell\'assemblea non puo\' essere passata';
+                                                }
+    
+                                                if (subOpenMoment.diff(moment()) < 0) {
+                                                    errors.subOpenDate = 'Le iscrizioni non possono essere gia\' aperte';
+                                                } else if (subOpenMoment.diff(dateMoment) > 0) {
+                                                    errors.subOpenDate = 'Le iscrizioni non possono aprire dopo la data dell\'assemblea';
+                                                }
+    
+                                                if (subCloseMoment.diff(moment()) < 0) {
+                                                    errors.subCloseDate = 'Le iscrizioni non possono essere gia\' chiuse';
+                                                } else if (subCloseMoment.diff(dateMoment) > 0) {
+                                                    errors.subCloseDate = 'Le iscrizioni non possono chiudere dopo la data dell\'assemblea';
+                                                } else if (subCloseMoment.diff(subOpenMoment) < 0) {
+                                                    errors.subCloseDate = 'Le iscrizioni non possono chiudere prima di iniziare';
+                                                }
+    
+    
+                                                if (Object.entries(errors).length === 0) {
+                                                    setSubmitting(false);
+                                                    createAssemblyInfo({
+                                                        uuid, title, date,
+                                                        subOpen: subOpenMoment.format(),
+                                                        subClose: subCloseMoment.format()
+                                                    });
+                                                } else {
+                                                    setSubmitting(false);
+                                                    setErrors(errors);
+                                                }
+                                            }
                                         }
                                     }
                                     buttons={[

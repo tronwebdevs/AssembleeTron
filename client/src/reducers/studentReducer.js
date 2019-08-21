@@ -5,7 +5,7 @@ import {
     STUDENT_WAS_PART,
     STUDENT_SUBED,
     UPDATE_STUDENT_LABS_PENDING,
-    FETCH_STUDENT_LABS_PENDING,
+    STUDENT_LABS_FETCHED,
     ERROR_IN_STUDENT_AUTH,
     ERROR_IN_STUDENT_LABS_UPDATE,
     ERROR_IN_STUDENT_LABS_FETCH,
@@ -13,12 +13,21 @@ import {
 } from '../actions/types.js';
 
 const initialState = {
-    profile: {},
+    profile: {
+        ID: null,
+        name: null,
+        surname: null,
+        classLabel: null
+    },
     subscribed: false,
     labs: [],
     labs_avabile: [],
-    fetch_pending: {},
-    error: ''
+    pendings: {},
+    error: {
+        target: 'global',
+        message: null,
+        display: false
+    }
 }
 
 export default function(state = initialState, { payload, type }) {
@@ -27,26 +36,29 @@ export default function(state = initialState, { payload, type }) {
         case FETCH_STUDENT_PENDING:
             return {
                 ...state,
-                fetch_pending: payload
-            }
-        case FETCH_STUDENT_LABS_PENDING:
+                pendings: {
+                    ...state.pendings,
+                    [payload]: true
+                },
+                error: initialState
+			};
+        case STUDENT_LABS_FETCHED:
             return {
                 ...state,
                 labs_avabile: payload.labs,
-                fetch_pending: {
-                    ...state.fetch_pending,
+                pendings: {
+                    ...state.pendings,
                     labs_avabile: false
                 }
-            }
-
+            };
         case STUDENT_SUBS:
             return {
                 ...state,
                 profile: payload.student,
                 subscribed: false,
                 labs_avabile: payload.labs,
-                fetch_pending: {
-					...state.fetch_pending,
+                pendings: {
+					...state.pendings,
                     profile: false
                 }
             };
@@ -56,11 +68,11 @@ export default function(state = initialState, { payload, type }) {
                 profile: payload.student,
                 subscribed: true,
                 labs: payload.labs,
-                fetch_pending: {
-					...state.fetch_pending,
+                pendings: {
+					...state.pendings,
                     profile: false
                 }
-            }
+            };
         case STUDENT_NOT_PART:
         case STUDENT_WAS_PART:
             return {
@@ -68,29 +80,35 @@ export default function(state = initialState, { payload, type }) {
                 profile: payload.student,
                 subscribed: false,
                 labs: [ -1, -1, -1, -1 ],
-                fetch_pending: {
-					...state.fetch_pending,
+                pendings: {
+					...state.pendings,
                     profile: false
                 }
             };
-
         case STUDENT_SUBED:
             return {
                 ...state,
                 labs: payload.labs,
-                fetch_pending: {
-					...state.fetch_pending,
+                pendings: {
+					...state.pendings,
                     subscribe: false
                 }
-            }
+            };
         case ERROR_IN_STUDENT_LABS_FETCH:
         case ERROR_IN_STUDENT_LABS_UPDATE:
         case ERROR_IN_STUDENT_AUTH:
             return {
                 ...state,
-                error: payload,
-                fetch_pending: {}
-            }
+                error: {
+                    target: payload.target || 'global',
+                    message: payload.message,
+                    display: true
+                },
+                pendings: {
+                    ...state.pendings,
+                    [payload.fetch]: false
+                }
+			};
         default:
             return state;
     }

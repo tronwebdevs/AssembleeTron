@@ -9,6 +9,7 @@ const LabClass = require('./models/LabClass');
 const AssemblyInfo = require('./models/AssemblyInfo');
 
 app.set('port', 6000);
+app.disable('x-powered-by');
 app.use(require('helmet')());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -20,6 +21,9 @@ app.use('/api/admins', require('./routes/admins'));
 
 app.use((err, req, res, next) => {
     console.error(err);
+    if (err.name === "SequelizeConnectionRefusedError") {
+        err.message = "Impossibile contattare il DataBase";
+    }
     res.status(500).json({
         code: err.code || -1,
         message: err.message

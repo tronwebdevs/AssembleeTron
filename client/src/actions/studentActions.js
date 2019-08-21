@@ -5,7 +5,7 @@ import {
     STUDENT_WAS_PART,
     STUDENT_SUBED,
     UPDATE_STUDENT_LABS_PENDING,
-    FETCH_STUDENT_LABS_PENDING,
+    STUDENT_LABS_FETCHED,
     ERROR_IN_STUDENT_AUTH,
     ERROR_IN_STUDENT_LABS_UPDATE,
     ERROR_IN_STUDENT_LABS_FETCH,
@@ -15,9 +15,7 @@ import {
 export const authStudent = (studentID, part, callback) => dispatch => {
     dispatch({
         type: FETCH_STUDENT_PENDING,
-        payload: {
-            profile: true
-        }
+        payload: 'profile'
     });
     fetch('/api/students/' + studentID + '?part=' + part)
     .then(res => res.json())
@@ -66,7 +64,8 @@ export const authStudent = (studentID, part, callback) => dispatch => {
         dispatch({
             type: ERROR_IN_STUDENT_AUTH,
             payload: {
-                fetch_error: error.message
+                message: error.message,
+                fetch: 'profile'
             }
         });
         callback(error, null);
@@ -76,9 +75,7 @@ export const authStudent = (studentID, part, callback) => dispatch => {
 export const fetchAvabileLabs = classLabel => dispatch => {
     dispatch({
         type: FETCH_STUDENT_PENDING,
-        payload: {
-            labs_avabile: true
-        }
+        payload: 'labs_avabile'
     });
     fetch('/api/students/labs?classLabel=' + classLabel)
     .then(res => res.json())
@@ -90,7 +87,7 @@ export const fetchAvabileLabs = classLabel => dispatch => {
             });
         } else if (data.code === 1) {
             dispatch({
-                type: FETCH_STUDENT_LABS_PENDING,
+                type: STUDENT_LABS_FETCHED,
                 payload: data
             });
         } else {
@@ -103,7 +100,8 @@ export const fetchAvabileLabs = classLabel => dispatch => {
     .catch(error => dispatch({
         type: ERROR_IN_STUDENT_LABS_FETCH,
         payload: {
-            fetch_error: error.message
+            message: error.message,
+            fetch: 'labs_avabile'
         }
     }));
 }
@@ -111,9 +109,7 @@ export const fetchAvabileLabs = classLabel => dispatch => {
 export const subscribeLabs = (studentID, labs, callback) => dispatch => {
     dispatch({
         type: UPDATE_STUDENT_LABS_PENDING,
-        payload: {
-            subscribe: true
-        }
+        payload: 'subscribe'
     });
     fetch('/api/students/' + studentID + '/labs', {
         method: 'POST',
@@ -146,7 +142,8 @@ export const subscribeLabs = (studentID, labs, callback) => dispatch => {
         dispatch({
             type: ERROR_IN_STUDENT_LABS_UPDATE,
             payload: {
-                fetch_error: error.message
+                message: error.message,
+                fetch: 'subscribe'
             }
         });
         callback(error, null);

@@ -19,25 +19,55 @@ const Info = ({
 	
 	if (pendings.update_info === false && edit === true) {
 		setEdit(false);
-	}
+    }
 
     const renderInfo = info => edit === true ? (
         <InfoForm 
             info={info} 
             onSubmit={
                 (
-                    values, 
+                    { 
+                        uuid, title, date, 
+                        subOpenDate, subOpenTime, 
+                        subCloseDate, subCloseTime 
+                    },
                     { setSubmitting, setErrors }
                 ) => {
-					setSubmitting(false);
 					if (pendings.update_info !== true) {
-						updateAssemblyInfo({
-							uuid: values.uuid,
-							title: values.title,
-							date: values.date,
-							subOpen: moment(values.subOpenDate + ' ' + values.subOpenTime).format(),
-							subClose: moment(values.subCloseDate + ' ' + values.subCloseTime).format()
-						});
+                        let errors = {};
+                        if (title === null || title.trim() === '') {
+                            errors.title = 'Il titolo non puo\' restare vuoto';
+                        }
+                        let dateMoment = moment(date);
+                        let subOpenMoment = moment(subOpenDate + ' ' + subOpenTime);
+                        let subCloseMoment = moment(subCloseDate + ' ' + subCloseTime);
+
+                        if (dateMoment.diff(moment()) < 0) {
+                            errors.date = 'La data dell\'assemblea non puo\' essere passata';
+                        }
+
+                        if (subOpenMoment.diff(dateMoment) > 0) {
+                            errors.subOpenDate = 'Le iscrizioni non possono aprire dopo la data dell\'assemblea';
+                        }
+
+                        if (subCloseMoment.diff(dateMoment) > 0) {
+                            errors.subCloseDate = 'Le iscrizioni non possono chiudere dopo la data dell\'assemblea';
+                        } else if (subCloseMoment.diff(subOpenMoment) < 0) {
+                            errors.subCloseDate = 'Le iscrizioni non possono chiudere prima di iniziare';
+                        }
+
+
+                        if (Object.entries(errors).length === 0) {
+                            setSubmitting(false);
+                            updateAssemblyInfo({
+                                uuid, title, date,
+                                subOpen: subCloseMoment.format(),
+                                subClose: subOpenMoment.format()
+                            });
+                        } else {
+                            setSubmitting(false);
+                            setErrors(errors);
+                        }
 					}
                 }
             }
@@ -74,6 +104,10 @@ const Info = ({
         />
     );
 
+    const checkIfExists = info => assembly.exists === false ? (
+        <p>Devi creare un'assemblea prima di poter visualizzare le informazioni</p>
+    ) : renderInfo(info);
+
     return (
         <SiteWrapper>
             <Page.Content title="Informazioni">
@@ -88,7 +122,7 @@ const Info = ({
                     <Grid.Col width={12}>
                         <Card>
                             <Card.Body>
-                                {pendings.assembly === false || pendings.info === false ? renderInfo(info) : ''}
+                                {pendings.assembly === false || pendings.info === false ? checkIfExists(info) : ''}
                             </Card.Body>
                         </Card>
                     </Grid.Col>

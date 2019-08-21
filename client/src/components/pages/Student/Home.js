@@ -12,29 +12,25 @@ const Home = ({
     fetchAssemblyInfo
 }) => {
 
-    const redirectAuthedStudent = labsCount => (
+    const redirectAuthedStudent = labsLength => (
         <Redirect to={{
-            pathname: (labsCount === 0 ? '/iscrizione' : '/conferma')
+            pathname: (labsLength === 4 ? '/conferma' : '/iscrizione')
         }} />
     );
 
-    if (!student.profile.ID) {
-        if (student.fetch_pending.profile === false) {
-            return redirectAuthedStudent(student.labs.length);
-        } else {
-            if (assembly.pendings.info === false) {
-                if (assembly.error) {
-                    return <LoginCard title={assembly.error} />;
-                } else if (!assembly.info.date) {
-                    return <LoginCard title={'Errore inaspettato'} />;
-                } else {
-                    return <LoginFormCard info={assembly.info}/>;
-                }
-            } else if (assembly.pendings.info === undefined) {
-                fetchAssemblyInfo();
+    if (student.profile.ID === null) {
+        if (assembly.pendings.info === false) {
+            if (assembly.error) {
+                return <LoginCard title={assembly.error} />;
+            } else if (!assembly.info.date) {
+                return <LoginCard title={'Errore inaspettato'} />;
+            } else {
+                return <LoginFormCard info={assembly.info}/>;
             }
-            return <React.Fragment></React.Fragment>;
+        } else if (assembly.pendings.info === undefined) {
+            fetchAssemblyInfo();
         }
+        return <React.Fragment></React.Fragment>;
     } else {
         return redirectAuthedStudent(student.labs.length);
     } 
