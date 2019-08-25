@@ -6,10 +6,7 @@ import { Formik } from 'formik';
 
 import LoginForm from './LoginForm';
 
-const LoginFormCard = ({ 
-    student, 
-    authStudent 
-}) => (
+const LoginFormCard = ({ authStudent, info }) => (
     <Formik
         initialValues={{
             studentID: "",
@@ -29,16 +26,13 @@ const LoginFormCard = ({
         onSubmit={(
             values,
             { setSubmitting, setErrors }
-        ) => {
-            authStudent(+values.studentID, +values.part, (err, data) => {
+        ) => authStudent(+values.studentID, +values.part)
+            .then(() => setSubmitting(false))
+            .catch(({ message, target }) => {
                 setSubmitting(false);
-                if (err) {
-                    setErrors({ studentID: err.message });
-                } else if(data.code !== 1) {
-                    setErrors({ studentID: data.message });
-                }
-            });
-        }}
+                setErrors({ [target || 'studentID']: message });
+            })
+        }
         render={({
             values,
             errors,
@@ -56,20 +50,14 @@ const LoginFormCard = ({
                 errors={errors}
                 touched={touched}
                 isSubmitting={isSubmitting}
+                assemblyInfo={info}
             />
         )}
     />
 );
 
 LoginFormCard.propTypes = {
-    authStudent: PropTypes.func.isRequired,
-    student: PropTypes.object.isRequired,
-    assembly: PropTypes.object.isRequired
-}
+    authStudent: PropTypes.func.isRequired
+};
 
-const mapStateToProps = state => ({
-	student: state.student,
-    assembly: state.assembly
-});
-
-export default connect(mapStateToProps, { authStudent })(LoginFormCard);
+export default connect(() => ({}), { authStudent })(LoginFormCard);

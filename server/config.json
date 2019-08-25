@@ -1,0 +1,18 @@
+{
+    "sequelize": {
+        "db_database": "AssembleeTron",
+        "db_username": "birbo",
+        "db_password": "Birbo2002_",
+        "db_options": {
+            "host": "192.168.1.15",
+            "dialect": "mysql",
+            "pool": {
+                "max": 100,
+                "acquire": 30000,
+                "idle": 10000
+            },
+            "logging": false
+        }
+    },
+    "adminPassword": "admin"
+}

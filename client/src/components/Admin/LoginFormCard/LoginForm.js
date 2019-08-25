@@ -12,7 +12,8 @@ const LoginForm = ({
     onBlur,
     values,
     errors,
-    isSubmitting
+    isSubmitting,
+    errorMessage
 }) => (
     <StandaloneFormPage imageURL={TWIcon}>
         <FormCard
@@ -20,6 +21,7 @@ const LoginForm = ({
             text="Zona riservata"
             onSubmit={onSubmit}
             pAlign="center"
+            errorMessage={errorMessage}
         >
             <Form.Group>
                 <Form.Input

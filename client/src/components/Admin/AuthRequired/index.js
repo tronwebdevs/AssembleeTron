@@ -24,7 +24,10 @@ const AuthRequired = ({
 			) : (
 				<Redirect to={{
 					pathname: '/gestore/login',
-					state: { from: props.location }
+					state: { 
+                        from: props.location, 
+                        message: 'Autenticazione richiesta' 
+                    }
 				}} />
 			)}
 		/>

@@ -8,7 +8,7 @@ import {
 const initialState = {
     authed: false,
     fetch_pending: {},
-    error: ''
+    error: null
 }
 
 export default function (state = initialState, { type, payload }) {
@@ -19,7 +19,8 @@ export default function (state = initialState, { type, payload }) {
                 fetch_pending: {
                     ...state.fetch_pending,
                     [payload]: true
-                }
+                },
+                error: initialState.error
             }
         case ADMIN_AUTHED:
             return {
@@ -28,7 +29,8 @@ export default function (state = initialState, { type, payload }) {
                 fetch_pending: {
                     ...state.fetch_pending,
                     auth: false
-                }
+                },
+                error: initialState.error
             }
         case ERROR_IN_ADMIN_AUTH:
             return {

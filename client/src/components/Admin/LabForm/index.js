@@ -33,7 +33,7 @@ const LabForm = ({
 		});
 		if (err) {
 			setDisplayMessage({
-				type: "error",
+				type: "danger",
 				message: err.message
 			});
 		} else {
@@ -149,13 +149,13 @@ const LabForm = ({
 								lastsTwoH: values.lastsTwoH
 							};
 							if (action === "edit") {
-								updateAssemblyLab(lab, (err, lab) =>
-									fetchCallback("edit", lab, err)
-								);
+                                updateAssemblyLab(lab)
+                                    .then(newLab => fetchCallback("edit", newLab, null))
+                                    .catch(err => fetchCallback("edit", null, err));
 							} else if (action === "create") {
-								createAssemblyLab(lab, (err, lab) =>
-									fetchCallback("create", lab, err)
-								);
+                                createAssemblyLab(lab)
+                                    .then(newLab => fetchCallback("create", newLab, null))
+                                    .catch(err => fetchCallback("create", null, err));
 							}
 						}}
 						onReset={() => {

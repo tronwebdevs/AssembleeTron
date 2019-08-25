@@ -55,12 +55,13 @@ const LabsTable = ({
 							onClick={() => {
                                 let answer = window.confirm(`Sicuro di voler eliminare il laboratorio ${lab.ID}?`);
                                 if (answer) {
-                                    deleteAssemblyLab(lab.ID, (err, labID) => {
-                                        setDisplayMessage({
-                                            type: err ? "error" : "success",
-                                            message: err? err.message : `Laboratorio ${labID} eliminato con successo`
-                                        });
-                                    });
+                                    deleteAssemblyLab(lab.ID).then(labID => setDisplayMessage({
+                                        type: "success",
+                                        message: `Laboratorio ${labID} eliminato con successo`
+                                    })).catch(({ message }) => setDisplayMessage({
+                                        type: "danger",
+                                        message
+                                    }));
                                 }
                             }}
 						/>

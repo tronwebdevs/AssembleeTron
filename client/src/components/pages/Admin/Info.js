@@ -13,9 +13,13 @@ const Info = ({
     updateAssemblyInfo
 }) => {
 
-    const { pendings, info, error } = assembly;
+    const { pendings, info } = assembly;
 
 	const [edit, setEdit] = useState(false);
+	const [displayMessage, setDisplayMessage] = useState({
+        type: null,
+        message: null
+    });
 	
 	if (pendings.update_info === false && edit === true) {
 		setEdit(false);
@@ -61,9 +65,15 @@ const Info = ({
                             setSubmitting(false);
                             updateAssemblyInfo({
                                 uuid, title, date,
-                                subOpen: subCloseMoment.format(),
-                                subClose: subOpenMoment.format()
-                            });
+                                subOpen: subOpenMoment.format(),
+                                subClose: subCloseMoment.format()
+                            }).then(message => setDisplayMessage({
+                                type: 'success',
+                                message
+                            })).catch(({ message }) => setDisplayMessage({
+                                type: 'danger',
+                                message
+                            }));
                         } else {
                             setSubmitting(false);
                             setErrors(errors);
@@ -112,9 +122,9 @@ const Info = ({
         <SiteWrapper>
             <Page.Content title="Informazioni">
                 <Grid.Row>
-                    {error ? (
+                    {displayMessage.message ? (
                         <Grid.Col width={12}>
-                            <Alert type="danger">{error}</Alert>
+                            <Alert type={displayMessage.type}>{displayMessage.message}</Alert>
                         </Grid.Col>
                     ) : ''}
                 </Grid.Row>

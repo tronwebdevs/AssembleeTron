@@ -11,141 +11,164 @@ import {
     ERROR_IN_STUDENT_LABS_FETCH,
     FETCH_STUDENT_PENDING
 } from '../actions/types.js';
+import { safeFetch } from './utils';
 
-export const authStudent = (studentID, part, callback) => dispatch => {
+/**
+ * Authenticate student
+ * @param {number} studentID 
+ * @param {number} part
+ * @public
+ */
+export const authStudent = (studentID, part) => dispatch => {
+
     dispatch({
         type: FETCH_STUDENT_PENDING,
         payload: 'profile'
     });
-    fetch('/api/students/' + studentID + '?part=' + part)
-    .then(res => res.json())
-    .then(data => {
-        callback(null, data);
-        switch (data.code) {
-            case -1:
-                dispatch({
-                    type: ERROR_IN_STUDENT_AUTH,
-                    payload: data.message
-                });
-                break;
-            case 1:
-                dispatch({
-                    type: STUDENT_SUBS,
-                    payload: data
-                });
-                break;
-            case 2: 
-                dispatch({
-                    type: STUDENT_NOT_PART,
-                    payload: data
-                });
-                break;
-            case 3: 
-                dispatch({
-                    type: STUDENT_WAS_PART,
-                    payload: data
-                });
-                break;
-            case 4: 
-                dispatch({
-                    type: STUDENT_IS_PART,
-                    payload: data
-                });
-                break;
-            default:
-                dispatch({
-                    type: ERROR_IN_STUDENT_AUTH,
-                    payload: 'Errore non riconosciuto (student)'
-                });
-                break;
-        }
-    })
-    .catch(error => {
-        dispatch({
-            type: ERROR_IN_STUDENT_AUTH,
-            payload: {
-                message: error.message,
-                fetch: 'profile'
-            }
-        });
-        callback(error, null);
-    });
-}
 
+    return new Promise((resolve, reject) => {
+
+        // Security check
+        if (isNaN(studentID)) {
+            let error = new Error('Identificativo studente errato');
+            error.target = 'studentID';
+            throw error;
+        }
+        if (isNaN(part)) {
+            let error = new Error('Parametro di partecipazione errato');
+            error.target = 'part';
+            throw error;
+        }
+
+        safeFetch('/api/students/' + studentID + '?part=' + part)
+            .then(data => {
+                switch (data.code) {
+                    case -1:
+                        throw new Error(data.message);
+                    case 1:
+                        dispatch({
+                            type: STUDENT_SUBS,
+                            payload: data
+                        });
+                        break;
+                    case 2: 
+                        dispatch({
+                            type: STUDENT_NOT_PART,
+                            payload: data
+                        });
+                        break;
+                    case 3: 
+                        dispatch({
+                            type: STUDENT_WAS_PART,
+                            payload: data
+                        });
+                        break;
+                    case 4: 
+                        dispatch({
+                            type: STUDENT_IS_PART,
+                            payload: data
+                        });
+                        break;
+                    default:
+                        throw new Error('Errore non riconosciuto (student)');
+                }
+                resolve();
+            })
+            .catch(err => {
+                dispatch({
+                    type: ERROR_IN_STUDENT_AUTH,
+                    payload: {
+                        message: err.message,
+                        fetch: 'profile'
+                    }
+                });
+                reject(err);
+            });
+    });
+};
+
+/**
+ * Fetch avabile laboratories for a specific class
+ * @param {string} classLabel 
+ * @public
+ */
 export const fetchAvabileLabs = classLabel => dispatch => {
+
     dispatch({
         type: FETCH_STUDENT_PENDING,
         payload: 'labs_avabile'
     });
-    fetch('/api/students/labs?classLabel=' + classLabel)
-    .then(res => res.json())
-    .then(data => {
-        if (data.code === -1) {
-            dispatch({
-                type: ERROR_IN_STUDENT_LABS_FETCH,
-                payload: data.message
-            });
-        } else if (data.code === 1) {
-            dispatch({
-                type: STUDENT_LABS_FETCHED,
-                payload: data
-            });
-        } else {
-            dispatch({
-                type: ERROR_IN_STUDENT_LABS_FETCH,
-                payload: 'Errore non riconosciuto (laboratori disponibili)'
-            });
-        }
-    })
-    .catch(error => dispatch({
-        type: ERROR_IN_STUDENT_LABS_FETCH,
-        payload: {
-            message: error.message,
-            fetch: 'labs_avabile'
-        }
-    }));
-}
 
-export const subscribeLabs = (studentID, labs, callback) => dispatch => {
+    return new Promise((resolve, reject) => {
+        safeFetch('/api/students/labs?classLabel=' + classLabel)
+            .then(data => {
+                if (data.code === 1) {
+                    dispatch({
+                        type: STUDENT_LABS_FETCHED,
+                        payload: data
+                    });
+                    resolve();
+                } else {
+                    throw new Error(data.message || 'Errore non riconosciuto (laboratori disponibili)');
+                }
+            })
+            .catch(err => {
+                dispatch({
+                    type: ERROR_IN_STUDENT_LABS_FETCH,
+                    payload: {
+                        message: err.message,
+                        fetch: 'labs_avabile'
+                    }
+                });
+                reject(err);
+            });
+    });
+};
+
+/**
+ * Submit student labs
+ * @param {number} studentID 
+ * @param {array} labs 
+ * @public
+ */
+export const subscribeLabs = (studentID, labs) => dispatch => {
+
     dispatch({
         type: UPDATE_STUDENT_LABS_PENDING,
         payload: 'subscribe'
     });
-    fetch('/api/students/' + studentID + '/labs', {
-        method: 'POST',
-        headers: new Headers({
-            "Content-Type": "application/json",
-        }),
-        body: JSON.stringify(labs)
-    })
-    .then(res => res.json())
-    .then(data => {
-        callback(null, data);
-        if (data.code === -1) {
-            dispatch({
-                type: ERROR_IN_STUDENT_LABS_UPDATE,
-                payload: data.message
+
+    return new Promise((resolve, reject) => {
+        safeFetch('/api/students/' + studentID + '/labs', {
+            method: 'POST',
+            headers: new Headers({
+                "Content-Type": "application/json",
+            }),
+            body: JSON.stringify(labs)
+        })
+            .then(data => {
+                if (data.code === 1) {
+                    dispatch({
+                        type: STUDENT_SUBED,
+                        payload: data
+                    });
+                    resolve();
+                } else {
+                    let error;
+                    error = new Error(data.message || 'Errore non riconosciuto (student)');
+                    error.target = data.target || null;
+                    throw error;
+                }
+            })
+            .catch(err => {
+                dispatch({
+                    type: ERROR_IN_STUDENT_LABS_UPDATE,
+                    payload: {
+                        message: err.message,
+                        fetch: 'subscribe'
+                    }
+                });
+                reject(err);
             });
-        } else if (data.code === 1) {
-            dispatch({
-                type: STUDENT_SUBED,
-                payload: data
-            });
-        } else {
-            dispatch({
-                type: ERROR_IN_STUDENT_LABS_UPDATE,
-                payload: 'Errore non riconosciuto (student)'
-            });
-        }
-    })
-    .catch(error => {
-        dispatch({
-            type: ERROR_IN_STUDENT_LABS_UPDATE,
-            payload: {
-                message: error.message,
-                fetch: 'subscribe'
-            }
-        });
-        callback(error, null);
     });
-}
+};

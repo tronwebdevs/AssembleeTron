@@ -4,10 +4,12 @@ import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Page, Grid, Card } from 'tabler-react';
 
-import { Badge, LabsSelectorForm, LabShow, /*ErrorAlert,*/ SiteWrapper } from '../../Student/';
+import { Badge, LabsSelectorForm, LabShow, SiteWrapper } from '../../Student/';
 
 const LabsSelect = ({ student }) => {
-    const { profile, labs, labs_avabile, /*error*/ } = student;
+
+    const { profile, labs, labs_avabile } = student;
+    
     const [globalError, setGlobalError] = useState(null);
 
     if (profile.ID === null) {
@@ -19,7 +21,6 @@ const LabsSelect = ({ student }) => {
     return (
         <SiteWrapper>
             <Page.Content title="Laboratori">
-                {/* {error ? <ErrorAlert message={error}/> : ''} */}
                 <Grid.Row>
                     <Grid.Col width={12} sm={12} lg={8}>
                         {window.innerWidth <= 999 ? (
@@ -46,7 +47,7 @@ const LabsSelect = ({ student }) => {
                                         ) : ''}
                                         <Card.Body>
                                             <u className="d-block mb-4" style={{ fontSize: '0.9em' }}>Per i progetti da <b>due ore</b> seleziona la prima e la seconda ora o la terza e la quarta ora.</u>
-                                            <LabsSelectorForm labs={labs_avabile} setGlobalError={msg => setGlobalError(msg)} />
+                                            <LabsSelectorForm labs={labs_avabile} setGlobalError={msg => setGlobalError(msg)}/>
                                         </Card.Body>
                                     </Card>
                                 </Grid.Col>

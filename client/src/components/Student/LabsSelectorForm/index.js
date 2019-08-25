@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { subscribeLabs, fetchAvabileLabs } from '../../../actions/studentActions';
-import { Redirect } from 'react-router-dom';
 import { Form, Button } from 'tabler-react';
 import { Spinner } from 'reactstrap';
 import { Formik } from 'formik';
@@ -33,25 +32,31 @@ const LabsSelectorForm = ({
                     errors['h' + i] = 'Scegli un laboratorio per quest\'ora';
                 }
             }
+
+            const { profile } = student;
+
             if (Object.entries(errors).length === 0 && errors.constructor === Object) {
-                subscribeLabs(student.profile.ID, values, (err, data) => {
-                    setSubmitting(false);
-                    if (err) {
-                        fetchAvabileLabs(student.profile.classLabel);
-                        setGlobalError(err.message);
-                    } else if (data.code === -1) {
-                        fetchAvabileLabs(student.profile.classLabel);
-                        if (!data.target || data.target === 0) {
-                            setGlobalError(data.message);
+                subscribeLabs(profile.ID, values)
+                    .then(() => {
+                        setSubmitting(false);
+                        setGlobalError(null);
+                    })
+                    .catch(({ message, target }) => {
+                        let globalError;
+                        if (!target || target === 0) {
+                            globalError = message;
+                            setGlobalError(message);
                         } else {
                             setGlobalError(null);
-                            setErrors({ ['h' + data.target]: data.message });
+                            setErrors({ ['h' + target]: message });
                         }
-                    } else {
-                        setGlobalError(null);
-                        return <Redirect to={{ pathname: '/conferma' }} />;
-                    }
-                });
+                        fetchAvabileLabs(profile.classLabel)
+                            .then(() => setSubmitting(false))
+                            .catch(({ message }) => {
+                                setSubmitting(false);
+                                setGlobalError(globalError + '\n' + message);
+                            });
+                    });
             } else {
                 setSubmitting(false);
                 setErrors(errors);

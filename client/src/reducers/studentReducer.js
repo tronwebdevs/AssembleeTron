@@ -23,11 +23,7 @@ const initialState = {
     labs: [],
     labs_avabile: [],
     pendings: {},
-    error: {
-        target: 'global',
-        message: null,
-        display: false
-    }
+    error: null
 }
 
 export default function(state = initialState, { payload, type }) {
@@ -39,8 +35,7 @@ export default function(state = initialState, { payload, type }) {
                 pendings: {
                     ...state.pendings,
                     [payload]: true
-                },
-                error: initialState
+                }
 			};
         case STUDENT_LABS_FETCHED:
             return {
@@ -49,7 +44,8 @@ export default function(state = initialState, { payload, type }) {
                 pendings: {
                     ...state.pendings,
                     labs_avabile: false
-                }
+                },
+                error: initialState.error
             };
         case STUDENT_SUBS:
             return {
@@ -60,7 +56,8 @@ export default function(state = initialState, { payload, type }) {
                 pendings: {
 					...state.pendings,
                     profile: false
-                }
+                },
+                error: initialState.error
             };
         case STUDENT_IS_PART:
             return {
@@ -71,7 +68,8 @@ export default function(state = initialState, { payload, type }) {
                 pendings: {
 					...state.pendings,
                     profile: false
-                }
+                },
+                error: initialState.error
             };
         case STUDENT_NOT_PART:
         case STUDENT_WAS_PART:
@@ -83,27 +81,27 @@ export default function(state = initialState, { payload, type }) {
                 pendings: {
 					...state.pendings,
                     profile: false
-                }
+                },
+                error: initialState.error
             };
         case STUDENT_SUBED:
             return {
                 ...state,
+                subscribed: true,
                 labs: payload.labs,
+                labs_avabile: initialState.labs_avabile,
                 pendings: {
 					...state.pendings,
                     subscribe: false
-                }
+                },
+                error: initialState.error
             };
         case ERROR_IN_STUDENT_LABS_FETCH:
         case ERROR_IN_STUDENT_LABS_UPDATE:
         case ERROR_IN_STUDENT_AUTH:
             return {
                 ...state,
-                error: {
-                    target: payload.target || 'global',
-                    message: payload.message,
-                    display: true
-                },
+                error: payload.message,
                 pendings: {
                     ...state.pendings,
                     [payload.fetch]: false

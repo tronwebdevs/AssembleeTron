@@ -2,6 +2,7 @@ import React from "react";
 import StandaloneFormPage from '../../StandaloneFormPage';
 import { Form, Button, /*Card, Grid, Icon*/ } from 'tabler-react';
 import { Spinner } from 'reactstrap';
+import moment from 'moment';
 import TWIcon from '../SiteWrapper/tw-icon.png';
 
 import FormCard from '../../FormCard';
@@ -12,11 +13,12 @@ const LoginForm = ({
     onBlur,
     values,
     errors,
-    isSubmitting
+    isSubmitting,
+    assemblyInfo
 }) => (
     <StandaloneFormPage imageURL={TWIcon}>
         <FormCard
-            title="Iscrizioni per l'Assemblea d'Istituto del 23/12/2020"
+            title={"Iscrizioni per l'Assemblea d'Istituto del " + moment(assemblyInfo.date).format('DD/MM/YYYY')}
             text={true ? "Inserisci la tua matricola per entrare:" : ''}
             onSubmit={onSubmit}
         >
@@ -26,7 +28,7 @@ const LoginForm = ({
                         <Grid.Col width={8}>
                             Sei gia' loggato come:
                             <br />
-                            <b>Davide Testolin</b>
+                            <b>Nome Cognome</b>
                         </Grid.Col>
                         <Grid.Col width={4}>
                             <span className="float-right">
@@ -51,7 +53,7 @@ const LoginForm = ({
                 />
             </Form.Group>
             <span className="text-center">
-                <Form.Group>
+                <Form.Group className="mb-1">
                     <Form.Radio
                         label="Partecipo"
                         name="part"
@@ -72,7 +74,8 @@ const LoginForm = ({
                     />
                 </Form.Group>
             </span>
-            <Form.Footer className="mt-1">
+            {errors.part ? <div className="input-feedback text-danger">{errors.part}</div> : null}
+            <Form.Footer className="mt-3">
                 <Button type="submit" color="primary" block={true}>
                     {isSubmitting ? <Spinner color="light" size="sm" /> : 'Entra'}
                 </Button>

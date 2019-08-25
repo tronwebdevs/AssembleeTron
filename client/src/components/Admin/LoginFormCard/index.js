@@ -1,14 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { authAdmin } from '../../../actions/adminActions';
 import { Formik } from 'formik';
 
 import LoginForm from './LoginForm';
 
-const LoginFormCard = ({ 
-    authAdmin
-}) => (
+const LoginFormCard = ({ authAdmin, errorMessage }) => (
     <Formik
         initialValues={{
             password: ""
@@ -23,16 +19,13 @@ const LoginFormCard = ({
         onSubmit={(
             values,
             { setSubmitting, setErrors }
-        ) => {
-            authAdmin(values.password, (err, data) => {
+        ) => authAdmin(values.password)
+            .then(() => setSubmitting(false))
+            .catch(({ message }) => {
                 setSubmitting(false);
-                if (err) {
-                    setErrors({ password: err.message });
-                } else if(data.code === -1) {
-                    setErrors({ password: data.message });
-                }
-            });
-        }}
+                setErrors({ password: message });
+            })
+        }
         render={({
             values,
             errors,
@@ -50,13 +43,15 @@ const LoginFormCard = ({
                 errors={errors}
                 touched={touched}
                 isSubmitting={isSubmitting}
+                errorMessage={errorMessage}
             />
         )}
     />
 );
 
 LoginFormCard.propTypes = {
-    authAdmin: PropTypes.func.isRequired
-}
+    authAdmin: PropTypes.func.isRequired,
+    errorMessage: PropTypes.string
+};
 
-export default connect(() => ({}), { authAdmin })(LoginFormCard);
+export default LoginFormCard;

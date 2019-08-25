@@ -11,7 +11,7 @@ const Labs = ({ assembly, deleteAssemblyLab }) => {
 	const { labs } = assembly;
 
 	const [displayMessage, setDisplayMessage] = useState({
-		type: "error",
+		type: null,
 		message: null
 	});
 	const [labDisplay, setLabDisplay] = useState({
@@ -26,13 +26,7 @@ const Labs = ({ assembly, deleteAssemblyLab }) => {
 				<Grid.Row>
 					{displayMessage.message ? (
 						<Grid.Col width={12}>
-							<Alert
-								type={
-									displayMessage.type === "error"
-										? "danger"
-										: "success"
-								}
-							>
+							<Alert type={displayMessage.type}>
 								{displayMessage.message}
 							</Alert>
 						</Grid.Col>
