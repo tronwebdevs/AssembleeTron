@@ -26,3 +26,5 @@ app.config.json
 
 .idea/
 .vs-code/
+
+backups/

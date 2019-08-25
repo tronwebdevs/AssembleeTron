@@ -1,7 +1,15 @@
 import {
     FETCH_ASSEMBLY_PENDING,
 	ASSEMBLY_FETCHED,
-	ERROR_IN_ASSEMBLY_FETCH,
+    ERROR_IN_ASSEMBLY_FETCH,
+    
+    REQUEST_ASSEMBLY_BACKUP,
+    ASSEMBLY_BACKUP_COMPLETED,
+    ERROR_IN_ASSEMBLY_BACKUP,
+
+    REQUEST_ASSEMBLY_LOAD,
+    ASSEMBLY_LOAD_COMPLETED,
+    ERROR_IN_ASSEMBLY_LOAD,
 
 	DELETE_ASSEMBLY_PENDING,
 	ASSEMBLY_DELETED,
@@ -113,32 +121,36 @@ export const createAssemblyInfo = info => dispatch => {
         payload: 'create_info'
     });
 
-    safeFetch('/api/assembly/info', {
-        method: 'POST',
-        headers: new Headers({
-            "Content-Type": "application/json",
-        }),
-        body: JSON.stringify(info)
-    })
-        .then(data => {
-            if (data.code === 1) {
-                dispatch({
-                    type: INFO_CREATED,
-                    payload: data.info
-                });
-            } else {
-                throw new Error(data.message || 'Errore inaspettato');
-            }
+    return new Promise((resolve, reject) => {
+        safeFetch('/api/assembly/info', {
+            method: 'POST',
+            headers: new Headers({
+                "Content-Type": "application/json",
+            }),
+            body: JSON.stringify(info)
         })
-        .catch(err => {
-            dispatch({
-                type: ERROR_IN_INFO_CREATE,
-                payload: {
-                    message: err.message,
-                    fetch: 'create_info'
+            .then(data => {
+                if (data.code === 1) {
+                    dispatch({
+                        type: INFO_CREATED,
+                        payload: data.info
+                    });
+                    resolve();
+                } else {
+                    throw new Error(data.message || 'Errore inaspettato');
                 }
+            })
+            .catch(err => {
+                dispatch({
+                    type: ERROR_IN_INFO_CREATE,
+                    payload: {
+                        message: err.message,
+                        fetch: 'create_info'
+                    }
+                });
+                reject(err);
             });
-        });
+    });
 };
 
 /**
@@ -186,7 +198,89 @@ export const updateAssemblyInfo = info => dispatch => {
 };
 
 /**
- * @function createAssemblyLab() Create new lab
+ * Request a backup of the assembly
+ * @public
+ */
+export const requestBackup = () => dispatch => {
+
+    dispatch({
+        type: REQUEST_ASSEMBLY_BACKUP,
+        payload: 'backup'
+    });
+
+    return new Promise((resolve, reject) => {
+        safeFetch('/api/assembly/backups', {
+            method: 'POST'
+        })
+            .then(data => {
+                if (data.code === 1) {
+                    dispatch({
+                        type: ASSEMBLY_BACKUP_COMPLETED,
+                        payload: null
+                    });
+                    resolve(data.message);
+                } else {
+                    throw new Error(data.message || 'Errore inaspettato');
+                }
+            })
+            .catch(err => {
+                dispatch({
+                    type: ERROR_IN_ASSEMBLY_BACKUP,
+                    payload: {
+                        fetch: 'backup',
+                        message: err.message
+                    }
+                });
+                reject(err);
+            });
+    });
+};
+
+/**
+ * Load assembly from backup
+ * @param {string} uuid 
+ */
+export const loadAssembly = uuid => dispatch => {
+
+    dispatch({
+        type: REQUEST_ASSEMBLY_LOAD,
+        payload: 'load'
+    });
+
+    return new Promise((resolve, reject) => {
+        safeFetch('/api/assembly/backups/load', {
+            method: 'POST',
+            headers: new Headers({
+                "Content-Type": "application/json",
+            }),
+            body: JSON.stringify({ uuid })
+        })
+            .then(data => {
+                if (data.code === 1) {
+                    dispatch({
+                        type: ASSEMBLY_LOAD_COMPLETED,
+                        payload: data.assembly
+                    });
+                    resolve();
+                } else {
+                    throw new Error(data.message || 'Errore inaspettato');
+                }
+            })
+            .catch(err => {
+                dispatch({
+                    type: ERROR_IN_ASSEMBLY_LOAD,
+                    payload: {
+                        fetch: 'load',
+                        message: err.message
+                    }
+                });
+                reject(err);
+            });
+    });
+};
+
+/**
+ * Create new lab
  * @param {object} lab
  * @public
  */
@@ -448,30 +542,34 @@ export const deleteAssembly = () => dispatch => {
 
     const password = prompt('Conferma la password');
 
-    safeFetch('/api/assembly', {
-        method: 'DELETE',
-        headers: new Headers({
-            "Content-Type": "application/json",
-        }),
-        body: JSON.stringify({ password })
-    })
-        .then(data => {
-            if (data.code === 1) {
-                dispatch({
-                    type: ASSEMBLY_DELETED,
-                    payload: null
-                });
-            } else {
-                throw new Error(data.message || 'Errore inaspettato');
-            }
+    return new Promise((resolve, reject) => {
+        safeFetch('/api/assembly', {
+            method: 'DELETE',
+            headers: new Headers({
+                "Content-Type": "application/json",
+            }),
+            body: JSON.stringify({ password })
         })
-        .catch(err => {
-            dispatch({
-                type: ERROR_IN_ASSEMBLY_DELETE,
-                payload: {
-                    message: err.message,
-                    fetch: 'delete_assembly'
+            .then(data => {
+                if (data.code === 1) {
+                    dispatch({
+                        type: ASSEMBLY_DELETED,
+                        payload: null
+                    });
+                    resolve();
+                } else {
+                    throw new Error(data.message || 'Errore inaspettato');
                 }
+            })
+            .catch(err => {
+                dispatch({
+                    type: ERROR_IN_ASSEMBLY_DELETE,
+                    payload: {
+                        message: err.message,
+                        fetch: 'delete_assembly'
+                    }
+                });
+                reject(err);
             });
-        });
+    });
 };

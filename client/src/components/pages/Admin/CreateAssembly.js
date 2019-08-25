@@ -1,19 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { createAssemblyInfo } from '../../../actions/assemblyActions';
+import { createAssemblyInfo, loadAssembly } from '../../../actions/assemblyActions';
 import { Page, Grid, Card, Button, Alert } from "tabler-react";
 import { Link, Redirect } from 'react-router-dom';
 import SiteWrapper from '../../Admin/SiteWrapper/';
 import InfoForm from '../../Admin/InfoForm';
 import moment from 'moment';
+import ImportAssemblyCard from '../../Admin/ImportAssemblyCard';
 
 const uuid = require('uuid/v4');
 
 const CreateAssembly = ({
     assembly,
-    createAssemblyInfo
+    createAssemblyInfo,
+    loadAssembly
 }) => {
+
+    const [displayMessage, setDisplayMessage] = useState({
+        type: null,
+        message: null
+    });
 
     const { error, exists, pendings } = assembly;
 
@@ -27,9 +34,9 @@ const CreateAssembly = ({
         <SiteWrapper>
             <Page.Content title="Crea Assemblea">
                 <Grid.Row>
-                    {error ? (
+                    {displayMessage.message ? (
                         <Grid.Col width={12}>
-                            <Alert type="danger">{error}</Alert>
+                            <Alert type={displayMessage.type}>{displayMessage.message}</Alert>
                         </Grid.Col>
                     ) : null}
                 </Grid.Row>
@@ -81,14 +88,20 @@ const CreateAssembly = ({
                                                     errors.subCloseDate = 'Le iscrizioni non possono chiudere prima di iniziare';
                                                 }
     
-    
                                                 if (Object.entries(errors).length === 0) {
-                                                    setSubmitting(false);
                                                     createAssemblyInfo({
                                                         uuid, title, date,
                                                         subOpen: subOpenMoment.format(),
                                                         subClose: subCloseMoment.format()
-                                                    });
+                                                    })
+                                                        .then(() => setSubmitting(false))
+                                                        .catch(({ message }) => {
+                                                            setSubmitting(false);
+                                                            setDisplayMessage({
+                                                                type: 'danger',
+                                                                message
+                                                            });
+                                                        });
                                                 } else {
                                                     setSubmitting(false);
                                                     setErrors(errors);
@@ -116,6 +129,17 @@ const CreateAssembly = ({
                         </Card>
                     </Grid.Col>
                 </Grid.Row>
+                <Grid.Row cards={true}>
+                    <Grid.Col width={12}>
+                        <ImportAssemblyCard 
+                            setError={message => setDisplayMessage({
+                                type: 'danger',
+                                message
+                            })}
+                            loadAssembly={loadAssembly}
+                        />
+                    </Grid.Col>
+                </Grid.Row>
             </Page.Content>
         </SiteWrapper>
     );
@@ -123,11 +147,12 @@ const CreateAssembly = ({
 
 CreateAssembly.propTypes = {
 	assembly: PropTypes.object.isRequired,
-    createAssemblyInfo: PropTypes.func.isRequired
+    createAssemblyInfo: PropTypes.func.isRequired,
+    loadAssembly: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
     assembly: state.assembly
 });
 
-export default connect(mapStateToProps, { createAssemblyInfo })(CreateAssembly);
+export default connect(mapStateToProps, { createAssemblyInfo, loadAssembly })(CreateAssembly);

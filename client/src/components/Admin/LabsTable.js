@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Table, Icon, Text } from 'tabler-react';
+import { Table, Icon, Text, Card } from 'tabler-react';
 
 const LabsTable = ({ 
     labs,
@@ -8,7 +8,7 @@ const LabsTable = ({
     deleteAssemblyLab,
     setDisplayMessage,
     setShowModal
-}) => (
+}) => labs.length > 0 ? (
 	<Table
 		responsive
 		className="card-table table-vcenter text-wrap labs-table"
@@ -55,6 +55,10 @@ const LabsTable = ({
 							onClick={() => {
                                 let answer = window.confirm(`Sicuro di voler eliminare il laboratorio ${lab.ID}?`);
                                 if (answer) {
+                                    window.scrollTo({
+                                        top: 0,
+                                        behavior: "smooth"
+                                    });
                                     deleteAssemblyLab(lab.ID).then(labID => setDisplayMessage({
                                         type: "success",
                                         message: `Laboratorio ${labID} eliminato con successo`
@@ -70,6 +74,10 @@ const LabsTable = ({
 			]
 		}))}
 	/>
+) : (
+    <Card.Body>
+        <p>Nessun laboratorio disponibile</p>
+    </Card.Body>
 );
 
 LabsTable.propTypes = {

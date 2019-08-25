@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
-import { deleteAssembly } from '../../../actions/assemblyActions';
+import { deleteAssembly, requestBackup } from '../../../actions/assemblyActions';
 import { Page, Grid, Alert, Button, Card } from 'tabler-react';
 import SiteWrapper from '../../Admin/SiteWrapper';
 import { ButtonGroup } from 'reactstrap';
@@ -10,10 +10,17 @@ import { Link } from 'react-router-dom';
 
 const DeleteAssembly = ({
     assembly,
+    requestBackup,
     deleteAssembly
 }) => {
+    
+    const [displayMessage, setDisplayMessage] = useState({
+        type: null,
+        message: null
+    });
 
-    const { pendings, info, error } = assembly;
+    const { pendings, info } = assembly;
+
     if (pendings.delete_assembly === false && info.deleted === true) {
         return <Redirect to={{ pathname: "/gestore/" }} />;
     }
@@ -22,9 +29,9 @@ const DeleteAssembly = ({
         <SiteWrapper>
             <Page.Content title="Elimina Assemblea">
                 <Grid.Row>
-                    {error !== null ? (
+                    {displayMessage.message !== null ? (
                         <Grid.Col width={12}>
-                            <Alert type="danger">{error}</Alert>
+                            <Alert type={displayMessage.type}>{displayMessage.message}</Alert>
                         </Grid.Col>
                     ) : null}
                 </Grid.Row>
@@ -34,7 +41,30 @@ const DeleteAssembly = ({
                             <Card.Body>
                                 <p>Prima di eliminare l'assemblea puoi creare un backup da utilizzare in un'eventuale assemblea futura simile.</p>
                                 <ButtonGroup align="center">
-                                    <Button color="outline-primary">Backup</Button>
+                                    <Button 
+                                        color="outline-primary"
+                                        onClick={e => {
+                                            e.preventDefault();
+                                            let { target } = e;
+                                            target.disabled = true;
+                                            requestBackup()
+                                                .then(message => {
+                                                    setDisplayMessage({
+                                                        type: 'success',
+                                                        message
+                                                    });
+                                                    target.className = 'btn btn-success';
+                                                    target.innerText = 'Backup completato';
+                                                })
+                                                .catch(({ message }) => {
+                                                    setDisplayMessage({
+                                                        type: 'danger',
+                                                        message
+                                                    });
+                                                    target.disabled = false;
+                                                });
+                                        }}
+                                    >Backup</Button>
                                 </ButtonGroup>
                             </Card.Body>
                         </Card>
@@ -50,7 +80,18 @@ const DeleteAssembly = ({
                                     >Annulla</Link>
                                     <Button 
                                         color="outline-danger"
-                                        onClick={deleteAssembly}
+                                        onClick={e => {
+                                            e.preventDefault();
+                                            let { target } = e;
+                                            target.disabled = true;
+                                            deleteAssembly().catch(({ message }) => {
+                                                setDisplayMessage({
+                                                    type: 'danger',
+                                                    message
+                                                });
+                                                target.disabled = false;
+                                            });
+                                        }}
                                     >Si</Button>
                                 </ButtonGroup>
                             </Card.Body>
@@ -64,6 +105,7 @@ const DeleteAssembly = ({
 
 DeleteAssembly.propTypes = {
     assembly: PropTypes.object.isRequired,
+    requestBackup: PropTypes.func.isRequired,
     deleteAssembly: PropTypes.func.isRequired
 };
 
@@ -71,4 +113,4 @@ const mapStateToProps = state => ({
     assembly: state.assembly
 });
 
-export default connect(mapStateToProps, { deleteAssembly })(DeleteAssembly);
+export default connect(mapStateToProps, { deleteAssembly, requestBackup })(DeleteAssembly);

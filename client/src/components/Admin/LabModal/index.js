@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 import Modal from "react-modal";
 import LabForm from "../LabForm/";
 
+Modal.setAppElement('#root');
+
 const LabModal = ({
 	showModal,
 	handleClose,
@@ -19,7 +21,7 @@ const LabModal = ({
 		contentLabel="Minimal Modal Example"
 		style={{
 			overlay: {
-				backgroundColor: "rgba(255, 255, 255, 0.5)"
+				backgroundColor: "rgba(255, 255, 255, 0.7)"
 			},
 			content: {
 				border: "none",
@@ -34,7 +36,7 @@ const LabModal = ({
 				bottom: "40px",
 				background: "transparent",
 				borderRadius: "0",
-				padding: "0"
+                padding: "0"
 			}
 		}}
 	>

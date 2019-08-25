@@ -2,6 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const moment = require('moment');
+const fs = require('fs-extra');
+const path = require('path');
 
 const Student = require('../models/Student');
 const Sub = require('../models/Sub');
@@ -10,6 +12,7 @@ const LabClass = require('../models/LabClass');
 const AssemblyInfo = require('../models/AssemblyInfo');
 
 const { adminPassword } = require('../config');
+const assembliesBackup = path.join(__dirname, '../backups');
 
 /**
  * Get assembly general info (admin dashboard)
@@ -77,22 +80,136 @@ router.delete('/', (req, res, next) => {
                 where: {},
                 truncate: true
             })
-            // .then(() => Lab.destroy({
-            //     where: {},
-            //     truncate: true
-            // }))
-            // .then(() => LabClass.destroy({
-            //     where: {},
-            //     truncate: true
-            // }))
-            // .then(() => Sub.destroy({
-            //     where: {},
-            //     truncate: true
-            // }))
-            .then(() => res.status(200).json({ code: 1 }))
+            .then(() => Lab.destroy({
+                where: {},
+                truncate: true
+            }))
+            .then(() => LabClass.destroy({
+                where: {},
+                truncate: true
+            }))
+            .then(() => Sub.destroy({
+                where: {},
+                truncate: true
+            }))
+            .then(() => res.status(200).json({ 
+                code: 1
+            }))
             .catch(err => next(err));
     } else {
         next(new Error('Autenticazione fallita'));
+    }
+});
+
+/**
+ * Get avabile backups
+ * @method get
+ * @public
+ */
+router.get('/backups', (req, res, next) => {
+    if (!fs.existsSync(assembliesBackup)){
+        fs.mkdirSync(assembliesBackup);
+        res.status(200).json({
+            code: 1,
+            backups: []
+        });
+    } else {
+        let files;
+        fs.readdir(assembliesBackup)
+            .then(result => {
+                files = result;
+                let promiseArray = [];
+                files.forEach(file => promiseArray.push(
+                    fs.readFile(
+                        path.join(assembliesBackup, file)
+                    )
+                ));
+                return Promise.all(promiseArray);
+            })
+            .then(results => {
+                files = files.map((file, index) => JSON.parse(results[index]));
+                res.status(200).json({
+                    code: 1,
+                    backups: files
+                })
+            })
+            .catch(err => next(err));
+    }
+});
+
+/**
+ * Backup assembly into JSON local file
+ * @method post
+ * @public
+ */
+router.post('/backups', (req, res, next) => {
+    let info;
+    getInfo()
+        .then(result => {
+            info = result.info;
+            return getAllLabs();
+        })
+        .then(labs => {
+            if (!fs.existsSync(assembliesBackup)){
+                fs.mkdirSync(assembliesBackup);
+            }
+            const assembly = {
+                info,
+                labs
+            };
+
+            const file = path.join(assembliesBackup, info.uuid + '.json');
+            return fs.writeFile(file, JSON.stringify(assembly, null, 4), 'utf8');
+        })
+        .then(() => res.status(200).json({
+            code: 1,
+            message: 'Assemblea salvata con successo'
+        }))
+        .catch(err => next(err));
+});
+
+/**
+ * Load assembly from local backup file
+ * @method post
+ * @public
+ */
+router.post('/backups/load', (req, res, next) => {
+    const { uuid } = req.body;
+    if (typeof uuid === 'string') {
+        const file = path.join(assembliesBackup, uuid + '.json');
+        let assemblyFile;
+        let newAssembly = {};
+        fs.readFile(file)
+            .then(data => {
+                assemblyFile = JSON.parse(data);
+                const { info } = assemblyFile;
+                const { uuid, title, date, subOpen, subClose } = info;
+                return AssemblyInfo.create({
+                    uuid, 
+                    title, 
+                    date, 
+                    subOpen, 
+                    subClose
+                });
+            })
+            .then(info => {
+                newAssembly.info = info;
+                let promiseArray = [];
+                assemblyFile.labs.forEach(lab => promiseArray.push(
+                    createLab(lab)
+                ));
+                return Promise.all(promiseArray);
+            })
+            .then(results => {
+                newAssembly.labs = results;
+                res.status(200).json({
+                    code: 1,
+                    assembly: newAssembly
+                });
+            })
+            .catch(err => next(err));
+    } else {
+        next(new Error('UUID non valido'));
     }
 });
 
@@ -360,33 +477,7 @@ router.put('/labs', (req, res, next) => {
 router.post('/labs', (req, res, next) => {
     const { lab } = req.body;
     if (lab) {
-        let promiseArray = [];
-        let classes = uniqueArray(lab.classesH1.concat(lab.classesH2, lab.classesH3, lab.classesH4));
-        classes.forEach(cl => promiseArray.push(LabClass.create({
-            classLabel: cl,
-            labID: +lab.ID || null,
-            allowedH1: ( lab.classesH1.indexOf(cl) === -1 ? false : true),
-            allowedH2: ( lab.classesH2.indexOf(cl) === -1 ? false : true),
-            allowedH3: ( lab.classesH3.indexOf(cl) === -1 ? false : true),
-            allowedH4: ( lab.classesH4.indexOf(cl) === -1 ? false : true)
-        })));
-        Promise
-            .all(promiseArray)
-            .then(() => Lab.create({
-                    ID: lab.ID,
-                    room: lab.room,
-                    title: lab.title,
-                    description: lab.description,
-                    seatsH1: lab.seatsH1,
-                    classesH1: lab.classesH1,
-                    seatsH2: lab.seatsH2,
-                    classesH2: lab.classesH2,
-                    seatsH3: lab.seatsH3,
-                    classesH3: lab.classesH3,
-                    seatsH4: lab.seatsH4,
-                    classesH4: lab.classesH4,
-                    lastsTwoH: lab.lastsTwoH
-            }))
+        createLab(lab)
             .then(newLab => res.status(200).json({
                 code: 1,
                 lab: newLab
@@ -547,6 +638,45 @@ const getAllLabs = () => {
             
             return labList;
         });
+};
+
+/**
+ * Create new laboratory
+ * @param {object} lab 
+ * @private
+ */
+const createLab = lab => {
+    let promiseArray = [];
+    let classes = uniqueArray(lab.classesH1.concat(lab.classesH2, lab.classesH3, lab.classesH4));
+    classes.forEach(cl => promiseArray.push(LabClass.create({
+        classLabel: cl,
+        labID: +lab.ID || null,
+        allowedH1: ( lab.classesH1.indexOf(cl) === -1 ? false : true),
+        allowedH2: ( lab.classesH2.indexOf(cl) === -1 ? false : true),
+        allowedH3: ( lab.classesH3.indexOf(cl) === -1 ? false : true),
+        allowedH4: ( lab.classesH4.indexOf(cl) === -1 ? false : true)
+    })));
+    return new Promise((resolve, reject) => {
+        Promise
+            .all(promiseArray)
+            .then(() => Lab.create({
+                    ID: lab.ID,
+                    room: lab.room,
+                    title: lab.title,
+                    description: lab.description,
+                    seatsH1: lab.seatsH1,
+                    classesH1: lab.classesH1,
+                    seatsH2: lab.seatsH2,
+                    classesH2: lab.classesH2,
+                    seatsH3: lab.seatsH3,
+                    classesH3: lab.classesH3,
+                    seatsH4: lab.seatsH4,
+                    classesH4: lab.classesH4,
+                    lastsTwoH: lab.lastsTwoH
+            }))
+            .then(newLab => resolve(newLab))
+            .catch(err => reject(err));
+    });
 };
 
 /**

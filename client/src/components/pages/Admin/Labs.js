@@ -34,7 +34,7 @@ const Labs = ({ assembly, deleteAssemblyLab }) => {
 				</Grid.Row>
 				<Grid.Row>
 					<Grid.Col width={12} xl={9}>
-						<Card title="Laboratori">
+						<Card>
 							<LabsTable
 								labs={labs}
 								setLabDisplay={setLabDisplay}

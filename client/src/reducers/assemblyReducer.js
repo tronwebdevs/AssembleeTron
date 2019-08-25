@@ -1,7 +1,15 @@
 import {
     FETCH_ASSEMBLY_PENDING,
 	ASSEMBLY_FETCHED,
-	ERROR_IN_ASSEMBLY_FETCH,
+    ERROR_IN_ASSEMBLY_FETCH,
+    
+    REQUEST_ASSEMBLY_BACKUP,
+    ASSEMBLY_BACKUP_COMPLETED,
+    ERROR_IN_ASSEMBLY_BACKUP,
+
+    REQUEST_ASSEMBLY_LOAD,
+    ASSEMBLY_LOAD_COMPLETED,
+    ERROR_IN_ASSEMBLY_LOAD,
 
 	DELETE_ASSEMBLY_PENDING,
 	ASSEMBLY_DELETED,
@@ -67,6 +75,8 @@ export default function (state = initialState, { payload, type }) {
     switch (type) {
         case FETCH_ASSEMBLY_PENDING:
         case DELETE_ASSEMBLY_PENDING:
+        case REQUEST_ASSEMBLY_BACKUP:
+        case REQUEST_ASSEMBLY_LOAD:
         case FETCH_INFO_PENDING:
         case CREATE_INFO_PENDING:
         case UPDATE_INFO_PENDING:
@@ -81,7 +91,30 @@ export default function (state = initialState, { payload, type }) {
                     ...state.pendings,
                     [payload]: true
                 }
-			};
+            };
+        case ASSEMBLY_BACKUP_COMPLETED:
+            return {
+                ...state,
+                pendings: {
+                    ...state.pendings,
+                    backup: false
+                }
+            };
+        case ASSEMBLY_LOAD_COMPLETED:
+            return {
+                ...state,
+                exists: true,
+				info: payload.info,
+				labs: payload.labs || [],
+				stats: {
+                    ...state.stats,
+					labs: (payload.labs || []).length
+				},
+                pendings: {
+                    ...state.pendings,
+                    load: false
+                }
+            };
 		case ASSEMBLY_FETCHED:
 		case ERROR_IN_ASSEMBLY_FETCH:
 			return {
@@ -220,6 +253,8 @@ export default function (state = initialState, { payload, type }) {
                 }
 			};
         case ERROR_IN_ASSEMBLY_DELETE:
+        case ERROR_IN_ASSEMBLY_BACKUP:
+        case ERROR_IN_ASSEMBLY_LOAD:
 		case ERROR_IN_INFO_FETCH:
 		case ERROR_IN_INFO_CREATE:
 		case ERROR_IN_INFO_UPDATE:

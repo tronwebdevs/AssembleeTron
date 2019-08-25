@@ -49,7 +49,6 @@ const Dashboard = ({
                             <Link to="/gestore/crea" className="btn btn-outline-success">
                                 Crea nuova assemblea
                             </Link>
-                            {/* <Button color="outline-success">Crea nuova assemblea</Button> */}
                         </span>
                         <Button color="outline-info">Crea assemblea da template</Button>
                     </Card.Body>

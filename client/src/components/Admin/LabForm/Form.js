@@ -105,7 +105,7 @@ const CustomForm = ({
 			<Form.Checkbox
 				name="lastsTwoH"
 				label="Questo laboratorio dura 2 ore"
-				value={values.lastsTwoH}
+				checked={values.lastsTwoH}
 				error={errors.lastsTwoH}
 				onChange={handleChange}
 			/>
