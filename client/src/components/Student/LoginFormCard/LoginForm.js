@@ -76,7 +76,7 @@ const LoginForm = ({
             </span>
             {errors.part ? <div className="input-feedback text-danger">{errors.part}</div> : null}
             <Form.Footer className="mt-3">
-                <Button type="submit" color="primary" block={true}>
+                <Button type="submit" color="primary" block={true} disabled={isSubmitting}>
                     {isSubmitting ? <Spinner color="light" size="sm" /> : 'Entra'}
                 </Button>
             </Form.Footer>

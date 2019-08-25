@@ -36,7 +36,7 @@ const LoginForm = ({
                 />
             </Form.Group>
             <Form.Footer className="mt-1">
-                <Button type="submit" color="primary" block={true}>
+                <Button type="submit" color="primary" block={true} disabled={isSubmitting}>
                     {isSubmitting ? <Spinner color="light" size="sm" /> : 'Login'}
                 </Button>
             </Form.Footer>

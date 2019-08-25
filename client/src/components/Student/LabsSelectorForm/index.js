@@ -74,7 +74,7 @@ const LabsSelectorForm = ({
             <Form onSubmit={handleSubmit} className="pt-2">
                 {[1, 2, 3, 4].map(h => <LabSelector key={h} labs={labs} h={h} onChange={handleChange} error={errors['h' + h]} value={values['h' + h]} />)}
                 <Form.Footer>
-                    <Button type="submit" color="primary" block={true}>
+                    <Button type="submit" color="primary" block={true} disabled={isSubmitting}>
                         {isSubmitting ? <Spinner color="light" size="sm" /> : 'Iscriviti'}
                     </Button>
                 </Form.Footer>

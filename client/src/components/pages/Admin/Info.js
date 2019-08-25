@@ -20,10 +20,6 @@ const Info = ({
         type: null,
         message: null
     });
-	
-	if (pendings.update_info === false && edit === true) {
-		setEdit(false);
-    }
 
     const renderInfo = info => edit === true ? (
         <InfoForm 
@@ -62,7 +58,6 @@ const Info = ({
 
 
                         if (Object.entries(errors).length === 0) {
-                            setSubmitting(false);
                             updateAssemblyInfo({
                                 uuid, title, date,
                                 subOpen: subOpenMoment.format(),
@@ -73,7 +68,10 @@ const Info = ({
                             })).catch(({ message }) => setDisplayMessage({
                                 type: 'danger',
                                 message
-                            }));
+                            })).finally(() => {
+                                setEdit(false);
+                                setSubmitting(false);
+                            });
                         } else {
                             setSubmitting(false);
                             setErrors(errors);
@@ -97,6 +95,7 @@ const Info = ({
                         type="submit" 
                         block 
                         color="primary"
+                        disabled={pendings.info === true}
                     >Salva</Button>
                 )
             ]}
