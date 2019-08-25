@@ -61,13 +61,6 @@ const initialState = {
         subs: 0
     },
 	students: [],
-	message: {
-		display: false,
-		type: null,
-		className: null,
-		msg: null
-	},
-    error: null,
     pendings: {}
 };
 
@@ -128,7 +121,6 @@ export default function (state = initialState, { payload, type }) {
 					students: (payload.students || []).length,
 					subs: (payload.students || []).filter(std => std.subscribed !== null).length
 				},
-				error: payload.message || null,
 				pendings: {
 					...state.pendings,
 					assembly: false
@@ -179,8 +171,7 @@ export default function (state = initialState, { payload, type }) {
 				pendings: {
 					...state.pendings,
 					create_info: false
-                },
-                error: null
+                }
 			};
 		case INFO_UPDATED:
 			return {
@@ -265,7 +256,6 @@ export default function (state = initialState, { payload, type }) {
 		case ERROR_IN_STUDENTS_FETCH:
             return {
                 ...state,
-                error: payload.message,
                 pendings: {
                     ...state.pendings,
                     [payload.fetch]: false

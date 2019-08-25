@@ -33,7 +33,7 @@ const Labs = ({ assembly, deleteAssemblyLab }) => {
 					) : null}
 				</Grid.Row>
 				<Grid.Row>
-					<Grid.Col width={12} xl={9}>
+					<Grid.Col width={12} xl={assembly.exists ? 9 : 12}>
 						<Card>
 							<LabsTable
 								labs={labs}
@@ -44,27 +44,29 @@ const Labs = ({ assembly, deleteAssemblyLab }) => {
 							/>
 						</Card>
 					</Grid.Col>
-					<Grid.Col width={12} xl={3}>
-						<Card>
-							<Card.Body>
-								<Button
-									type="button"
-									color="success"
-									block
-									onClick={() => setShowModal(true)}
-								>
-									Crea
-								</Button>
-								<Button
-									color="outline-warning"
-									block
-									onClick={() => alert("Not implemented yet")}
-								>
-									Controlla
-								</Button>
-							</Card.Body>
-						</Card>
-					</Grid.Col>
+                    {assembly.exists ? (
+                        <Grid.Col width={12} xl={3}>
+                            <Card>
+                                <Card.Body>
+                                    <Button
+                                        type="button"
+                                        color="success"
+                                        block
+                                        onClick={() => setShowModal(true)}
+                                    >
+                                        Crea
+                                    </Button>
+                                    <Button
+                                        color="outline-warning"
+                                        block
+                                        onClick={() => alert("Not implemented yet")}
+                                    >
+                                        Controlla
+                                    </Button>
+                                </Card.Body>
+                            </Card>
+                        </Grid.Col>
+                    ) : null}
 				</Grid.Row>
 				<LabModal
 					showModal={showModal}

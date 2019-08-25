@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Card, Text, Button, Table } from 'tabler-react';
+import { Spinner } from 'reactstrap';
 import moment from 'moment';
 
 const ImportAssemblyCard = ({ 
     loadAssembly,
-    setError 
+    setError,
+    isSubmitting
 }) => {
 
     const [backups, setBackups] = useState([]);
@@ -17,11 +19,11 @@ const ImportAssemblyCard = ({
             if (result.code === 1) {
                 setBackups(result.backups);
             } else {
-                console.error(result.message || 'Errore inaspettato');
+                setError(result.message || 'Errore inaspettato');
             }
         }
         fetchBackups();
-      }, []);
+      }, [setError]);
 
 	return (
 		<Card title="Backup">
@@ -54,7 +56,7 @@ const ImportAssemblyCard = ({
                                         onClick={e => {
                                             loadAssembly(info.uuid).catch(({ message }) => setError(message));
                                         }}
-                                    >Carica</Button>
+                                    >{isSubmitting ? <Spinner color="light" size="sm" /> : 'Carica'}</Button>
                                 )
                             }
                         ]
@@ -66,7 +68,8 @@ const ImportAssemblyCard = ({
 
 ImportAssemblyCard.propTypes = {
     loadAssembly: PropTypes.func.isRequired,
-    setError: PropTypes.func.isRequired
+    setError: PropTypes.func.isRequired,
+    isSubmitting: PropTypes.bool.isRequired
 };
 
 export default ImportAssemblyCard;

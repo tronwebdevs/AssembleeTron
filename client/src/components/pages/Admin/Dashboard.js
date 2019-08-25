@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Page, Grid, Card, Button, Alert } from "tabler-react";
+import { Page, Grid, Card, Alert } from "tabler-react";
 import SiteWrapper from '../../Admin/SiteWrapper/';
 import SmallCard from '../../Admin/Dashboard/SmallCard';
 import DashAssemblyRow from '../../Admin/DashAssemblyRow';
@@ -50,7 +50,6 @@ const Dashboard = ({
                                 Crea nuova assemblea
                             </Link>
                         </span>
-                        <Button color="outline-info">Crea assemblea da template</Button>
                     </Card.Body>
                 </Card>
             </Grid.Col>

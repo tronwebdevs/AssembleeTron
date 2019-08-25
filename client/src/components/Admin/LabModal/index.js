@@ -36,7 +36,8 @@ const LabModal = ({
 				bottom: "40px",
 				background: "transparent",
 				borderRadius: "0",
-                padding: "0"
+                padding: "0",
+                boxShadow: "0 0 8px #9E9E9E"
 			}
 		}}
 	>

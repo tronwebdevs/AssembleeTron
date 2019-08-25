@@ -22,9 +22,9 @@ const CreateAssembly = ({
         message: null
     });
 
-    const { error, exists, pendings } = assembly;
+    const { exists, pendings } = assembly;
 
-    if (pendings.create_info === false && exists === true && error === null) {
+    if (pendings.create_info === false && exists === true && displayMessage.message === null) {
         return <Redirect to={{ pathname: '/gestore/laboratori' }}/>
     } else if (exists === true) {   
         return <Redirect to={{ pathname: '/gestore/' }}/>
@@ -137,6 +137,7 @@ const CreateAssembly = ({
                                 message
                             })}
                             loadAssembly={loadAssembly}
+                            isSubmitting={pendings.load === true}
                         />
                     </Grid.Col>
                 </Grid.Row>

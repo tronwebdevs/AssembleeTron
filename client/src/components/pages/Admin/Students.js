@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Page, Grid, Card, Alert, Form } from "tabler-react";
+import { Page, Grid, Card, Form } from "tabler-react";
 import SiteWrapper from '../../Admin/SiteWrapper';
 import StudentsTable from '../../Admin/StudentsTable';
 
@@ -18,13 +18,6 @@ const Students = ({
     return (
         <SiteWrapper>
             <Page.Content title="Studenti">
-                <Grid.Row>
-                    {assembly.error ? (
-                        <Grid.Col width={12}>
-                            <Alert type="danger">{assembly.error}</Alert>
-                        </Grid.Col>
-                    ) : null}
-                </Grid.Row>
                 <Grid.Row>
                     <Grid.Col width={12}>
                         <Card title="Studenti" className="pb-5">
