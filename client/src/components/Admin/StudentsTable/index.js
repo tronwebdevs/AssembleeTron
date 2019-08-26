@@ -1,50 +1,60 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Column, Table, AutoSizer } from 'react-virtualized';
-import 'react-virtualized/styles.css';
-import './index.css';
+import { Badge } from 'tabler-react';
+import ReactTable from 'react-table';
+import 'react-table/react-table.css'
 
-const StudentsTable = ({
-    students,
-    height,
-    scrollToIndex
-}) => (
-    <AutoSizer>
-        {({ width }) => (
-            <Table
-                width={width}
-                height={height}
-                headerHeight={40}
-                scrollToIndex={scrollToIndex}
-                rowHeight={45}
-                rowCount={students.length}
-                rowGetter={({ index }) => students[index]}
-                style={{ border: '1px solid #e0e0e0' }}
-            >
-                <Column
-                    label='ID'
-                    dataKey='ID'
-                    width={150}
-                />
-                <Column
-                    label='Nome'
-                    dataKey='name'
-                    width={300}
-                />
-                <Column
-                    width={300}
-                    label='Cognome'
-                    dataKey='surname'
-                />
-                <Column
-                    label='Classe'
-                    dataKey='classLabel'
-                    width={200}
-                />
-            </Table>
-        )}
-    </AutoSizer>
-);
+
+const StudentsTable = ({ students }) => {
+    const columns = [
+        {
+            Header: 'ID',
+            accessor: 'ID'
+        },
+        {
+            Header: 'Nome',
+            accessor: 'name'
+        },
+        {
+            Header: 'Cognome',
+            accessor: 'surname'
+        },
+        {
+            Header: 'Classe',
+            accessor: 'classLabel'
+        },
+        {
+            Header: 'Partecipa',
+            accessor: 'subscribed',
+            Cell: props => {
+                if (props.value !== null) {
+                    const { value } = props;
+                    const part = ( value.h1 === value.h2 ) && (value.h3 === value.h4) && value.h1 === value.h4;
+                    return  <Badge color={part ? "success" : "danger"}>{part ? "Partecipa" : "Non partecipa"}</Badge>;
+                } else {
+                    return null;
+                }
+            }
+        }
+    ];
+
+    return (
+        <ReactTable
+            filterable
+            data={students}
+            columns={columns}
+            previousText="Indietro"
+            nextText="Avanti"
+            loadingText="Caricamento..."
+            noDataText="Nessuno studente trovato"
+            pageText="Pagina"
+            ofText="di"
+            rowsText="righe"
+            pageJumpText="vai alla pagina"
+            rowsSelectorText="studenti per pagina"
+        />
+    );
+};
 
 StudentsTable.propTypes = {
     students: PropTypes.array.isRequired
