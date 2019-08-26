@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import { deleteAssembly, requestBackup } from '../../../actions/assemblyActions';
 import { Page, Grid, Alert, Button, Card } from 'tabler-react';
-import SiteWrapper from '../../Admin/SiteWrapper';
+import { SiteWrapper } from '../../Admin/';
 import { ButtonGroup } from 'reactstrap';
-import { Link } from 'react-router-dom';
 
 const DeleteAssembly = ({
     assembly,

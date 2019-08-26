@@ -16,7 +16,7 @@ import {
     Bar,
     ResponsiveContainer
 } from "recharts";
-import SiteWrapper from "../../Admin/SiteWrapper";
+import { SiteWrapper } from "../../Admin/";
 
 const Stats = ({ assembly }) => {
 	const { students } = assembly;

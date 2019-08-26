@@ -3,9 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Page, Grid } from 'tabler-react';
-import moment from 'moment';
-
 import { LabsTable, Badge, SiteWrapper, NotPartCard } from '../../Student/';
+import moment from 'moment';
 
 const ConfirmSub = ({
     student,

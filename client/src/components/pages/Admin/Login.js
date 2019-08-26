@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { authAdmin } from '../../../actions/adminActions';
 import { Redirect } from 'react-router-dom';
-
-import LoginFormCard from '../../Admin/LoginFormCard/';
+import { LoginFormCard } from '../../Admin/';
 
 const Login = ({ 
     authAdmin,

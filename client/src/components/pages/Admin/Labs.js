@@ -3,11 +3,12 @@ import { connect } from "react-redux";
 import { deleteAssemblyLab } from "../../../actions/assemblyActions";
 import PropTypes from "prop-types";
 import { Page, Grid, Card, Button, Alert } from "tabler-react";
-import SiteWrapper from "../../Admin/SiteWrapper";
-import LabsTable from "../../Admin/LabsTable";
-import LabModal from "../../Admin/LabModal/";
+import { SiteWrapper, LabsTable, LabModal } from "../../Admin/";
 
-const Labs = ({ assembly, deleteAssemblyLab }) => {
+const Labs = ({ 
+    assembly, 
+    deleteAssemblyLab 
+}) => {
 	const { labs } = assembly;
 
 	const [displayMessage, setDisplayMessage] = useState({

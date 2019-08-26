@@ -4,10 +4,8 @@ import PropTypes from 'prop-types';
 import { createAssemblyInfo, loadAssembly } from '../../../actions/assemblyActions';
 import { Page, Grid, Card, Button, Alert } from "tabler-react";
 import { Link, Redirect } from 'react-router-dom';
-import SiteWrapper from '../../Admin/SiteWrapper/';
-import InfoForm from '../../Admin/InfoForm';
+import { SiteWrapper, InfoForm, ImportAssemblyCard } from '../../Admin/';
 import moment from 'moment';
-import ImportAssemblyCard from '../../Admin/ImportAssemblyCard';
 
 const uuid = require('uuid/v4');
 

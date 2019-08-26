@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Page, Grid, Card, Alert, Button } from "tabler-react";
-import SiteWrapper from '../../Admin/SiteWrapper/';
 import { updateAssemblyInfo } from '../../../actions/assemblyActions';
-import InfoForm from '../../Admin/InfoForm';
-import InfoCard from '../../Admin/InfoCard';
+import { SiteWrapper, InfoForm, InfoCard } from '../../Admin/';
 import moment from 'moment';
 
 const Info = ({
@@ -103,13 +101,7 @@ const Info = ({
     ) : (
         <InfoCard 
             info={info} 
-            edit={() => {
-				setEdit(true);
-				// if (moment().diff(moment(info.subOpen)) < 0) {
-				// } else {
-				//     setDisplayError('Non puoi modificare le informazioni dell\'assemblea dato che le iscrizioni hanno gia\' inizato')
-				// }
-            }} 
+            edit={() => setEdit(true)} 
         />
     );
 

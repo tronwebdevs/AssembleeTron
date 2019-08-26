@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Error404Page } from "tabler-react";
 
-import AuthRequired from '../../Admin/AuthRequired/';
+import { AuthRequired } from '../../Admin/';
 import Login from './Login';
 import Dashboard from './Dashboard';
 import Info from './Info';

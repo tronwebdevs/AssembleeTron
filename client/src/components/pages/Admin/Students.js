@@ -2,12 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Page, Grid, Card } from "tabler-react";
-import SiteWrapper from '../../Admin/SiteWrapper';
-import StudentsTable from '../../Admin/StudentsTable';
+import { SiteWrapper, StudentsTable } from '../../Admin/';
 
-const Students = ({
-    assembly
-}) => {
+const Students = ({ assembly }) => {
 
     const { students } = assembly;
 

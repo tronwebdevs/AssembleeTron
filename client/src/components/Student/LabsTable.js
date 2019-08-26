@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Table, Card } from 'tabler-react';
+import { Grid, Card } from 'tabler-react';
 import InfoBox from './InfoBox';
 
 const LabsTable = ({ labs }) => (
@@ -8,26 +8,29 @@ const LabsTable = ({ labs }) => (
         <Grid.Row>
             <Grid.Col width={12}>
                 <Card>
-                    <Table
-                        responsive
-                        className="card-table table-vcenter text-nowrap"
-                        style={{
-                            fontSize: '0.75rem'
-                        }}
-                        headerItems={[
-                            { content: "Ora", className: "w-1" },
-                            { content: "Attività" },
-                            { content: "Aula" }
-                        ]}
-                        bodyItems={labs.map((lab, index) => ({
-                            key: (index + 1),
-                            item: [
-                                { content: (index + 1) },
-                                { content: lab.title },
-                                { content: lab.room }
-                            ]
-                        }))}
-                    />
+                    <Card.Body>
+                        <Grid.Row>
+                            {labs.map((lab, index) => (
+                                <div className={"col-12 " + (index !== 3 ? "mb-3 border-bottom" : "")}>
+                                    <Grid.Row>
+                                        <Grid.Col width={3} className="py-2 pr-0">
+                                            <span className="text-muted d-block text-center">Ora {index + 1}:</span>
+                                        </Grid.Col>
+                                        <Grid.Col width={9} className="py-2 pl-0">
+                                            <Grid.Row>
+                                                <Grid.Col width={12}>
+                                                    <span className="d-block">{lab.title}</span>
+                                                </Grid.Col>
+                                                <Grid.Col width={12}>
+                                                    <span className="d-block text-muted">Aula: {lab.room}</span>
+                                                </Grid.Col>
+                                            </Grid.Row>
+                                        </Grid.Col>
+                                    </Grid.Row>
+                                </div>
+                            ))}
+                        </Grid.Row>
+                    </Card.Body>
                 </Card>
             </Grid.Col>
         </Grid.Row>
