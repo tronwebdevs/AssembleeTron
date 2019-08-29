@@ -4,7 +4,7 @@ import {
     ERROR_IN_ADMIN_AUTH,
     ADMIN_LOGOUT
 } from '../actions/types';
-import { safeFetch } from './utils';
+import axios from 'axios';
 
 /**
  * Authenticate user
@@ -19,14 +19,9 @@ export const authAdmin = password => dispatch => {
     });
 
     return new Promise((resolve, reject) => {
-        safeFetch('/api/admins/auth', {
-            method: 'POST',
-            headers: new Headers({
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify({ password })
-        })
-            .then(data => {
+        axios.post('/api/admins/auth', { password })
+            .then(({ data }) => {
+                console.log(data);
                 if (data.code === 1) {
                     dispatch({
                         type: ADMIN_AUTHED,
@@ -38,6 +33,9 @@ export const authAdmin = password => dispatch => {
                 }
             })
             .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                }
                 dispatch({
                     type: ERROR_IN_ADMIN_AUTH,
                     payload: {

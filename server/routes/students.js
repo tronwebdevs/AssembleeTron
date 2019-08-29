@@ -181,7 +181,7 @@ router.get('/:studentID', (req, res) => {
  */
 router.post('/:studentID/labs', (req, res, next) => {
     const studentID = +req.params.studentID || -1;
-    const { h1, h2, h3, h4 } = req.body;
+    const { h1, h2, h3, h4 } = req.body.labs;
     let labs = [ h1, h2, h3, h4 ];
 
     if (h1 && h2 && h3 && h4) {

@@ -16,7 +16,7 @@ router.post('/auth', (req, res, next) => {
                 code: 1
             });
         } else {
-            res.status(200).json({
+            res.status(401).json({
                 code: -1,
                 message: 'Password errata'
             });

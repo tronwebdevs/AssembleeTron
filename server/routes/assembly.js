@@ -227,15 +227,11 @@ router.get('/info', (req, res, next) => {
 /**
  * Update assembly info
  * @method put
- * @param {string} uuid
- * @param {string} title
- * @param {string} date
- * @param {string} subOpen
- * @param {string} subClose
+ * @param {object} info
  * @public
  */
 router.put('/info', (req, res, next) => {
-    const { uuid, title, date, subOpen, subClose } = req.body;
+    const { uuid, title, date, subOpen, subClose } = req.body.info;
     AssemblyInfo
         .findAndCountAll()
         .then(({ count, rows }) => {
@@ -261,15 +257,11 @@ router.put('/info', (req, res, next) => {
 /**
  * Create assembly info
  * @method put
- * @param {string} uuid
- * @param {string} title
- * @param {string} date
- * @param {string} subOpen
- * @param {string} subClose
+ * @param {object} info
  * @public
  */
 router.post('/info', (req, res, next) => {
-    const { uuid, title, date, subOpen, subClose } = req.body;
+    const { uuid, title, date, subOpen, subClose } = req.body.info;
     AssemblyInfo
         .findAndCountAll()
         .then(({ rows, count }) => {

@@ -49,7 +49,7 @@ import {
 	STUDENTS_FETCHED,
 	ERROR_IN_STUDENTS_FETCH,
 } from '../actions/types.js';
-import { safeFetch } from './utils';
+import axios from 'axios';
 
 /**
  * Fetch assembly info
@@ -63,8 +63,8 @@ export const fetchAssemblyInfo = () => dispatch => {
     });
 
     return new Promise((resolve, reject) => {
-        safeFetch('/api/assembly/info')
-            .then(data => {
+        axios.get('/api/assembly/info')
+            .then(({ data }) => {
                 switch (data.code) {
                     case 0:
                         dispatch({
@@ -97,6 +97,9 @@ export const fetchAssemblyInfo = () => dispatch => {
                 }
             })
             .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                }
                 dispatch({
                     type: ERROR_IN_INFO_FETCH,
                     payload: {
@@ -122,14 +125,8 @@ export const createAssemblyInfo = info => dispatch => {
     });
 
     return new Promise((resolve, reject) => {
-        safeFetch('/api/assembly/info', {
-            method: 'POST',
-            headers: new Headers({
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify(info)
-        })
-            .then(data => {
+        axios.post('/api/assembly/info', { info })
+            .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: INFO_CREATED,
@@ -141,6 +138,9 @@ export const createAssemblyInfo = info => dispatch => {
                 }
             })
             .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                }
                 dispatch({
                     type: ERROR_IN_INFO_CREATE,
                     payload: {
@@ -166,14 +166,8 @@ export const updateAssemblyInfo = info => dispatch => {
     });
 
     return new Promise((resolve, reject) => {
-        safeFetch('/api/assembly/info', {
-            method: 'PUT',
-            headers: new Headers({
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify(info)
-        })
-            .then(data => {
+        axios.put('/api/assembly/info', { info })
+            .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: INFO_UPDATED,
@@ -185,6 +179,9 @@ export const updateAssemblyInfo = info => dispatch => {
                 }
             })
             .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                }
                 dispatch({
                     type: ERROR_IN_INFO_UPDATE,
                     payload: {
@@ -209,10 +206,8 @@ export const requestBackup = () => dispatch => {
     });
 
     return new Promise((resolve, reject) => {
-        safeFetch('/api/assembly/backups', {
-            method: 'POST'
-        })
-            .then(data => {
+        axios.post('/api/assembly/backups')
+            .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: ASSEMBLY_BACKUP_COMPLETED,
@@ -224,6 +219,9 @@ export const requestBackup = () => dispatch => {
                 }
             })
             .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                }
                 dispatch({
                     type: ERROR_IN_ASSEMBLY_BACKUP,
                     payload: {
@@ -248,14 +246,8 @@ export const loadAssembly = uuid => dispatch => {
     });
 
     return new Promise((resolve, reject) => {
-        safeFetch('/api/assembly/backups/load', {
-            method: 'POST',
-            headers: new Headers({
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify({ uuid })
-        })
-            .then(data => {
+        axios.post('/api/assembly/backups/load', { uuid })
+            .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: ASSEMBLY_LOAD_COMPLETED,
@@ -267,6 +259,9 @@ export const loadAssembly = uuid => dispatch => {
                 }
             })
             .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                }
                 dispatch({
                     type: ERROR_IN_ASSEMBLY_LOAD,
                     payload: {
@@ -295,14 +290,8 @@ export const createAssemblyLab = lab => (dispatch, getState) => {
     });
 
     return new Promise((resolve, reject) => {
-        safeFetch('/api/assembly/labs', {
-            method: 'POST',
-            headers: new Headers({
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify({ lab })
-        })
-            .then(data => {
+        axios.post('/api/assembly/labs', { lab })
+            .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: LAB_CREATED,
@@ -316,6 +305,9 @@ export const createAssemblyLab = lab => (dispatch, getState) => {
                 }
             })
             .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                }
                 dispatch({
                     type: ERROR_IN_LAB_CREATE,
                     payload: {
@@ -344,14 +336,8 @@ export const updateAssemblyLab = lab => (dispatch, getState) => {
     });
 
     return new Promise((resolve, reject) => {
-        safeFetch('/api/assembly/labs', {
-            method: 'PUT',
-            headers: new Headers({
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify({ lab })
-        })
-            .then(data => {
+        axios.put('/api/assembly/labs', { lab })
+            .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: LAB_UPDATED,
@@ -368,6 +354,9 @@ export const updateAssemblyLab = lab => (dispatch, getState) => {
                 }
             })
             .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                }
                 dispatch({
                     type: ERROR_IN_LAB_UPDATE,
                     payload: {
@@ -396,14 +385,10 @@ export const deleteAssemblyLab = labID => (dispatch, getState) => {
     });
 
     return new Promise((resolve, reject) => {
-        safeFetch('/api/assembly/labs', {
-            method: 'DELETE',
-            headers: new Headers({
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify({ ID: labID })
+        axios.delete('/api/assembly/labs', { 
+            data: { ID: labID } 
         })
-            .then(data => {
+            .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: LAB_DELETED,
@@ -417,6 +402,9 @@ export const deleteAssemblyLab = labID => (dispatch, getState) => {
                 }
             })
             .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                }
                 dispatch({
                     type: ERROR_IN_LAB_DELETE,
                     payload: {
@@ -434,12 +422,14 @@ export const deleteAssemblyLab = labID => (dispatch, getState) => {
  * @public
  */
 export const fetchAssemblyGeneral = () => dispatch => {
+
     dispatch({
         type: FETCH_ASSEMBLY_PENDING,
         payload: 'assembly'
     });
-    safeFetch('/api/assembly/')
-        .then(data => {
+
+    axios.get('/api/assembly/')
+        .then(({ data }) => {
             switch (data.code) {
                 case 0:
                 case 1:
@@ -457,13 +447,18 @@ export const fetchAssemblyGeneral = () => dispatch => {
                     throw new Error(data.message || 'Errore inaspettato');
             }
         })
-        .catch(err => dispatch({
-            type: ERROR_IN_ASSEMBLY_FETCH,
-            payload: {
-                message: err.message,
-                fetch: 'assembly'
+        .catch(err => {
+            if (err.response && err.response.data && err.response.data.message) {
+                err.message = err.response.data.message;
             }
-        }));
+            dispatch({
+                type: ERROR_IN_ASSEMBLY_FETCH,
+                payload: {
+                    message: err.message,
+                    fetch: 'assembly'
+                }
+            })
+        });
 };
 
 /**
@@ -478,8 +473,10 @@ export const fetchAllLabs = () => dispatch => {
         payload: 'labs'
     });
 
-    safeFetch('/api/assembly/labs?action=getAll')
-        .then(data => {
+    axios.get('/api/assembly/labs', {
+        params: { action: 'getAll' }
+    })
+        .then(({ data }) => {
             if (data.code === 1) {
                 dispatch({
                     type: LABS_FETCHED,
@@ -489,13 +486,18 @@ export const fetchAllLabs = () => dispatch => {
                 throw new Error(data.message || 'Errore inaspettato');
             }
         })
-        .catch(err => dispatch({
-            type: ERROR_IN_LABS_FETCH,
-            payload: {
-                message: err.message,
-                fetch: 'labs'
+        .catch(err => {
+            if (err.response && err.response.data && err.response.data.message) {
+                err.message = err.response.data.message;
             }
-        }));
+            dispatch({
+                type: ERROR_IN_LABS_FETCH,
+                payload: {
+                    message: err.message,
+                    fetch: 'labs'
+                }
+            });
+        });
 };
 
 /**
@@ -509,8 +511,10 @@ export const fetchStudents = () => dispatch => {
         payload: 'students'
     });
 
-    safeFetch('/api/assembly/students?action=getAll')
-        .then(data => {
+    axios.get('/api/assembly/students', {
+        params: { action: 'getAll' }
+    })
+        .then(({ data }) => {
             if (data.code === 1) {
                 dispatch({
                     type: STUDENTS_FETCHED,
@@ -520,13 +524,18 @@ export const fetchStudents = () => dispatch => {
                 throw new Error(data.message || 'Errore inaspettato');
             }
         })
-        .catch(err => dispatch({
-            type: ERROR_IN_STUDENTS_FETCH,
-            payload: {
-                message: err.message,
-                fetch: 'students'
+        .catch(err => {
+            if (err.response && err.response.data && err.response.data.message) {
+                err.message = err.response.data.message;
             }
-        }));
+            dispatch({
+                type: ERROR_IN_STUDENTS_FETCH,
+                payload: {
+                    message: err.message,
+                    fetch: 'students'
+                }
+            })
+        });
 };
 
 /**
@@ -543,14 +552,10 @@ export const deleteAssembly = () => dispatch => {
     const password = prompt('Conferma la password');
 
     return new Promise((resolve, reject) => {
-        safeFetch('/api/assembly', {
-            method: 'DELETE',
-            headers: new Headers({
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify({ password })
+        axios.delete('/api/assembly', { 
+            data: { password }
         })
-            .then(data => {
+            .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: ASSEMBLY_DELETED,
@@ -562,6 +567,9 @@ export const deleteAssembly = () => dispatch => {
                 }
             })
             .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                }
                 dispatch({
                     type: ERROR_IN_ASSEMBLY_DELETE,
                     payload: {

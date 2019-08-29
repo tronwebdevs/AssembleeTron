@@ -11,7 +11,7 @@ import {
     ERROR_IN_STUDENT_LABS_FETCH,
     FETCH_STUDENT_PENDING
 } from '../actions/types.js';
-import { safeFetch } from './utils';
+import axios from 'axios';
 
 /**
  * Authenticate student
@@ -40,8 +40,10 @@ export const authStudent = (studentID, part) => dispatch => {
             throw error;
         }
 
-        safeFetch('/api/students/' + studentID + '?part=' + part)
-            .then(data => {
+        axios.get('/api/students/' + studentID, {
+            params: { part }
+        })
+            .then(({ data }) => {
                 switch (data.code) {
                     case -1:
                         throw new Error(data.message);
@@ -75,6 +77,15 @@ export const authStudent = (studentID, part) => dispatch => {
                 resolve();
             })
             .catch(err => {
+                if (err.response && err.response.data) {
+                    const { data } = err.response;
+                    if (data.message) {
+                        err.message = err.response.data.message;
+                    }
+                    if (data.target && data.target !== 0) {
+                        err.target = data.target;
+                    }
+                }
                 dispatch({
                     type: ERROR_IN_STUDENT_AUTH,
                     payload: {
@@ -100,8 +111,10 @@ export const fetchAvabileLabs = classLabel => dispatch => {
     });
 
     return new Promise((resolve, reject) => {
-        safeFetch('/api/students/labs?classLabel=' + classLabel)
-            .then(data => {
+        axios.get('/api/students/labs', {
+            params: { classLabel }
+        })
+            .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: STUDENT_LABS_FETCHED,
@@ -113,6 +126,9 @@ export const fetchAvabileLabs = classLabel => dispatch => {
                 }
             })
             .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                }
                 dispatch({
                     type: ERROR_IN_STUDENT_LABS_FETCH,
                     payload: {
@@ -139,14 +155,8 @@ export const subscribeLabs = (studentID, labs) => dispatch => {
     });
 
     return new Promise((resolve, reject) => {
-        safeFetch('/api/students/' + studentID + '/labs', {
-            method: 'POST',
-            headers: new Headers({
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify(labs)
-        })
-            .then(data => {
+        axios.post('/api/students/' + studentID + '/labs', { labs })
+            .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: STUDENT_SUBED,
@@ -161,6 +171,15 @@ export const subscribeLabs = (studentID, labs) => dispatch => {
                 }
             })
             .catch(err => {
+                if (err.response && err.response.data) {
+                    const { data } = err.response;
+                    if (data.message) {
+                        err.message = err.response.data.message;
+                    }
+                    if (data.target && data.target !== 0) {
+                        err.target = data.target;
+                    }
+                }
                 dispatch({
                     type: ERROR_IN_STUDENT_LABS_UPDATE,
                     payload: {
