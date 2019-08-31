@@ -11,15 +11,32 @@ const Lab = require('../models/Lab');
 const LabClass = require('../models/LabClass');
 const AssemblyInfo = require('../models/AssemblyInfo');
 
+const authUser = require('../utils/AuthUser');
+const { isAdmin, isStudent } = require('../utils/CheckUserType');
+
 const { adminPassword } = require('../config');
 const assembliesBackup = path.join(__dirname, '../backups');
+
+/**
+ * Get assembly info
+ * @method get
+ * @public
+ */
+router.get('/info', (req, res, next) => {
+    getInfo()
+        .then(result => res.status(200).json(result))
+        .catch(err => next(err));
+});
+
+router.use('*', authUser);
 
 /**
  * Get assembly general info (admin dashboard)
  * @method get
  * @public
  */
-router.get('/', (req, res, next) => {
+router.get('/', isAdmin, (req, res, next) => {
+    
     let labs;
     let students;
 
@@ -56,13 +73,15 @@ router.get('/', (req, res, next) => {
             code: result.code || 1,
             info: result.info,
             labs,
-            students
+            students,
+            token: req.jwtNewToken
         }))
         .catch(err => res.status(err.status || 500).json({
             code: err.code !== undefined ? err.code : -1,
             message: err.message,
             labs,
-            students
+            students,
+            token: req.jwtNewToken
         }));
 });
 
@@ -72,7 +91,7 @@ router.get('/', (req, res, next) => {
  * @param {string} password
  * @public
  */
-router.delete('/', (req, res, next) => {
+router.delete('/', isAdmin, (req, res, next) => {
     const { password } = req.body;
     if (password === adminPassword) {
         AssemblyInfo
@@ -93,7 +112,8 @@ router.delete('/', (req, res, next) => {
                 truncate: true
             }))
             .then(() => res.status(200).json({ 
-                code: 1
+                code: 1,
+                token: req.jwtNewToken
             }))
             .catch(err => next(err));
     } else {
@@ -106,12 +126,13 @@ router.delete('/', (req, res, next) => {
  * @method get
  * @public
  */
-router.get('/backups', (req, res, next) => {
+router.get('/backups', isAdmin, (req, res, next) => {
     if (!fs.existsSync(assembliesBackup)){
         fs.mkdirSync(assembliesBackup);
         res.status(200).json({
             code: 1,
-            backups: []
+            backups: [],
+            token: req.jwtNewToken
         });
     } else {
         let files;
@@ -130,7 +151,8 @@ router.get('/backups', (req, res, next) => {
                 files = files.map((file, index) => JSON.parse(results[index]));
                 res.status(200).json({
                     code: 1,
-                    backups: files
+                    backups: files,
+                    token: req.jwtNewToken
                 })
             })
             .catch(err => next(err));
@@ -142,7 +164,9 @@ router.get('/backups', (req, res, next) => {
  * @method post
  * @public
  */
-router.post('/backups', (req, res, next) => {
+router.post('/backups', isAdmin, (req, res, next) => {
+    const { overwrite } = req.body;
+    console.log(overwrite);
     let info;
     getInfo()
         .then(result => {
@@ -153,17 +177,24 @@ router.post('/backups', (req, res, next) => {
             if (!fs.existsSync(assembliesBackup)){
                 fs.mkdirSync(assembliesBackup);
             }
+            const file = path.join(assembliesBackup, info.uuid + '.json');
+            if (fs.existsSync(file) && overwrite !== true) {
+                let error = new Error('Il backup di questa assemblea esiste gia\', sovrascriverlo?');
+                error.code = 2;
+                throw error;
+            }
+
             const assembly = {
                 info,
                 labs
             };
-
-            const file = path.join(assembliesBackup, info.uuid + '.json');
+            
             return fs.writeFile(file, JSON.stringify(assembly, null, 4), 'utf8');
         })
         .then(() => res.status(200).json({
             code: 1,
-            message: 'Assemblea salvata con successo'
+            message: 'Assemblea salvata con successo',
+            token: req.jwtNewToken
         }))
         .catch(err => next(err));
 });
@@ -173,7 +204,7 @@ router.post('/backups', (req, res, next) => {
  * @method post
  * @public
  */
-router.post('/backups/load', (req, res, next) => {
+router.post('/backups/load', isAdmin, (req, res, next) => {
     const { uuid } = req.body;
     if (typeof uuid === 'string') {
         const file = path.join(assembliesBackup, uuid + '.json');
@@ -204,7 +235,8 @@ router.post('/backups/load', (req, res, next) => {
                 newAssembly.labs = results;
                 res.status(200).json({
                     code: 1,
-                    assembly: newAssembly
+                    assembly: newAssembly,
+                    token: req.jwtNewToken
                 });
             })
             .catch(err => next(err));
@@ -214,23 +246,12 @@ router.post('/backups/load', (req, res, next) => {
 });
 
 /**
- * Get assembly info
- * @method get
- * @public
- */
-router.get('/info', (req, res, next) => {
-    getInfo()
-        .then(result => res.status(200).json(result))
-        .catch(err => next(err));
-});
-
-/**
  * Update assembly info
  * @method put
  * @param {object} info
  * @public
  */
-router.put('/info', (req, res, next) => {
+router.put('/info', isAdmin, (req, res, next) => {
     const { uuid, title, date, subOpen, subClose } = req.body.info;
     AssemblyInfo
         .findAndCountAll()
@@ -249,7 +270,8 @@ router.put('/info', (req, res, next) => {
         })
         .then(updatedInfo => res.status(200).json({
             code: 1,
-            info: updatedInfo
+            info: updatedInfo,
+            token: req.jwtNewToken
         }))
         .catch(err => next(err));
 });
@@ -260,7 +282,7 @@ router.put('/info', (req, res, next) => {
  * @param {object} info
  * @public
  */
-router.post('/info', (req, res, next) => {
+router.post('/info', isAdmin, (req, res, next) => {
     const { uuid, title, date, subOpen, subClose } = req.body.info;
     AssemblyInfo
         .findAndCountAll()
@@ -281,7 +303,8 @@ router.post('/info', (req, res, next) => {
         })
         .then(info => res.status(200).json({
             code: 1,
-            info
+            info,
+            token: req.jwtNewToken
         }))
         .catch(err => next(err));
 });
@@ -293,14 +316,15 @@ router.post('/info', (req, res, next) => {
  * @param {string=} classLabel
  * @public
  */
-router.get('/labs', (req, res, next) => {
+router.get('/labs', isStudent, (req, res, next) => {
     const { action } = req.query;
     if (action === 'count') {
         Lab
             .count()
             .then(c => res.status(200).json({
                 code: 1,
-                labs: c
+                labs: c,
+                token: req.jwtNewToken
             }))
             .catch(err => next(err));
     } else if (action === 'getAll') {
@@ -319,13 +343,11 @@ router.get('/labs', (req, res, next) => {
                 // }));
                 res.status(200).json({
                     code: 1,
-                    labList: labs
+                    labList: labs,
+                    token: req.jwtNewToken
                 });
             })
-            .catch(err => res.status(500).json({
-                code: -1,
-                message: err.message
-            }));
+            .catch(err => next(err));
     } else if (action === 'getAvab') {
         if (typeof req.query.classLabel === 'string') {
             let classes;
@@ -386,13 +408,11 @@ router.get('/labs', (req, res, next) => {
                     });
                     res.status(200).json({
                         code: 1,
-                        labList
+                        labList,
+                        token: req.jwtNewToken
                     });
                 })
-                .catch(err => res.status(500).json({
-                    code: -1,
-                    message: err.message
-                }));
+                .catch(err => next(err));
         } else {
             next(new Error('Parametri non accettati'));
         }
@@ -407,7 +427,7 @@ router.get('/labs', (req, res, next) => {
  * @param {object} lab
  * @public
  */
-router.put('/labs', (req, res, next) => {
+router.put('/labs', isAdmin, (req, res, next) => {
     const { lab } = req.body;
     let upLab = null;
     if (lab && typeof lab.ID === 'number') {
@@ -452,7 +472,8 @@ router.put('/labs', (req, res, next) => {
             })
             .then(() => res.status(200).json({
                 code: 1,
-                lab
+                lab,
+                token: req.jwtNewToken
             }))
             .catch(err => next(err));
     } else {
@@ -466,13 +487,14 @@ router.put('/labs', (req, res, next) => {
  * @param {object} lab
  * @public
  */
-router.post('/labs', (req, res, next) => {
+router.post('/labs', isAdmin, (req, res, next) => {
     const { lab } = req.body;
     if (lab) {
         createLab(lab)
             .then(newLab => res.status(200).json({
                 code: 1,
-                lab: newLab
+                lab: newLab,
+                token: req.jwtNewToken
             }))
             .catch(err => next(err));
     } else {
@@ -486,7 +508,7 @@ router.post('/labs', (req, res, next) => {
  * @param {number} ID
  * @public
  */
-router.delete('/labs', (req, res, next) => {
+router.delete('/labs', isAdmin, (req, res, next) => {
     const { ID } = req.body;
     if (!isNaN(+ID)) {
         LabClass
@@ -498,7 +520,8 @@ router.delete('/labs', (req, res, next) => {
             }))
             .then(() => res.status(200).json({
                 code: 1,
-                labID: ID
+                labID: ID,
+                token: req.jwtNewToken
             }))
             .catch(err => next(err));
     } else {
@@ -512,7 +535,7 @@ router.delete('/labs', (req, res, next) => {
  * @param {string} action
  * @public
  */
-router.get('/students', (req, res, next) => {
+router.get('/students', isAdmin, (req, res, next) => {
     const { action } = req.query;
     if (action === 'count') {
         let stdCount;
@@ -526,7 +549,8 @@ router.get('/students', (req, res, next) => {
             .then(c => res.status(200).json({
                 code: 1,
                 students: stdCount,
-                subs: c
+                subs: c,
+                token: req.jwtNewToken
             }))
             .catch(err => next(err));
     } else if (action === 'getAll') {
@@ -534,7 +558,8 @@ router.get('/students', (req, res, next) => {
             .findAll()
             .then(students => res.status(200).json({
                 code: 1,
-                students
+                students,
+                token: req.jwtNewToken
             }))
             .catch(err => next(err));
     } else {

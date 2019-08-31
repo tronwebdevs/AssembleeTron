@@ -80,17 +80,19 @@ export const authStudent = (studentID, part) => dispatch => {
                 if (err.response && err.response.data) {
                     const { data } = err.response;
                     if (data.message) {
-                        err.message = err.response.data.message;
+                        err.message = data.message;
                     }
                     if (data.target && data.target !== 0) {
                         err.target = data.target;
                     }
+                    err.token = data.token;
                 }
                 dispatch({
                     type: ERROR_IN_STUDENT_AUTH,
                     payload: {
                         message: err.message,
-                        fetch: 'profile'
+                        fetch: 'profile',
+                        token: err.token
                     }
                 });
                 reject(err);
@@ -103,16 +105,19 @@ export const authStudent = (studentID, part) => dispatch => {
  * @param {string} classLabel 
  * @public
  */
-export const fetchAvabileLabs = classLabel => dispatch => {
+export const fetchAvabileLabs = classLabel => (dispatch, getState) => {
 
     dispatch({
         type: FETCH_STUDENT_PENDING,
         payload: 'labs_avabile'
     });
 
+    const authToken = getState().student.token;
+
     return new Promise((resolve, reject) => {
         axios.get('/api/students/labs', {
-            params: { classLabel }
+            params: { classLabel },
+            headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
                 if (data.code === 1) {
@@ -127,13 +132,16 @@ export const fetchAvabileLabs = classLabel => dispatch => {
             })
             .catch(err => {
                 if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
+                    const { data } = err.response;
+                    err.message = data.message;
+                    err.token = data.token;
                 }
                 dispatch({
                     type: ERROR_IN_STUDENT_LABS_FETCH,
                     payload: {
                         message: err.message,
-                        fetch: 'labs_avabile'
+                        fetch: 'labs_avabile',
+                        token: err.token
                     }
                 });
                 reject(err);
@@ -147,15 +155,19 @@ export const fetchAvabileLabs = classLabel => dispatch => {
  * @param {array} labs 
  * @public
  */
-export const subscribeLabs = (studentID, labs) => dispatch => {
+export const subscribeLabs = (studentID, labs) => (dispatch, getState) => {
 
     dispatch({
         type: UPDATE_STUDENT_LABS_PENDING,
         payload: 'subscribe'
     });
 
+    const authToken = getState().student.token;
+
     return new Promise((resolve, reject) => {
-        axios.post('/api/students/' + studentID + '/labs', { labs })
+        axios.post('/api/students/' + studentID + '/labs', { labs }, {
+            headers: { Authorization: `Bearer ${authToken}`}
+        })
             .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
@@ -174,17 +186,19 @@ export const subscribeLabs = (studentID, labs) => dispatch => {
                 if (err.response && err.response.data) {
                     const { data } = err.response;
                     if (data.message) {
-                        err.message = err.response.data.message;
+                        err.message = data.message;
                     }
                     if (data.target && data.target !== 0) {
                         err.target = data.target;
                     }
+                    err.token = data.token
                 }
                 dispatch({
                     type: ERROR_IN_STUDENT_LABS_UPDATE,
                     payload: {
                         message: err.message,
-                        fetch: 'subscribe'
+                        fetch: 'subscribe',
+                        token: err.token
                     }
                 });
                 reject(err);

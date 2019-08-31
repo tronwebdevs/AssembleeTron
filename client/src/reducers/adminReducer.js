@@ -2,12 +2,14 @@ import {
     AUTH_ADMIN_PENDING,
     ADMIN_AUTHED, 
     ERROR_IN_ADMIN_AUTH,
-    ADMIN_LOGOUT
+    ADMIN_LOGOUT,
+    UPDATE_ADMIN_TOKEN
 } from '../actions/types';
 
 const initialState = {
     authed: false,
-    fetch_pending: {}
+    pendings: {},
+    token: null
 }
 
 export default function (state = initialState, { type, payload }) {
@@ -15,8 +17,8 @@ export default function (state = initialState, { type, payload }) {
         case AUTH_ADMIN_PENDING:
             return {
                 ...state,
-                fetch_pending: {
-                    ...state.fetch_pending,
+                pendings: {
+                    ...state.pendings,
                     [payload]: true
                 }
             }
@@ -24,16 +26,22 @@ export default function (state = initialState, { type, payload }) {
             return {
                 ...state,
                 authed: true,
-                fetch_pending: {
-                    ...state.fetch_pending,
+                token: payload.token,
+                pendings: {
+                    ...state.pendings,
                     auth: false
                 }
             }
+        case UPDATE_ADMIN_TOKEN:
+            return {
+                ...state,
+                token: payload
+            };
         case ERROR_IN_ADMIN_AUTH:
             return {
                 ...state,
-                fetch_pending: {
-                    ...state.fetch_pending,
+                pendings: {
+                    ...state.pendings,
                     [payload.fetch]: false
                 }
             }

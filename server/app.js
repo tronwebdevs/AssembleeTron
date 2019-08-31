@@ -1,3 +1,4 @@
+"use strict"
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -26,7 +27,8 @@ app.use((err, req, res, next) => {
     }
     res.status(500).json({
         code: err.code || -1,
-        message: err.message
+        message: err.message,
+        token: req.jwtNewToken
     });
 });
 

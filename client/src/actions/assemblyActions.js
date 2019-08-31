@@ -47,8 +47,11 @@ import {
 
 	FETCH_STUDENTS_PENDING,
 	STUDENTS_FETCHED,
-	ERROR_IN_STUDENTS_FETCH,
+    ERROR_IN_STUDENTS_FETCH,
+    
+    UPDATE_ADMIN_TOKEN
 } from '../actions/types.js';
+import store from '../store';
 import axios from 'axios';
 
 /**
@@ -124,13 +127,21 @@ export const createAssemblyInfo = info => dispatch => {
         payload: 'create_info'
     });
 
+    const authToken = store.getState().admin.token;
+
     return new Promise((resolve, reject) => {
-        axios.post('/api/assembly/info', { info })
+        axios.post('/api/assembly/info', { info }, {
+            headers: { Authorization: `Bearer ${authToken}`}
+        })
             .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: INFO_CREATED,
                         payload: data.info
+                    });
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: data.token
                     });
                     resolve();
                 } else {
@@ -140,6 +151,10 @@ export const createAssemblyInfo = info => dispatch => {
             .catch(err => {
                 if (err.response && err.response.data && err.response.data.message) {
                     err.message = err.response.data.message;
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: err.response.data.token
+                    });
                 }
                 dispatch({
                     type: ERROR_IN_INFO_CREATE,
@@ -165,13 +180,21 @@ export const updateAssemblyInfo = info => dispatch => {
         payload: 'update_info'
     });
 
+    const authToken = store.getState().admin.token;
+
     return new Promise((resolve, reject) => {
-        axios.put('/api/assembly/info', { info })
+        axios.put('/api/assembly/info', { info }, {
+            headers: { Authorization: `Bearer ${authToken}`}
+        })
             .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: INFO_UPDATED,
                         payload: data.info
+                    });
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: data.token
                     });
                     resolve('Informazioni aggiornate con successo');
                 } else {
@@ -181,6 +204,10 @@ export const updateAssemblyInfo = info => dispatch => {
             .catch(err => {
                 if (err.response && err.response.data && err.response.data.message) {
                     err.message = err.response.data.message;
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: err.response.data.token
+                    });
                 }
                 dispatch({
                     type: ERROR_IN_INFO_UPDATE,
@@ -198,20 +225,28 @@ export const updateAssemblyInfo = info => dispatch => {
  * Request a backup of the assembly
  * @public
  */
-export const requestBackup = () => dispatch => {
+export const requestBackup = (overwrite = false) => dispatch => {
 
     dispatch({
         type: REQUEST_ASSEMBLY_BACKUP,
         payload: 'backup'
     });
 
+    const authToken = store.getState().admin.token;
+
     return new Promise((resolve, reject) => {
-        axios.post('/api/assembly/backups')
+        axios.post('/api/assembly/backups', { overwrite }, {
+            headers: { Authorization: `Bearer ${authToken}`}
+        })
             .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: ASSEMBLY_BACKUP_COMPLETED,
                         payload: null
+                    });
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: data.token
                     });
                     resolve(data.message);
                 } else {
@@ -220,7 +255,13 @@ export const requestBackup = () => dispatch => {
             })
             .catch(err => {
                 if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
+                    const { data } = err.response;
+                    err.message = data.message;
+                    err.code = data.code;
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: data.token
+                    });
                 }
                 dispatch({
                     type: ERROR_IN_ASSEMBLY_BACKUP,
@@ -245,13 +286,21 @@ export const loadAssembly = uuid => dispatch => {
         payload: 'load'
     });
 
+    const authToken = store.getState().admin.token;
+
     return new Promise((resolve, reject) => {
-        axios.post('/api/assembly/backups/load', { uuid })
+        axios.post('/api/assembly/backups/load', { uuid }, {
+            headers: { Authorization: `Bearer ${authToken}`}
+        })
             .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: ASSEMBLY_LOAD_COMPLETED,
                         payload: data.assembly
+                    });
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: data.token
                     });
                     resolve();
                 } else {
@@ -261,6 +310,10 @@ export const loadAssembly = uuid => dispatch => {
             .catch(err => {
                 if (err.response && err.response.data && err.response.data.message) {
                     err.message = err.response.data.message;
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: err.response.data.token
+                    });
                 }
                 dispatch({
                     type: ERROR_IN_ASSEMBLY_LOAD,
@@ -279,9 +332,10 @@ export const loadAssembly = uuid => dispatch => {
  * @param {object} lab
  * @public
  */
-export const createAssemblyLab = lab => (dispatch, getState) => {
+export const createAssemblyLab = lab => dispatch => {
 
-    const { assembly } = getState();
+    const { assembly, admin } = store.getState();
+    const authToken = admin.token;
     const { labs } = assembly;
 
     dispatch({
@@ -290,12 +344,18 @@ export const createAssemblyLab = lab => (dispatch, getState) => {
     });
 
     return new Promise((resolve, reject) => {
-        axios.post('/api/assembly/labs', { lab })
+        axios.post('/api/assembly/labs', { lab }, {
+            headers: { Authorization: `Bearer ${authToken}`}
+        })
             .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: LAB_CREATED,
                         payload: [ ...labs, data.lab ]
+                    });
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: data.token
                     });
                     resolve(data.lab);
                 } else {
@@ -307,6 +367,10 @@ export const createAssemblyLab = lab => (dispatch, getState) => {
             .catch(err => {
                 if (err.response && err.response.data && err.response.data.message) {
                     err.message = err.response.data.message;
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: err.response.data.token
+                    });
                 }
                 dispatch({
                     type: ERROR_IN_LAB_CREATE,
@@ -325,9 +389,10 @@ export const createAssemblyLab = lab => (dispatch, getState) => {
  * @param {object} lab
  * @public
  */
-export const updateAssemblyLab = lab => (dispatch, getState) => {
+export const updateAssemblyLab = lab => dispatch => {
     
-    const { assembly } = getState();
+    const { assembly, admin } = store.getState();
+    const authToken = admin.token;
     const { labs } = assembly;
 
     dispatch({
@@ -336,7 +401,9 @@ export const updateAssemblyLab = lab => (dispatch, getState) => {
     });
 
     return new Promise((resolve, reject) => {
-        axios.put('/api/assembly/labs', { lab })
+        axios.put('/api/assembly/labs', { lab }, {
+            headers: { Authorization: `Bearer ${authToken}`}
+        })
             .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
@@ -348,6 +415,10 @@ export const updateAssemblyLab = lab => (dispatch, getState) => {
                             return lab;
                         })
                     });
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: data.token
+                    });
                     resolve(data.lab);
                 } else {
                     throw new Error(data.message || 'Errore inaspettato');
@@ -356,6 +427,10 @@ export const updateAssemblyLab = lab => (dispatch, getState) => {
             .catch(err => {
                 if (err.response && err.response.data && err.response.data.message) {
                     err.message = err.response.data.message;
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: err.response.data.token
+                    });
                 }
                 dispatch({
                     type: ERROR_IN_LAB_UPDATE,
@@ -374,9 +449,10 @@ export const updateAssemblyLab = lab => (dispatch, getState) => {
  * @param {number} labID
  * @public
  */
-export const deleteAssemblyLab = labID => (dispatch, getState) => {
+export const deleteAssemblyLab = labID => dispatch => {
 
-    const { assembly } = getState();
+    const { assembly, admin } = store.getState();
+    const authToken = admin.token;
     const { labs } = assembly;
 
     dispatch({
@@ -386,13 +462,18 @@ export const deleteAssemblyLab = labID => (dispatch, getState) => {
 
     return new Promise((resolve, reject) => {
         axios.delete('/api/assembly/labs', { 
-            data: { ID: labID } 
+            data: { ID: labID },
+            headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: LAB_DELETED,
                         payload: labs.filter(lab => lab.ID !== data.labID)
+                    });
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: data.token
                     });
                     resolve(data.labID);
                 } else {
@@ -404,6 +485,10 @@ export const deleteAssemblyLab = labID => (dispatch, getState) => {
             .catch(err => {
                 if (err.response && err.response.data && err.response.data.message) {
                     err.message = err.response.data.message;
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: err.response.data.token
+                    });
                 }
                 dispatch({
                     type: ERROR_IN_LAB_DELETE,
@@ -428,37 +513,53 @@ export const fetchAssemblyGeneral = () => dispatch => {
         payload: 'assembly'
     });
 
-    axios.get('/api/assembly/')
-        .then(({ data }) => {
-            switch (data.code) {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                    dispatch({
-                        type: ASSEMBLY_FETCHED,
-                        payload: {
-                            ...data,
-                            exists: data.code === 0 ? false : true
-                        }
-                    });
-                    break;
-                default:
-                    throw new Error(data.message || 'Errore inaspettato');
-            }
+    const authToken = store.getState().admin.token;
+
+    return new Promise((resolve, reject) => {
+        axios.get('/api/assembly/', {
+            headers: { Authorization: `Bearer ${authToken}`}
         })
-        .catch(err => {
-            if (err.response && err.response.data && err.response.data.message) {
-                err.message = err.response.data.message;
-            }
-            dispatch({
-                type: ERROR_IN_ASSEMBLY_FETCH,
-                payload: {
-                    message: err.message,
-                    fetch: 'assembly'
+            .then(({ data }) => {
+                switch (data.code) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                        dispatch({
+                            type: ASSEMBLY_FETCHED,
+                            payload: {
+                                ...data,
+                                exists: data.code === 0 ? false : true
+                            }
+                        });
+                        dispatch({
+                            type: UPDATE_ADMIN_TOKEN,
+                            payload: data.token
+                        });
+                        resolve();
+                        break;
+                    default:
+                        throw new Error(data.message || 'Errore inaspettato');
                 }
             })
-        });
+            .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: err.response.data.token
+                    });
+                }
+                dispatch({
+                    type: ERROR_IN_ASSEMBLY_FETCH,
+                    payload: {
+                        message: err.message,
+                        fetch: 'assembly'
+                    }
+                });
+                reject(err);
+            });
+    });
 };
 
 /**
@@ -481,7 +582,7 @@ export const fetchAllLabs = () => dispatch => {
                 dispatch({
                     type: LABS_FETCHED,
                     payload: data.labList
-                })
+                });
             } else {
                 throw new Error(data.message || 'Errore inaspettato');
             }
@@ -489,6 +590,10 @@ export const fetchAllLabs = () => dispatch => {
         .catch(err => {
             if (err.response && err.response.data && err.response.data.message) {
                 err.message = err.response.data.message;
+                dispatch({
+                    type: UPDATE_ADMIN_TOKEN,
+                    payload: err.response.data.token
+                });
             }
             dispatch({
                 type: ERROR_IN_LABS_FETCH,
@@ -511,15 +616,22 @@ export const fetchStudents = () => dispatch => {
         payload: 'students'
     });
 
+    const authToken = store.getState().admin.token;
+
     axios.get('/api/assembly/students', {
-        params: { action: 'getAll' }
+        params: { action: 'getAll' },
+        headers: { Authorization: `Bearer ${authToken}`}
     })
         .then(({ data }) => {
             if (data.code === 1) {
                 dispatch({
                     type: STUDENTS_FETCHED,
                     payload: data.students
-                })
+                });
+                dispatch({
+                    type: UPDATE_ADMIN_TOKEN,
+                    payload: data.token
+                });
             } else {
                 throw new Error(data.message || 'Errore inaspettato');
             }
@@ -527,6 +639,10 @@ export const fetchStudents = () => dispatch => {
         .catch(err => {
             if (err.response && err.response.data && err.response.data.message) {
                 err.message = err.response.data.message;
+                dispatch({
+                    type: UPDATE_ADMIN_TOKEN,
+                    payload: err.response.data.token
+                });
             }
             dispatch({
                 type: ERROR_IN_STUDENTS_FETCH,
@@ -549,17 +665,23 @@ export const deleteAssembly = () => dispatch => {
         payload: 'delete_assembly'
     });
 
+    const authToken = store.getState().admin.token;
     const password = prompt('Conferma la password');
 
     return new Promise((resolve, reject) => {
         axios.delete('/api/assembly', { 
-            data: { password }
+            data: { password },
+            headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: ASSEMBLY_DELETED,
-                        payload: null
+                        payload: data
+                    });
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: data.token
                     });
                     resolve();
                 } else {
@@ -569,6 +691,10 @@ export const deleteAssembly = () => dispatch => {
             .catch(err => {
                 if (err.response && err.response.data && err.response.data.message) {
                     err.message = err.response.data.message;
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: err.response.data.token
+                    });
                 }
                 dispatch({
                     type: ERROR_IN_ASSEMBLY_DELETE,

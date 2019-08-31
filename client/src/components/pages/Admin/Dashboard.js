@@ -2,10 +2,10 @@ import React from "react";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Page, Grid, Card } from "tabler-react";
+import { Page, Grid, Card, Alert } from "tabler-react";
 import { SiteWrapper, SmallCard, DashAssemblyRow } from '../../Admin/';
 
-const Dashboard = ({ assembly }) => {
+const Dashboard = ({ assembly, errorMessage }) => {
 
     const { stats, info, pendings } = assembly;
 
@@ -55,6 +55,13 @@ const Dashboard = ({ assembly }) => {
     return (
         <SiteWrapper>
             <Page.Content title="Dashboard">
+                {errorMessage ? (
+                    <Grid.Row>
+                        <Grid.Col width={12}>
+                            <Alert type="danger">{errorMessage}</Alert>
+                        </Grid.Col>
+                    </Grid.Row>
+                ) : null}
                 <Grid.Row cards={true}>
                     {cards.map((card, index) => <SmallCard key={index} {...card} />)}
                 </Grid.Row>

@@ -24,6 +24,22 @@ const DeleteAssembly = ({
         return <Redirect to={{ pathname: "/gestore/" }} />;
     }
 
+    const backupCompleted = (target, message) => {
+        setDisplayMessage({
+            type: 'success',
+            message
+        });
+        target.className = 'btn btn-success';
+        target.innerText = 'Backup completato';
+    };
+    const backupError = (target, message) => {
+        setDisplayMessage({
+            type: 'danger',
+            message
+        });
+        target.disabled = false;
+    };
+
     return (
         <SiteWrapper>
             <Page.Content title="Elimina Assemblea">
@@ -47,20 +63,23 @@ const DeleteAssembly = ({
                                             let { target } = e;
                                             target.disabled = true;
                                             requestBackup()
-                                                .then(message => {
-                                                    setDisplayMessage({
-                                                        type: 'success',
-                                                        message
-                                                    });
-                                                    target.className = 'btn btn-success';
-                                                    target.innerText = 'Backup completato';
-                                                })
-                                                .catch(({ message }) => {
-                                                    setDisplayMessage({
-                                                        type: 'danger',
-                                                        message
-                                                    });
-                                                    target.disabled = false;
+                                                .then(msg => backupCompleted(target, msg))
+                                                .catch(({ message, code }) => {
+                                                    if (code === 2) {
+                                                        if (window.confirm(message) === true) {
+                                                            requestBackup(true)
+                                                                .then(msg => backupCompleted(target, msg))
+                                                                .catch(({ message }) => backupError(target, message));
+                                                        } else {
+                                                            setDisplayMessage({
+                                                                type: 'success',
+                                                                message: 'Operazione annullata'
+                                                            });
+                                                            target.disabled = false;
+                                                        }
+                                                    } else {
+                                                        backupError(target, message);
+                                                    }
                                                 });
                                         }}
                                     >Backup</Button>

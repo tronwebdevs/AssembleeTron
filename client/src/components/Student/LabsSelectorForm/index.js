@@ -65,9 +65,7 @@ const LabsSelectorForm = ({
         render={({
             values,
             errors,
-            touched,
             handleChange,
-            handleBlur,
             handleSubmit,
             isSubmitting
         }) => (

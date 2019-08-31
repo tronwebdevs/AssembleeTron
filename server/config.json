@@ -14,5 +14,6 @@
             "logging": false
         }
     },
-    "adminPassword": "admin"
+    "adminPassword": "admin",
+    "privateKey": "stfu"
 }

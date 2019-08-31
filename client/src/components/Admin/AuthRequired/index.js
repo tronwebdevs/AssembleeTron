@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchAssemblyGeneral } from '../../../actions/assemblyActions';
@@ -12,15 +12,17 @@ const AuthRequired = ({
     ...rest
 }) => {
 
-	if (assembly.pendings.assembly === undefined) {
-		fetchAssemblyGeneral();
+    const [error, setError] = useState(null)
+
+	if (assembly.pendings.assembly === undefined && admin.pendings.auth === false) {
+		fetchAssemblyGeneral().catch(err => setError(err.message));
 	}
 
     return (
 		<Route
 			{...rest}
 			render={props => admin.authed ? (
-				<Component {...props} />
+				<Component {...props} errorMessage={error}/>
 			) : (
 				<Redirect to={{
 					pathname: '/gestore/login',

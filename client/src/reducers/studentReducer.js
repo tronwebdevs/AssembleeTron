@@ -22,7 +22,8 @@ const initialState = {
     subscribed: false,
     labs: [],
     labs_avabile: [],
-    pendings: {}
+    pendings: {},
+    token: null
 }
 
 export default function(state = initialState, { payload, type }) {
@@ -35,7 +36,7 @@ export default function(state = initialState, { payload, type }) {
                     ...state.pendings,
                     [payload]: true
                 }
-			};
+            };
         case STUDENT_LABS_FETCHED:
             return {
                 ...state,
@@ -43,7 +44,8 @@ export default function(state = initialState, { payload, type }) {
                 pendings: {
                     ...state.pendings,
                     labs_avabile: false
-                }
+                },
+                token: payload.token
             };
         case STUDENT_SUBS:
             return {
@@ -54,7 +56,8 @@ export default function(state = initialState, { payload, type }) {
                 pendings: {
 					...state.pendings,
                     profile: false
-                }
+                },
+                token: payload.token
             };
         case STUDENT_IS_PART:
             return {
@@ -65,7 +68,8 @@ export default function(state = initialState, { payload, type }) {
                 pendings: {
 					...state.pendings,
                     profile: false
-                }
+                },
+                token: payload.token
             };
         case STUDENT_NOT_PART:
         case STUDENT_WAS_PART:
@@ -77,7 +81,8 @@ export default function(state = initialState, { payload, type }) {
                 pendings: {
 					...state.pendings,
                     profile: false
-                }
+                },
+                token: payload.token
             };
         case STUDENT_SUBED:
             return {
@@ -88,7 +93,8 @@ export default function(state = initialState, { payload, type }) {
                 pendings: {
 					...state.pendings,
                     subscribe: false
-                }
+                },
+                token: payload.token
             };
         case ERROR_IN_STUDENT_LABS_FETCH:
         case ERROR_IN_STUDENT_LABS_UPDATE:
@@ -98,7 +104,8 @@ export default function(state = initialState, { payload, type }) {
                 pendings: {
                     ...state.pendings,
                     [payload.fetch]: false
-                }
+                },
+                token: payload.token !== null && payload.token !== undefined ? payload.token : state.token
 			};
         default:
             return state;

@@ -3,24 +3,33 @@ const express = require('express');
 const router = express.Router();
 const Sequleize = require('sequelize');
 const { Op } = Sequleize;
+const jwt = require('jsonwebtoken');
 
 const Student = require('../models/Student');
 const Sub = require('../models/Sub');
 const Lab = require('../models/Lab');
 const LabClass = require('../models/LabClass');
 
+const authUser = require('../utils/AuthUser');
+const { isStudent } = require('../utils/CheckUserType');
+
+const { privateKey } = require('../config');
+
 /**
+ * Get avabile labs for specific class
  * @method get
  * @param {string} classLabel
  */
-router.get('/labs', (req, res, next) => {
-    const classLabel = req.query.classLabel;
+router.get('/labs', authUser, isStudent, (req, res, next) => {
+    
+    const { classLabel } = req.query;
 
     if (typeof classLabel === 'string') {
         fetchAvabileLabs(classLabel).then(result => {
             res.status(200).json({
                 code: 1,
-                labs: result.labList
+                labs: result.labList,
+                token: req.jwtNewToken
             });
         }).catch(err => next(err));
     } else {
@@ -28,12 +37,12 @@ router.get('/labs', (req, res, next) => {
     }
 });
 
-/**
+/** Authenticate student
  * @method get
  * @param {string} studentID
  * @param {string} part
  */
-router.get('/:studentID', (req, res) => {
+router.get('/:studentID', (req, res, next) => {
     let student;
     const studentID = +req.params.studentID || -1;
     const part = +req.query.part;
@@ -101,12 +110,13 @@ router.get('/:studentID', (req, res) => {
                 if (sutudenWasSub === true) {
                     // LO STUDENTE SI E' DISISCRITTO O E' GIA' ISCRITTO
                     if (results.h1 === -1 && results.h2 === -1 && results.h3 === -1 && results.h4 === -1) {
-                        // STUDENTE SI E' DISISCRITTO
+                        // STUDENTE SI E' DISISCRITTO (jwt non necessario)
                         res.status(200).json({
                             code: 3,
                             student,
                             subscribed: false,
-                            wasSubscribed: true
+                            wasSubscribed: true,
+                            token: null
                         });
                     } else {
                         // res.status(200).json({
@@ -120,7 +130,7 @@ router.get('/:studentID', (req, res) => {
                         //     ],
                         //     wasSubscribed: true
                         // });
-                        // STUDENTE VUOLE VISUALIZZARE I LABORATORI
+                        // STUDENTE VUOLE VISUALIZZARE I LABORATORI (jwt non necessario)
                         Lab.findAndCountAll({
                             where: {
                                 ID: [ results.h1, results.h2, results.h3, results.h4 ]
@@ -135,6 +145,7 @@ router.get('/:studentID', (req, res) => {
                                     labs,
                                     subscribed: true,
                                     wasSubscribed: true,
+                                    token: null
                                 });
                             } else {
                                 next(new Error('Errore inaspettato: numero di laboratori inaspettato (' + result.count + ')'));
@@ -142,21 +153,32 @@ router.get('/:studentID', (req, res) => {
                         }).catch(err => next(err));
                     }
                 } else {
-                    // LO STUDENTE NON PARTECIPA ALL'ASSEMBLEA
+                    // LO STUDENTE NON PARTECIPA ALL'ASSEMBLEA (jwt non necessario)
                     res.status(200).json({
                         code: 2,
                         student,
                         subscribed: false,
-                        wasSubscribed: false
+                        wasSubscribed: false,
+                        token: null
                     });
                 }
             } else if (results.labList) {
                 // STUDENTE DEVE ISCRIVERSI, `results.labList` E' LA LISTA DEI LABORATORI
-                res.status(200).json({
-                    code: 1,
-                    student,
-                    labs: results.labList,
-                    wasSubscribed: false
+                jwt.sign({
+                    id: null,
+                    type: 'student'
+                }, privateKey, { expiresIn: 60 * 5 }, (err, token) => {
+                    if (err) {
+                        next(err);
+                    } else {
+                        res.status(200).json({
+                            code: 1,
+                            student,
+                            labs: results.labList,
+                            wasSubscribed: false,
+                            token
+                        });
+                    }
                 });
             } else {
                 throw new Error('Risultato inaspettato');
@@ -165,21 +187,22 @@ router.get('/:studentID', (req, res) => {
         .catch(err => {
             res.status(err.status || 500).json({
                 code: -1,
-                message: err.message
+                message: err.message,
+                token: null
             });
         });
     }
 });
 
+router.use('*', authUser);
+
 /**
+ * Get student's labs
  * @method post
  * @param {string} studentID
- * @param {string} h1
- * @param {string} h2
- * @param {string} h3
- * @param {string} h4
+ * @param {object} labs
  */
-router.post('/:studentID/labs', (req, res, next) => {
+router.post('/:studentID/labs', isStudent, (req, res, next) => {
     const studentID = +req.params.studentID || -1;
     const { h1, h2, h3, h4 } = req.body.labs;
     let labs = [ h1, h2, h3, h4 ];
@@ -240,23 +263,26 @@ router.post('/:studentID/labs', (req, res, next) => {
             });
         }).then(sub => res.status(200).json({
             code: 1,
-            labs
+            labs,
+            token: req.jwtNewToken
         }))
         .catch(err => res.status(err.status || 500).json({
             code: -1,
             message: err.message,
-            target: err.target || 0
+            target: err.target || 0,
+            token: req.jwtNewToken
         }));
     } else {
         res.status(400).json({
             code: -1,
             message: 'Laboratori nulli',
-            target: 0
+            target: 0,
+            token: req.jwtNewToken
         });
     }
 });
 
-function fetchAvabileLabs(classLabel) {
+const fetchAvabileLabs = classLabel => {
     return new Promise((resolve, reject) => {
         let classes;
         let labList = [];
@@ -314,7 +340,7 @@ function fetchAvabileLabs(classLabel) {
             resolve({ labList });
         }).catch(err => reject(err));
     });
-}
+};
 
 
 module.exports = router;
