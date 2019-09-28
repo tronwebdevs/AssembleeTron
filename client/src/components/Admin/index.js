@@ -11,6 +11,7 @@ import ImportAssemblyCard from './ImportAssemblyCard';
 import InfoCard from './InfoCard';
 import InfoForm from './InfoForm';
 import LabsTable from './LabsTable';
+import PageLoading from './PageLoading';
 
 export {
     AuthRequired,
@@ -25,5 +26,6 @@ export {
     ImportAssemblyCard,
     InfoCard,
     InfoForm,
-    LabsTable
+    LabsTable,
+    PageLoading
 };

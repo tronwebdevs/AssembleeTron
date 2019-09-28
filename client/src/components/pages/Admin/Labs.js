@@ -3,13 +3,13 @@ import { connect } from "react-redux";
 import { deleteAssemblyLab } from "../../../actions/assemblyActions";
 import PropTypes from "prop-types";
 import { Page, Grid, Card, Button, Alert } from "tabler-react";
-import { SiteWrapper, LabsTable, LabModal } from "../../Admin/";
+import { SiteWrapper, LabsTable, LabModal, PageLoading } from "../../Admin/";
 
 const Labs = ({ 
     assembly, 
     deleteAssemblyLab 
 }) => {
-	const { labs } = assembly;
+	const { labs, pendings } = assembly;
 
 	const [displayMessage, setDisplayMessage] = useState({
 		type: null,
@@ -33,52 +33,56 @@ const Labs = ({
 						</Grid.Col>
 					) : null}
 				</Grid.Row>
-				<Grid.Row>
-					<Grid.Col width={12} xl={assembly.exists ? 9 : 12}>
-						<Card>
-							<LabsTable
-								labs={labs}
-								setLabDisplay={setLabDisplay}
-								deleteAssemblyLab={deleteAssemblyLab}
-                                setDisplayMessage={setDisplayMessage}
-                                setShowModal={setShowModal}
-							/>
-						</Card>
-					</Grid.Col>
-                    {assembly.exists ? (
-                        <Grid.Col width={12} xl={3}>
-                            <Card>
-                                <Card.Body>
-                                    <Button
-                                        type="button"
-                                        color="success"
-                                        block
-                                        onClick={() => setShowModal(true)}
-                                    >
-                                        Crea
-                                    </Button>
-                                    <Button
-                                        color="outline-warning"
-                                        block
-                                        onClick={() => alert("Not implemented yet")}
-                                    >
-                                        Controlla
-                                    </Button>
-                                </Card.Body>
-                            </Card>
-                        </Grid.Col>
-                    ) : null}
-				</Grid.Row>
-				<LabModal
-					showModal={showModal}
-					handleClose={() => setShowModal(false)}
-					id={labs.length + 1}
-					lab={labDisplay.lab}
-					action={labDisplay.action}
-					handleReset={() => setLabDisplay({ action: "create", lab: {} })}
-                    setDisplayMessage={setDisplayMessage}
-                    setLabDisplay={setLabDisplay}
-				/>
+                {pendings.assembly === false ? (
+                    <React.Fragment>
+                        <Grid.Row>
+                            <Grid.Col width={12} xl={assembly.exists ? 9 : 12}>
+                                <Card>
+                                    <LabsTable
+                                        labs={labs}
+                                        setLabDisplay={setLabDisplay}
+                                        deleteAssemblyLab={deleteAssemblyLab}
+                                        setDisplayMessage={setDisplayMessage}
+                                        setShowModal={setShowModal}
+                                    />
+                                </Card>
+                            </Grid.Col>
+                            {assembly.exists ? (
+                                <Grid.Col width={12} xl={3}>
+                                    <Card>
+                                        <Card.Body>
+                                            <Button
+                                                type="button"
+                                                color="success"
+                                                block
+                                                onClick={() => setShowModal(true)}
+                                            >
+                                                Crea
+                                            </Button>
+                                            <Button
+                                                color="outline-warning"
+                                                block
+                                                onClick={() => alert("Not implemented yet")}
+                                            >
+                                                Controlla
+                                            </Button>
+                                        </Card.Body>
+                                    </Card>
+                                </Grid.Col>
+                            ) : null}
+                        </Grid.Row>
+                        <LabModal
+                            showModal={showModal}
+                            handleClose={() => setShowModal(false)}
+                            id={labs.length + 1}
+                            lab={labDisplay.lab}
+                            action={labDisplay.action}
+                            handleReset={() => setLabDisplay({ action: "create", lab: {} })}
+                            setDisplayMessage={setDisplayMessage}
+                            setLabDisplay={setLabDisplay}
+                        />
+                    </React.Fragment>
+                ) : <PageLoading />}
 			</Page.Content>
 		</SiteWrapper>
 	);

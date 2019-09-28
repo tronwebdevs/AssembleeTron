@@ -21,7 +21,6 @@ export const authAdmin = password => dispatch => {
     return new Promise((resolve, reject) => {
         axios.post('/api/admins/auth', { password })
             .then(({ data }) => {
-                console.log(data);
                 if (data.code === 1) {
                     dispatch({
                         type: ADMIN_AUTHED,

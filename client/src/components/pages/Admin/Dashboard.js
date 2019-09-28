@@ -3,9 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Page, Grid, Card, Alert } from "tabler-react";
-import { SiteWrapper, SmallCard, DashAssemblyRow } from '../../Admin/';
+import { SiteWrapper, SmallCard, DashAssemblyRow, PageLoading } from '../../Admin/';
 
-const Dashboard = ({ assembly, errorMessage }) => {
+const Dashboard = ({
+    assembly, 
+    errorMessage
+}) => {
 
     const { stats, info, pendings } = assembly;
 
@@ -62,17 +65,22 @@ const Dashboard = ({ assembly, errorMessage }) => {
                         </Grid.Col>
                     </Grid.Row>
                 ) : null}
-                <Grid.Row cards={true}>
-                    {cards.map((card, index) => <SmallCard key={index} {...card} />)}
-                </Grid.Row>
-                {pendings.assembly === false ? renderAssemblyInfo() : null}
+                {pendings.assembly === false ? (
+                    <React.Fragment>
+                        <Grid.Row cards={true}>
+                            {cards.map((card, index) => <SmallCard key={index} {...card} />)}
+                        </Grid.Row>
+                        {renderAssemblyInfo()}
+                    </React.Fragment>
+                ) : <PageLoading />}
             </Page.Content>
         </SiteWrapper>
     );
 };
 
 Dashboard.propTypes = {
-    assembly: PropTypes.object.isRequired
+    assembly: PropTypes.object.isRequired,
+    errorMessage: PropTypes.string
 };
 
 const mapStateToProps = state => ({

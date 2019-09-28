@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Page, Grid, Card, Alert, Button } from "tabler-react";
 import { updateAssemblyInfo } from '../../../actions/assemblyActions';
-import { SiteWrapper, InfoForm, InfoCard } from '../../Admin/';
+import { SiteWrapper, InfoForm, InfoCard, PageLoading } from '../../Admin/';
 import moment from 'moment';
 
 const Info = ({
@@ -119,15 +119,17 @@ const Info = ({
                         </Grid.Col>
                     ) : ''}
                 </Grid.Row>
-                <Grid.Row>
-                    <Grid.Col width={12}>
-                        <Card>
-                            <Card.Body>
-                                {pendings.assembly === false || pendings.info === false ? checkIfExists(info) : ''}
-                            </Card.Body>
-                        </Card>
-                    </Grid.Col>
-                </Grid.Row>
+                {pendings.assembly === false ? (
+                    <Grid.Row>
+                        <Grid.Col width={12}>
+                            <Card>
+                                <Card.Body>
+                                    {pendings.assembly === false || pendings.info === false ? checkIfExists(info) : ''}
+                                </Card.Body>
+                            </Card>
+                        </Grid.Col>
+                    </Grid.Row>
+                ) : <PageLoading/>}
             </Page.Content>
         </SiteWrapper>
     );
