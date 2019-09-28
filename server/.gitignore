@@ -28,3 +28,4 @@ app.config.json
 .vs-code/
 
 backups/
+config.json

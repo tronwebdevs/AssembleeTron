@@ -3,8 +3,10 @@ import PropTypes from "prop-types";
 import { Card, Text, Button, Table } from 'tabler-react';
 import { Spinner } from 'reactstrap';
 import moment from 'moment';
+import axios from 'axios';
 
 const ImportAssemblyCard = ({ 
+    authToken,
     loadAssembly,
     setError,
     isSubmitting
@@ -14,16 +16,22 @@ const ImportAssemblyCard = ({
 
     useEffect(() => {
         async function fetchBackups() {
-            const fetchResult = await fetch('/api/assembly/backups');
-            const result = await fetchResult.json();
-            if (result.code === 1) {
-                setBackups(result.backups);
+            const resp = await axios.get('/api/assembly/backups', {
+                headers: { Authorization: `Bearer ${authToken}`}
+            });
+            const { data, response } = resp;
+            if (data && data.code === 1) {
+                setBackups(data.backups);
             } else {
-                setError(result.message || 'Errore inaspettato');
+                let errorMessage = 'Errore inaspettato';
+                if (response && response.data && response.data.message) {
+                    errorMessage = response.data.message;
+                }
+                setError(errorMessage);
             }
         }
         fetchBackups();
-      }, [setError]);
+      }, [setError, authToken]);
 
 	return (
 		<Card title="Backup">
@@ -67,6 +75,7 @@ const ImportAssemblyCard = ({
 };
 
 ImportAssemblyCard.propTypes = {
+    authToken: PropTypes.string.isRequired,
     loadAssembly: PropTypes.func.isRequired,
     setError: PropTypes.func.isRequired,
     isSubmitting: PropTypes.bool.isRequired

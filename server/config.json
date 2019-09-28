@@ -1,11 +1,15 @@
 {
     "sequelize": {
         "db_database": "AssembleeTron",
-        "db_username": "birbo",
-        "db_password": "Birbo2002_",
+        "db_username": "root",
+        "db_password": "Atomizzati2020",
         "db_options": {
-            "host": "192.168.1.15",
-            "dialect": "mysql",
+            "host": "localhost",
+            "dialect": "mariadb",
+            "dialectOptions": {
+                "useUTC": false,
+                "timezone": "Etc/GMT0"
+            },
             "pool": {
                 "max": 100,
                 "acquire": 30000,

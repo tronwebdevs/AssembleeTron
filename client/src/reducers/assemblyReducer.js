@@ -112,7 +112,7 @@ export default function (state = initialState, { payload, type }) {
 		case ERROR_IN_ASSEMBLY_FETCH:
 			return {
 				...state,
-				exists: payload.exists,
+				exists: payload.exists || state.exists,
 				info: payload.info || {},
 				labs: payload.labs || [],
 				students: payload.students || [],

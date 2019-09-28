@@ -10,6 +10,7 @@ import moment from 'moment';
 const uuid = require('uuid/v4');
 
 const CreateAssembly = ({
+    admin,
     assembly,
     createAssemblyInfo,
     loadAssembly
@@ -130,6 +131,7 @@ const CreateAssembly = ({
                 <Grid.Row cards={true}>
                     <Grid.Col width={12}>
                         <ImportAssemblyCard 
+                            authToken={admin.token}
                             setError={message => setDisplayMessage({
                                 type: 'danger',
                                 message
@@ -145,13 +147,15 @@ const CreateAssembly = ({
 };
 
 CreateAssembly.propTypes = {
-	assembly: PropTypes.object.isRequired,
+    assembly: PropTypes.object.isRequired,
+    admin: PropTypes.object.isRequired,
     createAssemblyInfo: PropTypes.func.isRequired,
     loadAssembly: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-    assembly: state.assembly
+    assembly: state.assembly,
+    admin: state.admin
 });
 
 export default connect(mapStateToProps, { createAssemblyInfo, loadAssembly })(CreateAssembly);
