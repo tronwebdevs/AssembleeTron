@@ -1,0 +1,19 @@
+{
+    "sequelize": {
+        "db_database": "database name",
+        "db_username": "username",
+        "db_password": "password",
+        "db_options": {
+            "host": "ip or localhost",
+            "dialect": "mysql",
+            "pool": {
+                "max": 100,
+                "acquire": 30000,
+                "idle": 10000
+            },
+            "logging": false
+        }
+    },
+    "adminPassword": "admin password",
+    "privateKey": "secret key"
+}
