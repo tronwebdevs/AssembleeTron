@@ -1,17 +1,16 @@
 "use strict";
 const express = require('express');
 const router = express.Router();
-const Sequleize = require('sequelize');
-const { Op } = Sequleize;
 const jwt = require('jsonwebtoken');
 
+const Assembly = require('../models/Assembly');
+const Laboratory = require('../models/Laboratory');
 const Student = require('../models/Student');
-const Sub = require('../models/Sub');
-const Lab = require('../models/Lab');
-const LabClass = require('../models/LabClass');
+const Subscribed = require('../models/Subscribed');
 
 const authUser = require('../utils/AuthUser');
 const { isStudent } = require('../utils/CheckUserType');
+const SectionsList = require('../utils/SectionsList');
 
 const { privateKey } = require('../config');
 
@@ -25,13 +24,45 @@ router.get('/labs', authUser, isStudent, (req, res, next) => {
     const { classLabel } = req.query;
 
     if (typeof classLabel === 'string') {
-        fetchAvabileLabs(classLabel).then(result => {
-            res.status(200).json({
-                code: 1,
-                labs: result.labList,
-                token: req.jwtNewToken
-            });
-        }).catch(err => next(err));
+        // TODO: Replade this find active with find specific by ID 
+        //       given in the request by the frontend
+        let allSections;
+        let fetchedLabs;
+        Assembly.find({ active: true })
+            .then(results => {
+                allSections = results[0].sections;
+                return Laboratory.find();
+            })
+            .then(results => {
+                fetchedLabs = results;
+                let promiseArray = [];
+                fetchedLabs.forEach(lab => {
+                    for (let i = 1; i <= 4; i++) {
+                        promiseArray.push(
+                            Subscribed.countDocuments({ 
+                                labs: { 
+                                    ['h' + i]: lab._id 
+                                } 
+                            })
+                        );
+                    }
+                });
+                return Promise.all(promiseArray);
+            })
+            .then(results => {
+                fetchedLabs = fetchedLabs.map(lab => {
+                    for (let i = 1; i <= 4; i++) {
+                        lab.info['h' + i].seats = results.find({ _id: lab._id });
+                        lab.info['h' + i].sections = SectionsList.parse(lab.info['h' + i].sections, allSections).getList();
+                    }
+                });
+                res.status(200).json({
+                    code: 1,
+                    labs: result.labList,
+                    token: req.jwtNewToken
+                });
+            })
+            .catch(err => next(err));
     } else {
         next(new Error('Parametri non validi'));
     }

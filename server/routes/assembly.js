@@ -5,11 +5,10 @@ const moment = require('moment');
 const fs = require('fs-extra');
 const path = require('path');
 
+const Assembly = require('../models/Assembly');
+const Laboratory = require('../models/Laboratory');
 const Student = require('../models/Student');
-const Sub = require('../models/Sub');
-const Lab = require('../models/Lab');
-const LabClass = require('../models/LabClass');
-const AssemblyInfo = require('../models/AssemblyInfo');
+const Subscribed = require('../models/Subscribed');
 
 const authUser = require('../utils/AuthUser');
 const { isAdmin, isStudent } = require('../utils/CheckUserType');
@@ -23,11 +22,55 @@ const assembliesBackup = path.join(__dirname, '../backups');
  * @public
  */
 router.get('/info', (req, res, next) => {
-    getInfo()
-        .then(result => res.status(200).json(result))
-        .catch(err => next(err));
+    if (req.userType == 'admin') {
+        Assembly.find()
+            .then(result => res.status(200).json({
+                code: 1,
+                assembly: result,
+                token: req.jwtNewToken
+            }))
+            .catch(err => next(err));
+    } else {
+        Assembly.find({ active: true })
+            .then(results => {
+                if (results.length === 0) {
+                    throw new Error('Nessuna assemblea in programma');
+                } else {
+                    const result = results[0];
+                    if (moment(result.date).diff(moment()) < 0) {
+                        error.code = 0;
+                        error.message = 'Nessuna assemblea in programma';
+                        throw error;
+                    } else {
+                        if (moment(result.subsctiption.open).diff(moment()) > 0) {
+                            error.code = 1;
+                            error.message = 'La iscrizioni sono attualmente chiuse, torna più tardi';
+                            throw error;
+                        } else {
+                            if (moment(result.subsctiption.close).diff(moment()) > 0) {
+                                res.status(200).json({
+                                    code: 2,
+                                    info: {
+                                        id: result._id,
+                                        title: result.title,
+                                        date: result.date,
+                                        subOpen: result.subsctiption.open,
+                                        subClose: result.subsctiption.close
+                                    }
+                                });
+                            } else {
+                                error.code = 3;
+                                error.message = 'La iscrizioni sono terminate';
+                                throw error;
+                            }
+                        }
+                    }
+                }
+            });
+    }
 });
 
+// Filter next routes, requesting the user to be authenticated
 router.use('*', authUser);
 
 /**
@@ -572,46 +615,7 @@ router.get('/students', isAdmin, (req, res, next) => {
  * @param {boolean} forseResponse 
  * @private
  */
-const getInfo = (forseResponse = false) => {
-    let error = new Error('Errore');
-    return AssemblyInfo.findAndCountAll().then(results => {
-        if (results.count > 0) {
-            const result = results.rows[0];
-            if (moment(result.date).diff(moment()) < 0 && !forseResponse) {
-                error.code = 0;
-                error.message = 'Nessuna assemblea in programma';
-                throw error;
-            } else {
-                if (moment(result.subOpen).diff(moment()) > 0 && !forseResponse) {
-                    error.code = 1;
-                    error.message = 'La iscrizioni sono attualmente chiuse, torna più tardi';
-                    throw error;
-                } else {
-                    if (moment(result.subClose).diff(moment()) > 0 || forseResponse) {
-                        return {
-                            code: 2,
-                            info: {
-                                uuid: result.uuid,
-                                title: result.title,
-                                date: result.date,
-                                subOpen: result.subOpen,
-                                subClose: result.subClose
-                            }
-                        };
-                    } else {
-                        error.code = 3;
-                        error.message = 'La iscrizioni sono terminate';
-                        throw error;
-                    }
-                }
-            }
-        } else {
-            error.code = 0;
-            error.message = 'Nessuna assemblea in programma';
-            throw error;
-        }
-    });
-};
+const getInfo = (forseResponse = false) => ({});
 
 /**
  * Get assembly laboratories
