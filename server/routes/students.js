@@ -322,11 +322,10 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
  * @param {String} section
  * @private
  */
-const fetchAvabileLabs = section => 
-    new Promise((resolve, reject) => {
+const fetchAvabileLabs = section => {
         let assembly;
         let labs;
-        Assembly.find({ active: true })
+        return Assembly.find({ active: true })
             .then(results => {
                 // Use first assembly ignoring the others actives
                 assembly = results[0].toObject();
@@ -357,6 +356,6 @@ const fetchAvabileLabs = section =>
                 resolve(labs);
             })
             .catch(err => reject(err));
-    });
+};
 
 module.exports = router;

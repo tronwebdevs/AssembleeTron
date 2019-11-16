@@ -108,8 +108,8 @@ app.get('/api/test/std', (req, res, next) => {
 });
 
 app.use('/api/students', require('./routes/students'));
-// app.use('/api/assembly', require('./routes/assembly'));
-// app.use('/api/admins', require('./routes/admins'));
+app.use('/api/assembly', require('./routes/assembly'));
+app.use('/api/admins', require('./routes/admins'));
 
 app.use((err, req, res, next) => 
     res.status(500).json({
