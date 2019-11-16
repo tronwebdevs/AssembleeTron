@@ -12,28 +12,28 @@ const Laboratory = new Schema({
                 type: Number,
                 min: 0
             },
-            sections: [Schema.Types.ObjectId]
+            sections: [String]
         },
         h2: {
             seats: {
                 type: Number,
                 min: 0
             },
-            sections: [Schema.Types.ObjectId]
+            sections: [String]
         },
         h3: {
             seats: {
                 type: Number,
                 min: 0
             },
-            sections: [Schema.Types.ObjectId]
+            sections: [String]
         },
         h4: {
             seats: {
                 type: Number,
                 min: 0
             },
-            sections: [Schema.Types.ObjectId]
+            sections: [String]
         }
     },
     two_h: {

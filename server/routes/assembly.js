@@ -4,6 +4,7 @@ const router = express.Router();
 const moment = require('moment');
 const fs = require('fs-extra');
 const path = require('path');
+const { ObjectId } = mongoose.Types;
 
 const Assembly = require('../models/Assembly');
 const Laboratory = require('../models/Laboratory');

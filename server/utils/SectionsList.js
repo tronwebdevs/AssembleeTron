@@ -1,4 +1,8 @@
 "use strict";
+/**
+ * Class to hold and parse sections lists
+ * @author Davide Testolin
+ */
 
 class SectionsList {
 
@@ -15,8 +19,8 @@ class SectionsList {
      * @param {String} section 
      * @return {boolean}
      */
-    contains(section) {
-        return this._list.contains(section);
+    includes(section) {
+        return this._list.includes(section);
     }
 
     /**
@@ -36,35 +40,50 @@ class SectionsList {
      */
     static parse(list, completeList) {
         let parsedList = [];
+        // Check if array are identical
         if (list === completeList) {
             parsedList = list;
         } else {
-            if (list.length > 0 && completeList.length > 0) {
-                switch (list[0]) {
-                    case '@1':
-                        parsedList = completeList.filter(section => section[0] === 1);
-                        break;
-                    case '@2':
-                        parsedList = completeList.filter(section => section[0] === 2);
-                        break;
-                    case '@3':
-                        parsedList = completeList.filter(section => section[0] === 3);
-                        break;
-                    case '@4':
-                        parsedList = completeList.filter(section => section[0] === 4);
-                        break;
-                    case '@5':
-                        parsedList = completeList.filter(section => section[0] === 5);
-                        break;
-                    case '@a':
-                    default:
-                        parsedList = completeList;
-                        break;
+            // Check if both arrays are empty
+            if (completeList.length < 0) throw new Error('Complete list is empty!');
+            if (list.length < 0) throw new Error('Complete list is empty!');
+
+            // Check if in the list array there is the tag ALL
+            let indexAll = list.indexOf('@a');
+            if (indexAll !== -1) {
+                // Remove tag from list array
+                list.splice(indexAll, 1);
+                // Set final array to contains all sections
+                parsedList = completeList;
+            } else {
+                // Check for every grade if tag is present in the list array
+                let found = [];
+                for (let i = 1; i <= 5; i++) {
+                    let index = list.indexOf('@' + i);
+                    if (index !== -1 && !found.includes(i)) {
+                        // Remove tag from list array
+                        list.splice(index, 1);
+                        // Save tag to prevent recursion
+                        found.push(i);
+                        // Concat sections to final array
+                        parsedList = parsedList.concat(
+                            completeList.filter(section => section[0] === String(i))
+                        );
+                    }
                 }
-                let exclude = list.filter(section => section[0] === '-');
-                parsedList = parsedList.filter(section => !exclude.includes(section));
             }
+
+            // Concat to final list sections prensets in the original array
+            parsedList = parsedList.concat(list);
+
+            // First filter sections to remove (es "3IC")
+            let exclude1 = list.filter(section => section[0] === '-');
+            // Second filter section removed (es "-3IC")
+            let exclude2 = exclude1.map(section => section.substr(1));
+            // Filter final list with sections to remove
+            parsedList = parsedList.filter(section => !exclude1.includes(section) && !exclude2.includes(section));
         }
+        // Return final array
         return new SectionsList(parsedList);
     }
 }

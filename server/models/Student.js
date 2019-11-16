@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const Student = new Schema({
+    studentId: Number,
     name: String,
     surname: String,
     section: String
