@@ -11,7 +11,7 @@ const LabsTable = ({ labs }) => (
                     <Card.Body>
                         <Grid.Row>
                             {labs.map((lab, index) => (
-                                <div className={"col-12 " + (index !== 3 ? "mb-3 border-bottom" : "")}>
+                                <div className={"col-12 " + (index !== 3 ? "mb-3 border-bottom" : "")} key={index}>
                                     <Grid.Row>
                                         <Grid.Col width={3} className="py-2 pr-0">
                                             <span className="text-muted d-block text-center">Ora {index + 1}:</span>

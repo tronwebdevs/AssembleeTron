@@ -24,7 +24,7 @@ const LabSelector = ({
             <DefaultOption h={h} />
             {
                 labs.map((lab, index) => {
-                    if (lab['seatsH' + h] > 0) {
+                    if (lab.info['h' + h].seats > 0) {
                         return <Option key={index} lab={lab} h={h} />
                     } else {
                         return '';

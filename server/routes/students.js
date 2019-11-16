@@ -14,6 +14,7 @@ const Subscribed = require('../models/Subscribed');
 const authUser = require('../utils/AuthUser');
 const { isStudent } = require('../utils/CheckUserType');
 const SectionsList = require('../utils/SectionsList');
+const { fetchAvabileLabs } = require('../utils/LabsFunctions');
 
 const { privateKey } = require('../config');
 
@@ -315,47 +316,5 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
         });
     }
 });
-
-/* UTILS FUNCTIONS */
-/**
- * Get avabile labs for a specific section
- * @param {String} section
- * @private
- */
-const fetchAvabileLabs = section => {
-        let assembly;
-        let labs;
-        return Assembly.find({ active: true })
-            .then(results => {
-                // Use first assembly ignoring the others actives
-                assembly = results[0].toObject();
-                return Laboratory.find();
-            })
-            .then(results => {
-                labs = results;
-                let promiseArray = [];
-                labs = labs.map(lab => {
-                    lab = lab.toObject();
-                    for (let i = 1; i <= 4; i++) {
-                        promiseArray.push(
-                            Subscribed.countDocuments({ ['h' + i]: ObjectId(lab._id) })
-                        );
-                        lab.info['h' + i].sections = SectionsList.parse(lab.info['h' + i].sections, assembly.sections).getList();
-                    }
-                    return lab;
-                });
-                return Promise.all(promiseArray);
-            })
-            .then(results => {
-                labs = labs.map((lab, index) => {
-                    for (let i = 1; i <= 4; i++) {
-                        lab.info['h' + i].seats -= results[index * 4 + (i - 1)];
-                    }
-                    return lab;
-                });
-                resolve(labs);
-            })
-            .catch(err => reject(err));
-};
 
 module.exports = router;

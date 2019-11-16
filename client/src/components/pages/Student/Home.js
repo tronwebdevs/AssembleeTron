@@ -20,7 +20,7 @@ const Home = ({
         }} />
     );
 
-    if (student.profile.ID === null) {
+    if (student.profile.studentId === null) {
         if (assembly.pendings.info === false) {
             if (error) {
                 return <LoginCard title={error} />;

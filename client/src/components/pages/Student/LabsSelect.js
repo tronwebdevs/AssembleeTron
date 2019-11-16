@@ -12,7 +12,7 @@ const LabsSelect = ({ student }) => {
     
     const [globalError, setGlobalError] = useState(null);
 
-    if (profile.ID === null) {
+    if (profile.studentId === null) {
         return <Redirect to={{ pathname: "/" }} />;
     } else if (labs.length > 0) {
         return <Redirect to={{ pathname: "/conferma" }} />;

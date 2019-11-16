@@ -13,7 +13,7 @@ const ConfirmSub = ({
 
     const { profile, labs } = student;
 
-    if (profile.ID === null) {
+    if (profile.studentId === null) {
         return <Redirect to={{ pathname: "/" }} />;
     } else if (labs.length === 0) {
         return <Redirect to={{ pathname: "/iscrizione" }} />;
