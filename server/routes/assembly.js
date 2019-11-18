@@ -34,12 +34,12 @@ router.get('/info', (req, res, next) => {
             }))
             .catch(err => next(err));
     } else {
-        Assembly.find({ active: true })
+        Assembly.find()
             .then(results => {
                 if (results.length === 0) {
                     throw new Error('Nessuna assemblea in programma');
                 } else {
-                    const assembly = results[0];
+                    let assembly = results[0];
                     if (moment(assembly.date).diff(moment()) < 0) {
                         error.code = 0;
                         error.message = 'Nessuna assemblea in programma';
@@ -92,17 +92,17 @@ router.get('/', isAdmin, (req, res, next) => {
         })
         .then(subs => {
             students = students.map(student => {
-                let sub = subs.find(s => s.studentId.equals(student.studentId)) || null;
+                let sub = subs.find(s => s.studentId === student.studentId) || null;
                 student = student.toObject();
-                student.labs = sub !== null ? [
-                    sub.h1, 
-                    sub.h2, 
-                    sub.h3, 
-                    sub.h4
-                ] : null;
+                student.labs = sub !== null ? {
+                    h1: sub.h1, 
+                    h2: sub.h2, 
+                    h3: sub.h3, 
+                    h4: sub.h4
+                } : null;
                 return student;
             });
-            return Assembly.find({ active: true });
+            return Assembly.find();
         })
         .then(results => 
             res.status(200).json({
@@ -135,9 +135,9 @@ router.delete('/', isAdmin, (req, res, next) => {
     const { password } = req.body;
     if (password === adminPassword) {
         Assembly
-            .remove({})
-            .then(() => Laboratory.remove({}))
-            .then(() => Subscribed.remove({}))
+            .deleteMany({})
+            .then(() => Laboratory.deleteMany({}))
+            .then(() => Subscribed.deleteMany({}))
             .then(() => 
                 res.status(200).json({ 
                     code: 1,
@@ -274,7 +274,6 @@ router.delete('/', isAdmin, (req, res, next) => {
 //     }
 // });
 
-// TODO: TEST
 /**
  * Update assembly info
  * @method put
@@ -283,7 +282,7 @@ router.delete('/', isAdmin, (req, res, next) => {
  */
 router.put('/info', isAdmin, (req, res, next) => {
     const { 
-        id, 
+        _id, 
         title, 
         date, 
         subOpen, 
@@ -292,7 +291,7 @@ router.put('/info', isAdmin, (req, res, next) => {
         sections 
     } = req.body.info;
 
-    Assembly.findByIdAndUpdate(id, {
+    Assembly.findByIdAndUpdate(_id, {
         title, date,
         subscription: {
             open: moment(subOpen).toDate(),
@@ -300,13 +299,17 @@ router.put('/info', isAdmin, (req, res, next) => {
         },
         active, sections
     }, { new: true })
-        .then(result => 
-            res.status(200).json({
-                code: 1,
-                info: result,
-                token: req.jwtNewToken
-            })
-        )
+        .then(result => {
+            if (result) {
+                res.status(200).json({
+                    code: 1,
+                    info: result,
+                    token: req.jwtNewToken
+                })
+            } else {
+                throw new Error('Assemblea non trovata (id: ' + _id + ')');
+            }
+        })
         .catch(err => next(err));
 });
 
@@ -319,7 +322,7 @@ router.put('/info', isAdmin, (req, res, next) => {
  */
 router.post('/info', isAdmin, (req, res, next) => {
     const { 
-        id, 
+        _id, 
         title, 
         date, 
         subOpen, 

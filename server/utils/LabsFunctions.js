@@ -13,7 +13,7 @@ const SectionsList = require("./SectionsList");
  * @private
  */
 const fetchAvabileLabs = async section => {
-	const results = await Assembly.find({ active: true });
+	const results = await Assembly.find();
 	// Use first assembly ignoring the others actives
 	let assembly = results[0].toObject();
 	let labs = await Laboratory.find();

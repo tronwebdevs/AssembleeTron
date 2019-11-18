@@ -30,7 +30,7 @@ const DashAssemblyRow = ({ info }) => {
                         text: (
                             <React.Fragment>
                                 {moment(info.date).format('DD/MM/YYYY')}
-                                <small className="text-muted">({displayDaysLeft(moment(info.date).diff(moment(), 'days'))})</small>
+                                <small className="text-muted">{' '}({displayDaysLeft(moment(info.date).diff(moment(), 'days'))})</small>
                             </React.Fragment>
                         )
                     },
@@ -50,20 +50,28 @@ const DashAssemblyRow = ({ info }) => {
                     {
                         title: "Stato",
                         text: (
-                            moment(info.subOpen).diff(moment()) < 0 && moment(info.subClose).diff(moment()) > 0 ?
+                            moment(info.subscription.open).diff(moment()) < 0 && moment(info.subscription.close).diff(moment()) > 0 ?
                             <Badge color="success">Aperte</Badge> :
                             <Badge color="danger">Chiuse</Badge>
                         )
                     },
                     {
                         title: "Apertura",
-                        text: moment(info.subOpen).format('HH:mm DD/MM/YYYY')
+                        text: moment(info.subscription.open).format('HH:mm DD/MM/YYYY')
                     },
                     {
                         title: "Chiusura",
-                        text: moment(info.subClose).format('HH:mm DD/MM/YYYY')
-                    },
+                        text: moment(info.subscription.close).format('HH:mm DD/MM/YYYY')
+                    }
                 ]}
+                button={(
+                    <Link
+                        to="/gestore/informazioni"
+                        className="btn btn-block btn-outline-info"
+                    >
+                        Statistiche
+                    </Link>
+                )}
             />
             <Grid.Col width={12} md={4}>
                 <Card title="Elimina assemblea">

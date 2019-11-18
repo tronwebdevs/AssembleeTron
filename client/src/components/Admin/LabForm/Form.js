@@ -18,26 +18,17 @@ const CustomForm = ({
 	<Form onSubmit={handleSubmit}>
 		<Form.Group>
 			<Grid.Row className="mb-2">
-				<Grid.Col width={12} md={2}>
+				<Grid.Col width={12} md={7} className="mb-2 mb-md-0">
 					<Form.Input
-						type="number"
-						name="ID"
-						value={values.ID}
-						error={errors.ID}
+						placeholder="Generato automaticamente"
+						name="_id"
+						value={values._id}
+						error={errors._id}
 						readOnly
 						onChange={handleChange}
 					/>
 				</Grid.Col>
-				<Grid.Col width={12} md={7}>
-					<Form.Input
-						placeholder="Titolo"
-						name="title"
-						value={values.title}
-						error={errors.title}
-						onChange={handleChange}
-					/>
-				</Grid.Col>
-				<Grid.Col width={12} md={3}>
+				<Grid.Col width={12} md={5}>
 					<Form.Input
 						placeholder="Aula"
 						name="room"
@@ -47,6 +38,17 @@ const CustomForm = ({
 					/>
 				</Grid.Col>
 			</Grid.Row>
+            <Grid.Row className="mb-2">
+                <Grid.Col width={12}>
+					<Form.Input
+						placeholder="Titolo"
+						name="title"
+						value={values.title}
+						error={errors.title}
+						onChange={handleChange}
+					/>
+				</Grid.Col>
+            </Grid.Row>
 			<Grid.Row>
 				<Grid.Col width={12}>
 					<Form.Textarea

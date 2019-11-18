@@ -74,7 +74,6 @@ const Labs = ({
                         <LabModal
                             showModal={showModal}
                             handleClose={() => setShowModal(false)}
-                            id={labs.length + 1}
                             lab={labDisplay.lab}
                             action={labDisplay.action}
                             handleReset={() => setLabDisplay({ action: "create", lab: {} })}

@@ -25,9 +25,10 @@ const Info = ({
             onSubmit={
                 (
                     { 
-                        uuid, title, date, 
+                        _id, title, date, 
                         subOpenDate, subOpenTime, 
-                        subCloseDate, subCloseTime 
+                        subCloseDate, subCloseTime,
+                        sections
                     },
                     { setSubmitting, setErrors }
                 ) => {
@@ -54,12 +55,17 @@ const Info = ({
                             errors.subCloseDate = 'Le iscrizioni non possono chiudere prima di iniziare';
                         }
 
+                        if (sections.length < 0) {
+                            errors.sections = 'Nessuna classe potrà partecipare all\'assemblea';
+                        }
+
 
                         if (Object.entries(errors).length === 0) {
                             updateAssemblyInfo({
-                                uuid, title, date,
+                                _id, title, date,
                                 subOpen: subOpenMoment.format(),
-                                subClose: subCloseMoment.format()
+                                subClose: subCloseMoment.format(),
+                                sections: sections.map(({ value }) => value)
                             }).then(message => setDisplayMessage({
                                 type: 'success',
                                 message

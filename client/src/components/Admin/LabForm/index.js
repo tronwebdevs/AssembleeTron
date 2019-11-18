@@ -8,9 +8,9 @@ import PropTypes from "prop-types";
 import { Formik } from "formik";
 import Form from "./Form";
 import { Card } from "tabler-react";
+import SectionsList from '../../../utils/SectionsList';
 
 const LabForm = ({
-	id,
 	lab,
 	action,
 	handleReset,
@@ -44,10 +44,12 @@ const LabForm = ({
 				} con successo`
 			});
 		}
-	};
+    };
+    
+    const completeSectionsList = assembly.info.sections;
 
 	return (
-		<div id="form-card-wrapper">
+		<div id="form-card-wrapper" style={{ boxShadow: "0 0 8px #9E9E9E" }}>
 			<Card className="m-0 p-0">
 				<Card.Body>
 					<Card.Title>
@@ -56,56 +58,52 @@ const LabForm = ({
 					<Formik
 						enableReinitialize={true}
 						initialValues={{
-							ID: lab.ID || id,
+							_id: lab._id || "",
 							room: lab.room || "",
 							title: lab.title || "",
 							description: lab.description || "",
-							seatsH1: lab.seatsH1 || 0,
-							classesH1: (lab.classesH1 || []).map(cl => ({
+							seatsH1: lab.info ? lab.info.h1.seats : 0,
+							classesH1: (lab.info ? SectionsList.parse(lab.info.h1.sections, completeSectionsList).getList() : []).map(cl => ({
 								label: cl,
 								value: cl
 							})),
-							seatsH2: lab.seatsH2 || 0,
-							classesH2: (lab.classesH2 || []).map(cl => ({
+							seatsH2: lab.info ? lab.info.h2.seats : 0,
+							classesH2: (lab.info ? SectionsList.parse(lab.info.h2.sections, completeSectionsList).getList() : []).map(cl => ({
 								label: cl,
 								value: cl
 							})),
-							seatsH3: lab.seatsH3 || 0,
-							classesH3: (lab.classesH3 || []).map(cl => ({
+							seatsH3: lab.info ? lab.info.h3.seats : 0,
+							classesH3: (lab.info ? SectionsList.parse(lab.info.h3.sections, completeSectionsList).getList() : []).map(cl => ({
 								label: cl,
 								value: cl
 							})),
-							seatsH4: lab.seatsH4 || 0,
-							classesH4: (lab.classesH4 || []).map(cl => ({
+							seatsH4: lab.info ? lab.info.h4.seats : 0,
+							classesH4: (lab.info ? SectionsList.parse(lab.info.h4.sections, completeSectionsList).getList() : []).map(cl => ({
 								label: cl,
 								value: cl
 							})),
-							lastsTwoH: lab.lastsTwoH
+							two_h: lab.two_h
 						}}
 						validate={values => {
 							let errors = {};
-							if (values.ID !== lab.ID) {
+							if (values._id !== lab._id) {
 								const { labs } = assembly;
 								labs.forEach(lab => {
-									if (lab.ID === values.ID) {
-										errors.ID = "ID duplicato";
+									if (lab._id === values._id) {
+										errors._id = "ID duplicato";
 									}
 									if (lab.room === values.room.trim()) {
-										errors.room = `Classe identica al laboratorio ${
-											lab.ID
-										}`;
+										errors.room = `Aula identica al laboratorio "${lab.title}"`;
 									}
 									if (lab.title === values.title.trim()) {
-										errors.title = `Esiste gia' un laboratorio con questo titolo (${
-											lab.ID
-										})`;
+										errors.title = `Esiste gia' un laboratorio con questo titolo ("${lab.title}")`;
 									}
 									if (
 										lab.description ===
 											values.description.trim() &&
 										values.description !== "-"
 									) {
-										errors.description = "Classe duplicato";
+										errors.description = `Esiste gia' un laboratorio con questa descrizione ("${lab.title}")`;
 									}
 								});
 							}
@@ -117,8 +115,7 @@ const LabForm = ({
 								errors.room = "L'aula non puo' restare vuota";
 							}
 							if (values.description.trim() === "") {
-								errors.description =
-									"La descrizione non puo' restare vuota";
+								errors.description = "La descrizione non puo' restare vuota";
 							}
 
 							return errors;
@@ -126,7 +123,7 @@ const LabForm = ({
 						validateOnChange={false}
 						onSubmit={values => {
 							let lab = {
-								ID: values.ID,
+								_id: values._id,
 								room: values.room,
 								title: values.title,
 								description: values.description || "",
@@ -146,7 +143,7 @@ const LabForm = ({
 								classesH4: (values.classesH4 || []).map(
 									({ label }) => label
 								),
-								lastsTwoH: values.lastsTwoH
+								two_h: values.two_h
 							};
 							if (action === "edit") {
                                 updateAssemblyLab(lab)
@@ -187,9 +184,9 @@ const LabForm = ({
                                     assembly.students
 									.filter(
 										(std, pos, arr) =>
-											arr.findIndex(s => s.classLabel === std.classLabel) === pos
+											arr.findIndex(s => s.section === std.section) === pos
 									)
-									.map(std => std.classLabel)
+									.map(std => std.section)
                                     .sort()
                                 }
 							/>
@@ -202,7 +199,6 @@ const LabForm = ({
 };
 
 LabForm.propTypes = {
-	id: PropTypes.number.isRequired,
 	lab: PropTypes.object.isRequired,
 	action: PropTypes.string.isRequired,
 	handleReset: PropTypes.func.isRequired,

@@ -9,7 +9,7 @@ const StudentsTable = ({ students }) => {
     const columns = [
         {
             Header: 'ID',
-            accessor: 'ID'
+            accessor: 'studentId'
         },
         {
             Header: 'Nome',
@@ -21,16 +21,19 @@ const StudentsTable = ({ students }) => {
         },
         {
             Header: 'Classe',
-            accessor: 'classLabel'
+            accessor: 'section'
         },
         {
             Header: 'Partecipa',
-            accessor: 'subscribed',
+            accessor: 'labs',
             Cell: props => {
                 if (props.value !== null) {
                     const { value } = props;
-                    const part = ( value.h1 === value.h2 ) && (value.h3 === value.h4) && value.h1 === value.h4;
-                    return  <Badge color={part ? "success" : "danger"}>{part ? "Partecipa" : "Non partecipa"}</Badge>;
+                    const part = (value.h1 === -1 || value.h1 === null) && 
+                                 (value.h1 === value.h2) && 
+                                 (value.h3 === value.h4) && 
+                                 (value.h1 === value.h4);
+                    return  <Badge color={part ? "danger" : "success"}>{part ? "Partecipa" : "Non partecipa"}</Badge>;
                 } else {
                     return null;
                 }

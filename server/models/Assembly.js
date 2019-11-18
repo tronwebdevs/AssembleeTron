@@ -9,11 +9,7 @@ const Assembly = new Schema({
         open: Date,
         close: Date
     },
-    sections: [String],
-    active: {
-        type: Boolean,
-        default: true
-    }
+    sections: [String]
 });
 
 module.exports = mongoose.model('Assembly', Assembly);

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Formik } from 'formik';
 import { Grid, Form } from 'tabler-react';
 import moment from 'moment';
+import Selector from './LabForm/LabHour/Selector';
 
 const InfoForm = ({ 
     info,
@@ -11,13 +12,14 @@ const InfoForm = ({
 }) => (
     <Formik
         initialValues={{
-            uuid: info.uuid,
+            _id: info._id,
             title: info.title,
             date: info.date,
-            subOpenTime: moment(info.subOpen).format('HH:mm'),
-            subOpenDate: moment(info.subOpen).format('YYYY-MM-DD'),
-            subCloseTime: moment(info.subClose).format('HH:mm'),
-            subCloseDate: moment(info.subClose).format('YYYY-MM-DD')
+            subOpenTime: moment(info.subscription.open).format('HH:mm'),
+            subOpenDate: moment(info.subscription.open).format('YYYY-MM-DD'),
+            subCloseTime: moment(info.subscription.close).format('HH:mm'),
+            subCloseDate: moment(info.subscription.close).format('YYYY-MM-DD'),
+            sections: info.sections.map(c => ({ label: c, value: c }))
         }}
         onSubmit={onSubmit}
         render={({
@@ -26,7 +28,8 @@ const InfoForm = ({
             touched,
             handleChange,
             handleBlur,
-            handleSubmit
+            handleSubmit,
+            setFieldValue
         }) => (
                 <Form onSubmit={handleSubmit}>
                     <Grid.Row>
@@ -45,9 +48,9 @@ const InfoForm = ({
                             <Form.Group label="Identificativo">
                                 <Form.Input 
                                     name="uuid" 
-                                    value={values.uuid} 
-                                    error={errors.uuid} 
-                                    touched={touched.uuid} 
+                                    value={values._id} 
+                                    error={errors._id} 
+                                    touched={touched._id} 
                                     onChange={handleChange} 
                                     onBlur={handleBlur}
                                     readOnly 
@@ -59,7 +62,7 @@ const InfoForm = ({
                                 <Form.Input
                                     type="date" 
                                     name="date" 
-                                    value={values.date} 
+                                    value={moment(values.date).format('YYYY-MM-DD')} 
                                     error={errors.date} 
                                     touched={touched.date} 
                                     onChange={handleChange} 
@@ -120,6 +123,18 @@ const InfoForm = ({
                                         />
                                     </Grid.Col>
                                 </Grid.Row>
+                            </Form.Group>
+                        </Grid.Col>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Col>
+                            <Form.Group label="Classi partecipanti">
+                                <Selector 
+                                    name={"sections"} 
+                                    value={values.sections} 
+                                    classes={info.sections} 
+                                    setValue={value => setFieldValue('sections', value)}
+                                />
                             </Form.Group>
                         </Grid.Col>
                     </Grid.Row>

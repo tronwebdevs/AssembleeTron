@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Form, Button} from 'tabler-react';
 import moment from 'moment';
+import Selector from '../Admin/LabForm/LabHour/Selector';
 
 const InfoCard = ({ info, edit }) => (
     <div>
@@ -16,7 +17,7 @@ const InfoCard = ({ info, edit }) => (
                 </Form.Group>
                 <Form.Group label="Identificativo">
                     <Form.Input
-                        value={info.uuid}
+                        value={info._id}
                         disabled
                     />
                 </Form.Group>
@@ -25,7 +26,7 @@ const InfoCard = ({ info, edit }) => (
                 <Form.Group label="Data">
                     <Form.Input
                         type="date"
-                        value={info.date}
+                        value={moment(info.date).format('YYYY-MM-DD')}
                         className="mb-2"
                         disabled
                     />
@@ -37,14 +38,14 @@ const InfoCard = ({ info, edit }) => (
                         <Grid.Col width={12} lg={7}>
                             <Form.Input
                                 type="date"
-                                value={moment(info.subOpen).format('YYYY-MM-DD')}
+                                value={moment(info.subscription.open).format('YYYY-MM-DD')}
                                 disabled
                             />
                         </Grid.Col>
                         <Grid.Col width={12} lg={5}>
                             <Form.Input
                                 type="time"
-                                value={moment(info.subOpen).format('HH:mm')}
+                                value={moment(info.subscription.open).format('HH:mm')}
                                 disabled
                             />
                         </Grid.Col>
@@ -55,18 +56,31 @@ const InfoCard = ({ info, edit }) => (
                         <Grid.Col width={12} lg={7}>
                         <Form.Input
                                 type="date"
-                                value={moment(info.subClose).format('YYYY-MM-DD')}
+                                value={moment(info.subscription.close).format('YYYY-MM-DD')}
                                 disabled
                             />
                         </Grid.Col>
                         <Grid.Col width={12} lg={5}>
                             <Form.Input
                                 type="time"
-                                value={moment(info.subClose).format('HH:mm')}
+                                value={moment(info.subscription.close).format('HH:mm')}
                                 disabled
                             />
                         </Grid.Col>
                     </Grid.Row>
+                </Form.Group>
+            </Grid.Col>
+        </Grid.Row>
+        <Grid.Row>
+            <Grid.Col>
+                <Form.Group label="Classi partecipanti">
+                    <Selector 
+                        name={"sections"} 
+                        value={info.sections.map(c => ({ label: c, value: c }))} 
+                        classes={info.sections} 
+                        setValue={() => ({})} 
+                        isDisabled={true}
+                    />
                 </Form.Group>
             </Grid.Col>
         </Grid.Row>

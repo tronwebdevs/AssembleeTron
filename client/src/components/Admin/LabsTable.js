@@ -20,13 +20,13 @@ const LabsTable = ({
 			{ content: null },
 			{ content: null }
 		]}
-		bodyItems={labs.map(lab => ({
+		bodyItems={labs.map((lab, index) => ({
 			key: lab.ID,
 			item: [
 				{
 					content: (
 						<Text RootComponent="span" muted>
-							{lab.ID}
+							{index + 1}
 						</Text>
 					)
 				},
@@ -53,13 +53,13 @@ const LabsTable = ({
 							link
 							name="trash-2"
 							onClick={() => {
-                                let answer = window.confirm(`Sicuro di voler eliminare il laboratorio ${lab.ID}?`);
+                                let answer = window.confirm(`Sicuro di voler eliminare il laboratorio "${lab.title}"?`);
                                 if (answer) {
                                     window.scrollTo({
                                         top: 0,
                                         behavior: "smooth"
                                     });
-                                    deleteAssemblyLab(lab.ID).then(labID => setDisplayMessage({
+                                    deleteAssemblyLab(lab._id).then(labID => setDisplayMessage({
                                         type: "success",
                                         message: `Laboratorio ${labID} eliminato con successo`
                                     })).catch(({ message }) => setDisplayMessage({

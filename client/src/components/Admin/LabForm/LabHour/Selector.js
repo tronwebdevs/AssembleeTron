@@ -2,7 +2,13 @@ import React from 'react';
 import { Grid } from 'tabler-react';
 import Select from 'react-select';
 
-const Selector = ({ name, value, setValue, classes }) => {
+const Selector = ({ 
+    name, 
+    value, 
+    setValue, 
+    classes, 
+    ...rest 
+}) => {
     
     const options = [{
         label: 'Classi',
@@ -60,35 +66,35 @@ const Selector = ({ name, value, setValue, classes }) => {
                     <button
                         type="button" 
                         style={{...buttonStyle, borderRight: '1px solid #ced4da'}} 
-                        onClick={() => setValue(selectProps.options[0].options.filter(classLabel => +classLabel.value[0] === 1))}
+                        onClick={() => setValue(selectProps.options[0].options.filter(section => +section.value[0] === 1))}
                     >1ª</button>
                 </Grid.Col>
                 <Grid.Col width={2} className="p-0">
                     <button 
                         type="button" 
                         style={{...buttonStyle, borderRight: '1px solid #ced4da'}} 
-                        onClick={() => setValue(selectProps.options[0].options.filter(classLabel => +classLabel.value[0] === 2))}
+                        onClick={() => setValue(selectProps.options[0].options.filter(section => +section.value[0] === 2))}
                     >2ª</button>
                 </Grid.Col>
                 <Grid.Col width={2} className="p-0">
                     <button 
                         type="button" 
                         style={{...buttonStyle, borderRight: '1px solid #ced4da'}} 
-                        onClick={() => setValue(selectProps.options[0].options.filter(classLabel => +classLabel.value[0] === 3))}
+                        onClick={() => setValue(selectProps.options[0].options.filter(section => +section.value[0] === 3))}
                     >3ª</button>
                 </Grid.Col>
                 <Grid.Col width={2} className="p-0">
                     <button 
                         type="button" 
                         style={{...buttonStyle, borderRight: '1px solid #ced4da'}} 
-                        onClick={() => setValue(selectProps.options[0].options.filter(classLabel => +classLabel.value[0] === 4))}
+                        onClick={() => setValue(selectProps.options[0].options.filter(section => +section.value[0] === 4))}
                     >4ª</button>
                 </Grid.Col>
                 <Grid.Col width={2} className="p-0">
                     <button 
                         type="button" 
                         style={buttonStyle} 
-                        onClick={() => setValue(selectProps.options[0].options.filter(classLabel => +classLabel.value[0] === 5))}
+                        onClick={() => setValue(selectProps.options[0].options.filter(section => +section.value[0] === 5))}
                     >5ª</button>
                 </Grid.Col>
             </Grid.Row>
@@ -109,7 +115,8 @@ const Selector = ({ name, value, setValue, classes }) => {
             closeMenuOnSelect={false}
             onChange={setValue}
 			noOptionsMessage={() => 'Nessun risultato trovato'}
-			hideSelectedOptions={false}
+            hideSelectedOptions={false}
+            {...rest}
         />
     );
 };
