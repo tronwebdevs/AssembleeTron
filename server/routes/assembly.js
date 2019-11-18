@@ -18,55 +18,44 @@ const { isAdmin, isStudent } = require('../utils/CheckUserType');
 const { adminPassword } = require('../config');
 const assembliesBackup = path.join(__dirname, '../backups');
 
-// TODO: TEST
 /**
  * Get assembly info
  * @method get
  * @public
  */
-router.get('/info', (req, res, next) => {
-    if (req.userType == 'admin') {
-        Assembly.find()
-            .then(result => res.status(200).json({
-                code: 1,
-                assembly: result,
-                token: req.jwtNewToken
-            }))
-            .catch(err => next(err));
-    } else {
-        Assembly.find()
-            .then(results => {
-                if (results.length === 0) {
-                    throw new Error('Nessuna assemblea in programma');
+router.get('/info', (req, res, next) =>
+    Assembly.find()
+        .then(results => {
+            if (results.length === 0) {
+                throw new Error('Nessuna assemblea in programma');
+            } else {
+                let assembly = results[0];
+                if (moment(assembly.date).diff(moment()) < 0) {
+                    error.code = 0;
+                    error.message = 'Nessuna assemblea in programma';
+                    throw error;
                 } else {
-                    let assembly = results[0];
-                    if (moment(assembly.date).diff(moment()) < 0) {
-                        error.code = 0;
-                        error.message = 'Nessuna assemblea in programma';
+                    if (moment(assembly.subscription.open).diff(moment()) > 0) {
+                        error.code = 1;
+                        error.message = 'La iscrizioni sono attualmente chiuse, torna più tardi';
                         throw error;
                     } else {
-                        if (moment(assembly.subscription.open).diff(moment()) > 0) {
-                            error.code = 1;
-                            error.message = 'La iscrizioni sono attualmente chiuse, torna più tardi';
-                            throw error;
+                        if (moment(assembly.subscription.close).diff(moment()) > 0) {
+                            res.status(200).json({
+                                code: 2,
+                                info: assembly.toObject()
+                            });
                         } else {
-                            if (moment(assembly.subscription.close).diff(moment()) > 0) {
-                                res.status(200).json({
-                                    code: 2,
-                                    info: assembly.toObject()
-                                });
-                            } else {
-                                error.code = 3;
-                                error.message = 'La iscrizioni sono terminate';
-                                throw error;
-                            }
+                            error.code = 3;
+                            error.message = 'La iscrizioni sono terminate';
+                            throw error;
                         }
                     }
                 }
-            })
-            .catch(err => next(err));
-    }
-});
+            }
+        })
+        .catch(err => next(err))
+);
 
 // Filter next routes, requesting the user to be authenticated
 router.use('*', authUser);
@@ -106,7 +95,7 @@ router.get('/', isAdmin, (req, res, next) => {
         })
         .then(results => 
             res.status(200).json({
-                code: 1,
+                code: results.length > 0 ? 1 : 0,
                 info: results.length > 0 ? results[0] : null,
                 labs,
                 students,
@@ -124,7 +113,6 @@ router.get('/', isAdmin, (req, res, next) => {
         );
 });
 
-// TODO: TEST
 /**
  * Delete assembly
  * @method post
@@ -286,8 +274,7 @@ router.put('/info', isAdmin, (req, res, next) => {
         title, 
         date, 
         subOpen, 
-        subClose, 
-        active, 
+        subClose,
         sections 
     } = req.body.info;
 
@@ -297,7 +284,7 @@ router.put('/info', isAdmin, (req, res, next) => {
             open: moment(subOpen).toDate(),
             close: moment(subClose).toDate()
         },
-        active, sections
+        sections
     }, { new: true })
         .then(result => {
             if (result) {
@@ -313,7 +300,6 @@ router.put('/info', isAdmin, (req, res, next) => {
         .catch(err => next(err));
 });
 
-// TODO: TEST
 /**
  * Create assembly info
  * @method put
@@ -321,24 +307,9 @@ router.put('/info', isAdmin, (req, res, next) => {
  * @public
  */
 router.post('/info', isAdmin, (req, res, next) => {
-    const { 
-        _id, 
-        title, 
-        date, 
-        subOpen, 
-        subClose, 
-        active, 
-        sections 
-    } = req.body.info;
+    const { info } = req.body;
 
-    new Assembly({
-        title, date,
-        subscription: {
-            open: moment(subOpen).toDate(),
-            close: moment(subClose).toDate()
-        },
-        active, sections
-    }).save()
+    new Assembly(info).save()
         .then(assembly => 
             res.status(200).json({
                 code: 1,
@@ -385,7 +356,6 @@ router.get('/labs', isStudent, (req, res, next) => {
     }
 });
 
-// TODO: TEST
 /**
  * Update assembly laboratory
  * @method put
@@ -394,22 +364,25 @@ router.get('/labs', isStudent, (req, res, next) => {
  */
 router.put('/labs', isAdmin, (req, res, next) => {
     const { lab } = req.body;
-    if (lab && typeof lab.ID === 'number') {
+    if (lab) {
         Laboratory.findByIdAndUpdate(lab._id, lab, { new: true })
-            .then(result => 
-                res.status(200).json({
-                    code: 1,
-                    lab: result,
-                    token: req.jwtNewToken
-                })
-            )
+            .then(result => {
+                if (result) {
+                    res.status(200).json({
+                        code: 1,
+                        lab: result,
+                        token: req.jwtNewToken
+                    });
+                } else {
+                    throw new Error('Laboratorio non trovato (' + lab._id + ')');
+                }
+            })
             .catch(err => next(err));
     } else {
         next(new Error('Parametri non accettati'));
     }
 });
 
-// TODO: TEST
 /**
  * Create assembly laboratory
  * @method post
@@ -418,6 +391,7 @@ router.put('/labs', isAdmin, (req, res, next) => {
  */
 router.post('/labs', isAdmin, (req, res, next) => {
     const { lab } = req.body;
+    lab._id = new ObjectId();
     if (lab) {
         new Laboratory(lab).save()
             .then(newLab => 
@@ -433,7 +407,6 @@ router.post('/labs', isAdmin, (req, res, next) => {
     }
 });
 
-// TODO: TEST
 /**
  * Delete assembly laboratory
  * @method delete
@@ -443,14 +416,18 @@ router.post('/labs', isAdmin, (req, res, next) => {
 router.delete('/labs', isAdmin, (req, res, next) => {
     const { _id } = req.body;
     if (typeof _id === 'string') {
-        Laboratory.findByIdAndDelete()
-            .then(lab => 
-                res.status(200).json({
-                    code: 1,
-                    lab,
-                    token: req.jwtNewToken
-                })
-            )
+        Laboratory.findByIdAndDelete(_id)
+            .then(lab => {
+                if (lab) {
+                    res.status(200).json({
+                        code: 1,
+                        labID: lab._id,
+                        token: req.jwtNewToken
+                    });
+                } else {
+                    throw new Error('Laboratorio non trovato (' + _id + ')');
+                }
+            })
             .catch(err => next(err));
     } else {
         next(new Error('Parametri non accettati'));

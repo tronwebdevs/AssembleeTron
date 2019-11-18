@@ -39,7 +39,7 @@ const LabForm = ({
 		} else {
 			setDisplayMessage({
 				type: "success",
-				message: `Laboratorio ${lab.ID} ${
+				message: `Laboratorio "${lab.title}" ${
 					action === "edit" ? "modificato" : "creato"
 				} con successo`
 			});
@@ -122,29 +122,22 @@ const LabForm = ({
 						}}
 						validateOnChange={false}
 						onSubmit={values => {
-							let lab = {
-								_id: values._id,
+                            let lab = {
+                                _id: values._id,
 								room: values.room,
 								title: values.title,
-								description: values.description || "",
-								seatsH1: values.seatsH1 || 0,
-								classesH1: (values.classesH1 || []).map(
-									({ label }) => label
-								),
-								seatsH2: values.seatsH2 || 0,
-								classesH2: (values.classesH2 || []).map(
-									({ label }) => label
-								),
-								seatsH3: values.seatsH3 || 0,
-								classesH3: (values.classesH3 || []).map(
-									({ label }) => label
-								),
-								seatsH4: values.seatsH4 || 0,
-								classesH4: (values.classesH4 || []).map(
-									({ label }) => label
-								),
-								two_h: values.two_h
-							};
+                                description: values.description || "",
+                                info: {},
+                                two_h: values.two_h
+                            };
+                            for (let i = 1; i <= 4; i++) {
+                                lab.info['h' + i] = {
+                                    seats: values['seatsH' + i],
+                                    sections: new SectionsList((values['classesH' + i] || []).map(
+                                        ({ label }) => label
+                                    ), completeSectionsList).minify()
+                                };
+                            }
 							if (action === "edit") {
                                 updateAssemblyLab(lab)
                                     .then(newLab => fetchCallback("edit", newLab, null))

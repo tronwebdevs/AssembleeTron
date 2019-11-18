@@ -8,6 +8,7 @@ import moment from 'moment';
 
 const Info = ({
     assembly,
+    admin,
     updateAssemblyInfo
 }) => {
 
@@ -55,8 +56,18 @@ const Info = ({
                             errors.subCloseDate = 'Le iscrizioni non possono chiudere prima di iniziare';
                         }
 
-                        if (sections.length < 0) {
+                        if (sections.length <= 0) {
                             errors.sections = 'Nessuna classe potrà partecipare all\'assemblea';
+                        } else if (
+                            sections.length !== info.sections.length && 
+                            !sections.every(
+                                (value, index) => value === info.sections[index]
+                            ) &&
+                            assembly.labs.length > 0
+                        ) {
+                            errors.sections = 'Non puoi modificare le classi che partecipano all\'assemblea ' +
+                                              'dato che ci sono gia\' dei laboratori associati ad essa. ' +
+                                              'Riprova dopo aver eliminato tutti i laboratori.';
                         }
 
 
@@ -103,6 +114,11 @@ const Info = ({
                     >Salva</Button>
                 )
             ]}
+            setError={message => setDisplayMessage({
+                type: 'danger',
+                message
+            })}
+            authToken={admin.token}
         />
     ) : (
         <InfoCard 
@@ -143,11 +159,13 @@ const Info = ({
 
 Info.propTypes = {
     assembly: PropTypes.object.isRequired,
+    admin: PropTypes.object.isRequired,
     updateAssemblyInfo: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-    assembly: state.assembly
+    assembly: state.assembly,
+    admin: state.admin
 });
 
 export default connect(mapStateToProps, { updateAssemblyInfo })(Info);

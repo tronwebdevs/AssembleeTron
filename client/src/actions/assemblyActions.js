@@ -409,7 +409,7 @@ export const updateAssemblyLab = lab => dispatch => {
                     dispatch({
                         type: LAB_UPDATED,
                         payload: labs.map(lab => {
-                            if (lab.ID === data.lab.ID) {
+                            if (lab._id === data.lab._id) {
                                 return data.lab;
                             }
                             return lab;
@@ -462,14 +462,14 @@ export const deleteAssemblyLab = labID => dispatch => {
 
     return new Promise((resolve, reject) => {
         axios.delete('/api/assembly/labs', { 
-            data: { ID: labID },
+            data: { _id: labID },
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: LAB_DELETED,
-                        payload: labs.filter(lab => lab.ID !== data.labID)
+                        payload: labs.filter(lab => lab._id !== data.labID)
                     });
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
@@ -523,8 +523,6 @@ export const fetchAssemblyGeneral = () => dispatch => {
                 switch (data.code) {
                     case 0:
                     case 1:
-                    case 2:
-                    case 3:
                         dispatch({
                             type: ASSEMBLY_FETCHED,
                             payload: {

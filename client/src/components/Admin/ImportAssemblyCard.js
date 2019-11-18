@@ -40,7 +40,7 @@ const ImportAssemblyCard = ({
                     className="card-table table-vcenter text-wrap"
                     style={{ fontSize: "0.85rem" }}
                     headerItems={[
-                        { content: "UUID" },
+                        { content: "ID" },
                         { content: "Titolo" },
                         { content: "Data" },
                         { content: null }
@@ -51,7 +51,7 @@ const ImportAssemblyCard = ({
                             {
                                 content: (
                                     <Text RootComponent="span" muted>
-                                        {info.uuid}
+                                        {info._id}
                                     </Text>
                                 )
                             },
@@ -62,7 +62,7 @@ const ImportAssemblyCard = ({
                                     <Button 
                                         color="gray"
                                         onClick={e => {
-                                            loadAssembly(info.uuid).catch(({ message }) => setError(message));
+                                            loadAssembly(info._id).catch(({ message }) => setError(message));
                                         }}
                                     >{isSubmitting ? <Spinner color="light" size="sm" /> : 'Carica'}</Button>
                                 )

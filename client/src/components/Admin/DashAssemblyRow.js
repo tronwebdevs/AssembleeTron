@@ -66,7 +66,7 @@ const DashAssemblyRow = ({ info }) => {
                 ]}
                 button={(
                     <Link
-                        to="/gestore/informazioni"
+                        to="/gestore/statistiche"
                         className="btn btn-block btn-outline-info"
                     >
                         Statistiche

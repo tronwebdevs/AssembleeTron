@@ -7,8 +7,6 @@ import { Link, Redirect } from 'react-router-dom';
 import { SiteWrapper, InfoForm, ImportAssemblyCard } from '../../Admin/';
 import moment from 'moment';
 
-const uuid = require('uuid/v4');
-
 const CreateAssembly = ({
     admin,
     assembly,
@@ -21,6 +19,7 @@ const CreateAssembly = ({
         message: null
     });
 
+    const authToken = admin.token;
     const { exists, pendings } = assembly;
 
     if (pendings.create_info === false && exists === true && displayMessage.message === null) {
@@ -45,18 +44,21 @@ const CreateAssembly = ({
                             <Card.Body>
                                 <InfoForm
                                     info={{
-                                        uuid: uuid(),
                                         title: '',
                                         date: moment().format('YYYY') + '-01-01',
-                                        subOpen: moment().format('YYYY') + '-01-01 14:00',
-                                        subClose: moment().format('YYYY') + '-01-01 20:00',
+                                        subscription: {
+                                            open: moment().format('YYYY') + '-01-01 14:00',
+                                            close: moment().format('YYYY') + '-01-01 20:00',
+                                        },
+                                        sections: []
                                     }}
                                     onSubmit={
                                         (
                                             { 
-                                                uuid, title, date, 
+                                                _id, title, date, 
                                                 subOpenDate, subOpenTime, 
-                                                subCloseDate, subCloseTime 
+                                                subCloseDate, subCloseTime,
+                                                sections
                                             },
                                             { setSubmitting, setErrors }
                                         ) => {
@@ -86,12 +88,19 @@ const CreateAssembly = ({
                                                 } else if (subCloseMoment.diff(subOpenMoment) < 0) {
                                                     errors.subCloseDate = 'Le iscrizioni non possono chiudere prima di iniziare';
                                                 }
+
+                                                if (sections.length <= 0) {
+                                                    errors.sections = 'Nessuna classe potrà partecipare all\'assemblea';
+                                                }
     
                                                 if (Object.entries(errors).length === 0) {
                                                     createAssemblyInfo({
-                                                        uuid, title, date,
-                                                        subOpen: subOpenMoment.format(),
-                                                        subClose: subCloseMoment.format()
+                                                        _id, title, date,
+                                                        subscription: {
+                                                            open: subOpenMoment.format(),
+                                                            close: subCloseMoment.format()
+                                                        }, 
+                                                        sections: sections.map(({ value }) => value)
                                                     })
                                                         .then(() => setSubmitting(false))
                                                         .catch(({ message }) => {
@@ -123,6 +132,11 @@ const CreateAssembly = ({
                                             >Continua</Button>
                                         )
                                     ]}
+                                    setError={message => setDisplayMessage({
+                                        type: 'danger',
+                                        message
+                                    })}
+                                    authToken={authToken}
                                 />
                             </Card.Body>
                         </Card>
@@ -131,7 +145,7 @@ const CreateAssembly = ({
                 <Grid.Row cards={true}>
                     <Grid.Col width={12}>
                         <ImportAssemblyCard 
-                            authToken={admin.token}
+                            authToken={authToken}
                             setError={message => setDisplayMessage({
                                 type: 'danger',
                                 message

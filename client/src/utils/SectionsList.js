@@ -41,7 +41,7 @@ class SectionsList {
      */
     static parse(list, completeList) {
         let parsedList = [];
-        // Check if array are identical
+        // Check if arrays are identical
         if (list === completeList) {
             parsedList = list;
         } else {
@@ -94,7 +94,57 @@ class SectionsList {
      */
     minify() {
         let finalList = [];
-        // TODO: finish this method
+        // Check if both arrays are empty
+        if (this._completeList.length < 0) return finalList;
+        if (this._list.length < 0) return finalList;
+
+        // Check if array are identical
+        if (this._list.length === this._completeList.length && 
+            this._list.every(
+                (value, index) => value === this._completeList[index]
+            )
+        ) {
+            // Arrays are identical, return ALL tag
+            finalList = ['@a'];
+        } else if (this._list.length >= (this._completeList.length - 5)) {
+            let diff = this._completeList.filter(section => !this._list.includes(section))
+                                         .map(section => '-' + section);
+            // Arrays are very similar, but not identical
+            finalList.push('@a', ...diff);
+        }else {
+            // Arrays are different
+            for (let i = 1; i <= 5; i++) {
+                let gradeSections = [];
+                let totGradeSections = [];
+                // Filter sections of grade "i" in all sections array
+                totGradeSections = this._completeList.filter(
+                    section => section[0] === String(i)
+                );
+                    
+                // Filter sections of grade "i" in list sections array
+                gradeSections = this._list.filter(
+                    section => section[0] === String(i)
+                );
+
+                // Check if array are identical
+                if (gradeSections.length === totGradeSections.length && 
+                    gradeSections.every(
+                        (value, index) => value === totGradeSections[index]
+                    )
+                ) {
+                    // Arrays are identical, return ALL tag for specific grade
+                    finalList.push('@' + i);
+                } else {
+                    if (gradeSections.length > totGradeSections.length / 2) {
+                        let diff = totGradeSections.filter(section => !gradeSections.includes(section))
+                                                .map(section => '-' + section);
+                        finalList.push('@' + i, ...diff);
+                    } else {
+                        finalList.push(...gradeSections);
+                    }
+                }
+            }
+        }
         return finalList;
     }
 }

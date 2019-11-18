@@ -12,7 +12,7 @@ const Student = require('../models/Student');
 const Subscribed = require('../models/Subscribed');
 
 const authUser = require('../utils/AuthUser');
-const { isStudent } = require('../utils/CheckUserType');
+const { isStudent, isAdmin } = require('../utils/CheckUserType');
 const SectionsList = require('../utils/SectionsList');
 const { fetchAvabileLabs } = require('../utils/LabsFunctions');
 
@@ -41,6 +41,22 @@ router.get('/labs', authUser, isStudent, (req, res, next) => {
         next(new Error('Parametri non validi'));
     }
 });
+
+/**
+ * Get school's sections
+ * @method get
+ */
+router.get('/sections', authUser, isAdmin, (req, res, next) =>
+    Student.distinct('section')
+        .then(sections =>
+            res.status(200).json({
+                code: 1,
+                sections,
+                token: req.jwtNewToken
+            })
+        )
+        .catch(err => next(err))
+);
 
 /** Authenticate student
  * @method get

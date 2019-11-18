@@ -6,7 +6,8 @@ const Selector = ({
     name, 
     value, 
     setValue, 
-    classes, 
+    classes,
+    error,
     ...rest 
 }) => {
     
@@ -102,22 +103,33 @@ const Selector = ({
     );
 
     return (
-        <Select
-            name={name}
-            value={value}
-            components={{ GroupHeading }}
-            options={options}
-            isMulti
-            isSearchable
-            styles={customStyle}
-            placeholder={<span className="text-muted">Seleziona le classi</span>}
-            className="basic-multi-select"
-            closeMenuOnSelect={false}
-            onChange={setValue}
-			noOptionsMessage={() => 'Nessun risultato trovato'}
-            hideSelectedOptions={false}
-            {...rest}
-        />
+        <React.Fragment>
+            <Select
+                name={name}
+                value={value}
+                components={{ GroupHeading }}
+                options={options}
+                isMulti
+                isSearchable
+                styles={customStyle}
+                placeholder={<span className="text-muted">Seleziona le classi</span>}
+                className="basic-multi-select"
+                closeMenuOnSelect={false}
+                onChange={setValue}
+                noOptionsMessage={() => 'Nessun risultato trovato'}
+                hideSelectedOptions={false}
+                {...rest}
+            />
+            {error ? (
+                <span style={{
+                    color: '#fa4654',
+                    fontSize: '14px',
+                    marginTop: '0.25rem'
+                }}>
+                    {error}
+                </span>
+            ) : null}
+        </React.Fragment>
     );
 };
 

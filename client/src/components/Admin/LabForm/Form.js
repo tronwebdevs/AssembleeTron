@@ -105,10 +105,10 @@ const CustomForm = ({
 		</Form.Group>
 		<Form.Group>
 			<Form.Checkbox
-				name="lastsTwoH"
+				name="two_h"
 				label="Questo laboratorio dura 2 ore"
-				checked={values.lastsTwoH}
-				error={errors.lastsTwoH}
+				checked={values.two_h}
+				error={errors.two_h}
 				onChange={handleChange}
 			/>
 		</Form.Group>
