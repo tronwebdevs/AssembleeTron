@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import { Page, Grid } from 'tabler-react';
-import { LabsTable, Badge, SiteWrapper, NotPartCard } from '../../Student/';
+import { Row } from 'reactstrap';
+import { LabsTable, Badge, NotPartCard, PageTitle, SiteWrapper } from '../../Student/';
 import moment from 'moment';
 
 const ConfirmSub = ({
@@ -24,12 +24,13 @@ const ConfirmSub = ({
 
     return (
         <SiteWrapper>
-            <Page.Content title={"Iscrizioni per l'Assemblea d'Istituto del " + moment(date).format('DD/MM/YYYY')}>
-                <Grid.Row>
-                    <Badge student={profile} sm={12} lg={4} offsetLg={4} />
-                </Grid.Row>
-                {notSub ? <NotPartCard/> : <LabsTable labs={labs} />}
-            </Page.Content>
+            <Row>
+                <PageTitle title={"Iscrizioni per l'Assemblea d'Istituto del " + moment(date).format('DD/MM/YYYY')}/>
+            </Row>
+            <Row>
+                <Badge student={profile} lg={{size: "4", offset: "4"}}/>
+            </Row>
+            {notSub ? <NotPartCard/> : <LabsTable labs={labs} />}
         </SiteWrapper>
     );
 }

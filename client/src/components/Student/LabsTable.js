@@ -1,39 +1,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Card } from 'tabler-react';
+import { Row, Col, Card, CardBody } from 'reactstrap';
 import InfoBox from './InfoBox';
 
 const LabsTable = ({ labs }) => (
     <>
-        <Grid.Row>
-            <Grid.Col width={12}>
+        <Row>
+            <Col>
                 <Card>
-                    <Card.Body>
-                        <Grid.Row>
+                    <CardBody>
+                        <Row>
                             {labs.map((lab, index) => (
                                 <div className={"col-12 " + (index !== 3 ? "mb-3 border-bottom" : "")} key={index}>
-                                    <Grid.Row>
-                                        <Grid.Col width={3} className="py-2 pr-0">
+                                    <Row>
+                                        <Col xs="3" className="py-2 pr-0">
                                             <span className="text-muted d-block text-center">Ora {index + 1}:</span>
-                                        </Grid.Col>
-                                        <Grid.Col width={9} className="py-2 pl-0">
-                                            <Grid.Row>
-                                                <Grid.Col width={12}>
+                                        </Col>
+                                        <Col xs="9" className="py-2 pl-0">
+                                            <Row>
+                                                <Col xs="12">
                                                     <span className="d-block">{lab.title}</span>
-                                                </Grid.Col>
-                                                <Grid.Col width={12}>
+                                                </Col>
+                                                <Col xs="12">
                                                     <span className="d-block text-muted">Aula: {lab.room}</span>
-                                                </Grid.Col>
-                                            </Grid.Row>
-                                        </Grid.Col>
-                                    </Grid.Row>
+                                                </Col>
+                                            </Row>
+                                        </Col>
+                                    </Row>
                                 </div>
                             ))}
-                        </Grid.Row>
-                    </Card.Body>
+                        </Row>
+                    </CardBody>
                 </Card>
-            </Grid.Col>
-        </Grid.Row>
+            </Col>
+        </Row>
         <InfoBox />
     </>
 );

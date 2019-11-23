@@ -1,16 +1,16 @@
 import React from 'react';
-import { Grid, Card } from 'tabler-react';
+import { Row, Col, Card, CardBody } from 'reactstrap';
 
-const NotPartCard = props => (
-    <Grid.Row>
-        <Grid.Col>
+const NotPartCard = () => (
+    <Row>
+        <Col>
             <Card>
-                <Card.Body className="text-center font-weight-bold text-uppercase">
+                <CardBody className="text-center font-weight-bold text-uppercase">
                     <span className="text-danger">Non partecipi all'assemblea</span>
-                </Card.Body>
+                </CardBody>
             </Card>
-        </Grid.Col>
-    </Grid.Row>
+        </Col>
+    </Row>
 );
 
 export default NotPartCard;

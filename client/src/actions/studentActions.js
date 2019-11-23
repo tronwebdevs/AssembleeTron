@@ -102,10 +102,10 @@ export const authStudent = (studentID, part) => dispatch => {
 
 /**
  * Fetch avabile laboratories for a specific class
- * @param {string} classLabel 
+ * @param {string} section 
  * @public
  */
-export const fetchAvabileLabs = classLabel => (dispatch, getState) => {
+export const fetchAvabileLabs = section => (dispatch, getState) => {
 
     dispatch({
         type: FETCH_STUDENT_PENDING,
@@ -116,7 +116,7 @@ export const fetchAvabileLabs = classLabel => (dispatch, getState) => {
 
     return new Promise((resolve, reject) => {
         axios.get('/api/students/labs', {
-            params: { classLabel },
+            params: { section },
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {

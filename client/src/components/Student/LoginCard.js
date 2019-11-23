@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import StandaloneFormPage from '../StandaloneFormPage';
 import FormCard from '../FormCard';
-import TWIcon from './SiteWrapper/tw-icon.png';
+import TWIcon from './LoginFormCard/tw-logo.png';
 
 const LoginCard = ({ title, text }) => (
     <StandaloneFormPage imageURL={TWIcon}>

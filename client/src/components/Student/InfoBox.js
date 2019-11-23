@@ -1,11 +1,11 @@
 import React from 'react';
-import { Grid, Card } from 'tabler-react';
+import { Row, Col, Card, CardBody } from 'reactstrap';
 
-const InfoBox = props => (
-    <Grid.Row>
-        <Grid.Col width={100}>
+const InfoBox = () => (
+    <Row>
+        <Col>
             <Card>
-                <Card.Body className="text-center p-3">
+                <CardBody className="text-center p-3">
                     <small>
                         <p className="font-weight-bold mb-1">
                             Conserva questa tabella! Ti consigliamo di salvare uno screenshot di questa schermata prima di uscire.
@@ -17,10 +17,10 @@ const InfoBox = props => (
                             Per disiscriverti dall'assemblea vai alla <a href="/">pagina di login</a> e seleziona "Non partecipo"
                         </p>
                     </small>
-                </Card.Body>
+                </CardBody>
             </Card>
-        </Grid.Col>
-    </Grid.Row>
+        </Col>
+    </Row>
 );
 
 export default InfoBox;

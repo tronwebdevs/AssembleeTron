@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form } from 'tabler-react';
+import { FormGroup, Input, FormFeedback } from 'reactstrap';
 
 import DefaultOption from './DefaultOption';
 import Option from './Option';
@@ -12,14 +12,15 @@ const LabSelector = ({
     value,
     error 
 }) => (
-    <Form.Group className="mb-3">
-        <Form.Select
+    <FormGroup className="mb-3">
+        <Input
+            type="select"
             className="select-lab"
             name={'h' + h}
             id={'selectorH' + h}
             onChange={onChange}
             value={value}
-            error={error}
+            invalid={error}
         >
             <DefaultOption h={h} />
             {
@@ -31,8 +32,9 @@ const LabSelector = ({
                     }
                 })
             }
-        </Form.Select>
-    </Form.Group>
+        </Input>
+        <FormFeedback>{error}</FormFeedback>
+    </FormGroup>
 );
 
 LabSelector.propTypes = {

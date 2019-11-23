@@ -3,7 +3,7 @@ import StandaloneFormPage from '../../StandaloneFormPage';
 import { Form, Button, /*Card, Grid, Icon*/ } from 'tabler-react';
 import { Spinner } from 'reactstrap';
 import moment from 'moment';
-import TWIcon from '../SiteWrapper/tw-icon.png';
+import TWIcon from './tw-logo.png';
 
 import FormCard from '../../FormCard';
 

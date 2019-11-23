@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { subscribeLabs, fetchAvabileLabs } from '../../../actions/studentActions';
-import { Form, Button } from 'tabler-react';
-import { Spinner } from 'reactstrap';
+import { Form, FormGroup, Button, Spinner } from 'reactstrap';
 import { Formik } from 'formik';
 
 import LabSelector from './LabSelector/';
@@ -36,7 +35,7 @@ const LabsSelectorForm = ({
             const { profile } = student;
 
             if (Object.entries(errors).length === 0 && errors.constructor === Object) {
-                subscribeLabs(profile.ID, values)
+                subscribeLabs(profile.studentId, values)
                     .then(() => {
                         setSubmitting(false);
                         setGlobalError(null);
@@ -50,7 +49,7 @@ const LabsSelectorForm = ({
                             setGlobalError(null);
                             setErrors({ ['h' + target]: message });
                         }
-                        fetchAvabileLabs(profile.classLabel)
+                        fetchAvabileLabs(profile.section)
                             .then(() => setSubmitting(false))
                             .catch(({ message }) => {
                                 setSubmitting(false);
@@ -70,12 +69,21 @@ const LabsSelectorForm = ({
             isSubmitting
         }) => (
             <Form onSubmit={handleSubmit} className="pt-2">
-                {[1, 2, 3, 4].map(h => <LabSelector key={h} labs={labs} h={h} onChange={handleChange} error={errors['h' + h]} value={values['h' + h]} />)}
-                <Form.Footer>
-                    <Button type="submit" color="primary" block={true} disabled={isSubmitting}>
+                {[1, 2, 3, 4].map(h => (
+                    <LabSelector 
+                        key={h} 
+                        labs={labs} 
+                        h={h} 
+                        onChange={handleChange} 
+                        error={errors['h' + h]} 
+                        value={values['h' + h]} 
+                    />
+                ))}
+                <FormGroup className="mb-0 pt-2">
+                    <Button type="submit" color="primary" block disabled={isSubmitting}>
                         {isSubmitting ? <Spinner color="light" size="sm" /> : 'Iscriviti'}
                     </Button>
-                </Form.Footer>
+                </FormGroup>
             </Form>
         )}
     />

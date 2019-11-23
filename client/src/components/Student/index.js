@@ -8,6 +8,7 @@ import NotPartCard from './NotPartCard';
 import LoginFormCard from './LoginFormCard/';
 import SiteWrapper from './SiteWrapper/';
 import LabsSelectorForm from './LabsSelectorForm/';
+import PageTitle from './PageTitle';
 
 export {
     Badge,
@@ -19,5 +20,6 @@ export {
     NotPartCard,
     LoginFormCard,
     SiteWrapper,
-    LabsSelectorForm
+    LabsSelectorForm,
+    PageTitle
 };
