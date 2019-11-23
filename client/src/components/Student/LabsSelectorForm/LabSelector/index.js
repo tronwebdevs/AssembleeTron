@@ -20,7 +20,7 @@ const LabSelector = ({
             id={'selectorH' + h}
             onChange={onChange}
             value={value}
-            invalid={error}
+            invalid={error !== undefined}
         >
             <DefaultOption h={h} />
             {

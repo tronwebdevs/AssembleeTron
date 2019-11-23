@@ -1,9 +1,14 @@
 import React from "react";
 import StandaloneFormPage from '../../StandaloneFormPage';
-import { Form, Button, /*Card, Grid, Icon*/ } from 'tabler-react';
-import { Spinner } from 'reactstrap';
+import { 
+    Spinner, 
+    Button, 
+    FormGroup, 
+    Input, 
+    CustomInput, 
+    FormFeedback 
+} from 'reactstrap';
 import moment from 'moment';
-import TWIcon from './tw-logo.png';
 
 import FormCard from '../../FormCard';
 
@@ -16,7 +21,7 @@ const LoginForm = ({
     isSubmitting,
     assemblyInfo
 }) => (
-    <StandaloneFormPage imageURL={TWIcon}>
+    <StandaloneFormPage>
         <FormCard
             title={"Iscrizioni per l'Assemblea d'Istituto del " + moment(assemblyInfo.date).format('DD/MM/YYYY')}
             text={true ? "Inserisci la tua matricola per entrare:" : ''}
@@ -40,8 +45,8 @@ const LoginForm = ({
                     </Grid.Row>
                 </Card.Alert>
             </Form.Group> */}
-            <Form.Group>
-                <Form.Input
+            <FormGroup>
+                <Input
                     type='text'
                     placeholder='Matricola'
                     name="studentID"
@@ -49,37 +54,42 @@ const LoginForm = ({
                     onBlur={onBlur}
                     autoFocus={true}
                     value={values.studentID}
-                    error={errors.studentID}
+                    invalid={errors.studentID !== undefined}
                 />
-            </Form.Group>
+                <FormFeedback>{errors.studentID}</FormFeedback>
+            </FormGroup>
             <span className="text-center">
-                <Form.Group className="mb-1">
-                    <Form.Radio
+                <FormGroup className="mb-1">
+                    <CustomInput
+                        type="radio"
+                        id="partRadio"
                         label="Partecipo"
                         name="part"
                         value="1"
                         checked={values.part === '1'}
                         onChange={onChange}
                         onBlur={onBlur}
-                        isInline
+                        inline
                         />
-                    <Form.Radio
+                    <CustomInput
+                        type="radio"
+                        id="noPartRadio"
                         label="Non partecipo"
                         name="part"
                         value="0"
                         onChange={onChange}
                         onBlur={onBlur}
                         checked={values.part === '0'}
-                        isInline
+                        inline
                     />
-                </Form.Group>
+                </FormGroup>
             </span>
             {errors.part ? <div className="input-feedback text-danger">{errors.part}</div> : null}
-            <Form.Footer className="mt-3">
+            <FormGroup className="pt-2">
                 <Button type="submit" color="primary" block={true} disabled={isSubmitting}>
                     {isSubmitting ? <Spinner color="light" size="sm" /> : 'Entra'}
                 </Button>
-            </Form.Footer>
+            </FormGroup>
         </FormCard>
     </StandaloneFormPage>
 );

@@ -10,6 +10,7 @@ import './c3jscustom.css';
 
 import TWIcon from './tw-icon.png';
 import NavBarItems from './NavBarItems';
+// import NavBar from "./NavBar";
 
 const SiteWrapper = ({ logout, children }) => (
     <Site.Wrapper
@@ -55,6 +56,14 @@ const SiteWrapper = ({ logout, children }) => (
     >
         {children}
     </Site.Wrapper>
+    // <React.Fragment>
+    //     <NavBar/>
+    //     <Row>
+    //         <Col>
+    //             {children}
+    //         </Col>
+    //     </Row>
+    // </React.Fragment>
 );
 
 SiteWrapper.propTypes = {
