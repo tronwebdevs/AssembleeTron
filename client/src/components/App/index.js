@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { Error404Page } from "tabler-react";
+import { Error404Page } from 'tabler-react';
 import './index.css';
 
 import store from '../../store';

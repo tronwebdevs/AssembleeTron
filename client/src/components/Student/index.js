@@ -6,9 +6,10 @@ import LabsTable from './LabsTable';
 import LoginCard from './LoginCard';
 import NotPartCard from './NotPartCard';
 import LoginFormCard from './LoginFormCard/';
-import SiteWrapper from './SiteWrapper/';
+import SiteWrapper from './SiteWrapper';
 import LabsSelectorForm from './LabsSelectorForm/';
 import PageTitle from './PageTitle';
+import LabsListCard from './LabsListCard';
 
 export {
     Badge,
@@ -21,5 +22,6 @@ export {
     LoginFormCard,
     SiteWrapper,
     LabsSelectorForm,
-    PageTitle
+    PageTitle,
+    LabsListCard
 };

@@ -6,10 +6,13 @@ import {
 	NavbarToggler,
 	NavbarBrand,
 	Nav,
-	NavItem
+    NavItem
 } from "reactstrap";
 import { NavLink } from "react-router-dom";
-import NavBarItems from './NavBarItems';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons'
+import NavBarItems from "./NavBarItems";
+import TWIcon from './tw-icon.png';
 
 const NavBar = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -17,23 +20,31 @@ const NavBar = () => {
 	const toggle = () => setIsOpen(!isOpen);
 
 	return (
-		<div>
-			<Navbar color="light" light expand="md">
+		<header>
+			<Navbar color="white" light expand="md">
                 <Container>
-                    <NavbarBrand href="/">tronweb</NavbarBrand>
-                    <NavbarToggler onClick={toggle} />
+                    <NavbarBrand
+                        tag={() => (
+                            <NavLink to={{ pathname: '/gestore' }}>
+                                <img style={{ height: '40px', width: '40px' }} src={TWIcon} alt="TronWeb Logo" />
+                            </NavLink>
+                        )}
+                    />
+                    <NavbarToggler onClick={toggle}/>
                     <Collapse isOpen={isOpen} navbar>
-                        <Nav className="mr-auto" navbar>
-                            {NavBarItems.map(item => (
-                                <NavItem>
-                                    <NavLink to={{pathname: item.to}}>{item.value}</NavLink>
+                        <Nav className="ml-auto" navbar>
+                            {NavBarItems.map((item, index) => (
+                                <NavItem key={index}>
+                                    <NavLink to={{ pathname: item.to}} className="nav-link">
+                                        {item.value}
+                                    </NavLink>
                                 </NavItem>
                             ))}
                         </Nav>
                     </Collapse>
                 </Container>
 			</Navbar>
-		</div>
+		</header>
 	);
 };
 

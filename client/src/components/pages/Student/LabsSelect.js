@@ -8,21 +8,16 @@ import {
     Card,
     CardHeader,
     CardBody,
-    Alert,
-    Button,
-    Collapse
+    Alert
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 
-import { Badge, LabsSelectorForm, LabShow, PageTitle, SiteWrapper } from '../../Student/';
+import { Badge, LabsSelectorForm, PageTitle, SiteWrapper, LabsListCard } from '../../Student/';
 
 const LabsSelect = ({ student }) => {
 
     const { profile, labs, labs_avabile } = student;
     
     const [globalError, setGlobalError] = useState(null);
-    const [labsCollapse, setLabsCollapse] = useState(window.innerWidth > 999);
 
     if (profile.studentId === null) {
         return <Redirect to={{ pathname: "/" }} />;
@@ -36,49 +31,15 @@ const LabsSelect = ({ student }) => {
                 <PageTitle title="Laboratori"/>
             </Row>
             <Row>
-                <Col sm="12" lg="8">
+                <Col xs="12" lg="8">
                     {window.innerWidth <= 999 ? (
                         <Row>
                             <Badge student={profile} />
                         </Row>
                     ) : null}
-                    <Card>
-                        <CardHeader onClick={() => setLabsCollapse(!labsCollapse)}>
-                            <b>Lista dei laboratori</b>
-                            {labsCollapse === false && window.innerWidth <= 999 ? (
-                                <small className="text-muted ml-2">(clicca per aprire)</small>
-                            ) : null}
-                            <Button
-                                color="link" 
-                                id="labsToggler"
-                                style={{
-                                    position: 'absolute',
-                                    right: '10px'
-                                }}
-                            >
-                                {labsCollapse === true ? (
-                                    <FontAwesomeIcon icon={faChevronUp}/>
-                                ) : (
-                                    <FontAwesomeIcon icon={faChevronDown}/>
-                                )}
-                                
-                            </Button>
-                        </CardHeader>
-                        <Collapse isOpen={labsCollapse}>
-                            <CardBody>
-                                {labs_avabile.map((lab, index, labs) => (
-                                    <LabShow 
-                                        key={index} 
-                                        title={lab.title} 
-                                        description={lab.description} 
-                                        borderBottom={index < (labs.length - 1)}
-                                    />
-                                ))}
-                            </CardBody>
-                        </Collapse>
-                    </Card>
+                    <LabsListCard labs={labs_avabile} />
                 </Col>
-                <Col sm="12" lg="4">
+                <Col xs="12" lg="4">
                     <div style={{ position: 'sticky', top: '1.5rem' }}>
                         <Row>
                             {window.innerWidth > 999 ? <Badge student={profile} /> : null}

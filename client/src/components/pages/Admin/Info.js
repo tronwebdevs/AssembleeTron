@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Page, Grid, Card, Alert, Button } from "tabler-react";
+import { Row, Col, Card, CardBody, Alert, Button } from 'reactstrap';
 import { updateAssemblyInfo } from '../../../actions/assemblyActions';
 import { SiteWrapper, InfoForm, InfoCard, PageLoading } from '../../Admin/';
 import moment from 'moment';
@@ -102,7 +102,8 @@ const Info = ({
                         onClick={() => {
                             setEdit(false);
                         }} 
-                        color="outline-danger"
+                        outline
+                        color="danger"
                     >Annulla</Button>
                 ),
                 (
@@ -132,27 +133,25 @@ const Info = ({
     ) : renderInfo(info);
 
     return (
-        <SiteWrapper>
-            <Page.Content title="Informazioni">
-                <Grid.Row>
-                    {displayMessage.message ? (
-                        <Grid.Col width={12}>
-                            <Alert type={displayMessage.type}>{displayMessage.message}</Alert>
-                        </Grid.Col>
-                    ) : ''}
-                </Grid.Row>
-                {pendings.assembly === false ? (
-                    <Grid.Row>
-                        <Grid.Col width={12}>
-                            <Card>
-                                <Card.Body>
-                                    {pendings.assembly === false || pendings.info === false ? checkIfExists(info) : ''}
-                                </Card.Body>
-                            </Card>
-                        </Grid.Col>
-                    </Grid.Row>
-                ) : <PageLoading/>}
-            </Page.Content>
+        <SiteWrapper title="Informazioni">
+            <Row>
+                {displayMessage.message ? (
+                    <Col xs="12">
+                        <Alert color={displayMessage.type}>{displayMessage.message}</Alert>
+                    </Col>
+                ) : ''}
+            </Row>
+            {pendings.assembly === false ? (
+                <Row>
+                    <Col xs="12">
+                        <Card>
+                            <CardBody>
+                                {pendings.assembly === false || pendings.info === false ? checkIfExists(info) : ''}
+                            </CardBody>
+                        </Card>
+                    </Col>
+                </Row>
+            ) : <PageLoading/>}
         </SiteWrapper>
     );
 };

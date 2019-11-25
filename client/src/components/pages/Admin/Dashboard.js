@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Page, Grid, Card, Alert } from "tabler-react";
+import { Row, Col, Card, CardHeader, CardBody, Alert } from 'reactstrap';
 import { SiteWrapper, SmallCard, DashAssemblyRow, PageLoading } from '../../Admin/';
 
 const Dashboard = ({
@@ -39,41 +39,42 @@ const Dashboard = ({
     const renderAssemblyInfo = () => assembly.exists === true ? (
         <DashAssemblyRow info={info}/>
     ) : (
-        <Grid.Row>
-            <Grid.Col width={12}>
-                <Card title="Nessuna assemblea esistente">
-                    <Card.Body>
+        <Row>
+            <Col xs="12">
+                <Card>
+                    <CardHeader>
+                        <b>Nessuna assemblea esistente</b>
+                    </CardHeader>
+                    <CardBody>
                         <p>Nessuna assemblea trovata sul database, procedi per crearne una nuova</p>
                         <span className="mr-3">
                             <Link to="/gestore/crea" className="btn btn-outline-success">
                                 Crea nuova assemblea
                             </Link>
                         </span>
-                    </Card.Body>
+                    </CardBody>
                 </Card>
-            </Grid.Col>
-        </Grid.Row>
+            </Col>
+        </Row>
     );
 
     return (
-        <SiteWrapper>
-            <Page.Content title="Dashboard">
-                {errorMessage ? (
-                    <Grid.Row>
-                        <Grid.Col width={12}>
-                            <Alert type="danger">{errorMessage}</Alert>
-                        </Grid.Col>
-                    </Grid.Row>
-                ) : null}
-                {pendings.assembly === false ? (
-                    <React.Fragment>
-                        <Grid.Row cards={true}>
-                            {cards.map((card, index) => <SmallCard key={index} {...card} />)}
-                        </Grid.Row>
-                        {renderAssemblyInfo()}
-                    </React.Fragment>
-                ) : <PageLoading />}
-            </Page.Content>
+        <SiteWrapper title="Dashboard">
+            {errorMessage ? (
+                <Row>
+                    <Col xs="12">
+                        <Alert color="danger">{errorMessage}</Alert>
+                    </Col>
+                </Row>
+            ) : null}
+            {pendings.assembly === false ? (
+                <React.Fragment>
+                    <Row>
+                        {cards.map((card, index) => <SmallCard key={index} {...card} />)}
+                    </Row>
+                    {renderAssemblyInfo()}
+                </React.Fragment>
+            ) : <PageLoading />}
         </SiteWrapper>
     );
 };

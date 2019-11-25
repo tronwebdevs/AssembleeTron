@@ -21,7 +21,7 @@ const LabsTable = ({
 			{ content: null }
 		]}
 		bodyItems={labs.map((lab, index) => ({
-			key: lab.ID,
+			key: lab._id,
 			item: [
 				{
 					content: (

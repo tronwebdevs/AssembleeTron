@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Card, Form } from 'tabler-react';
+import { CardTitle, CardBody, Alert, Form } from 'reactstrap';
 import './index.css';
 
 const FormCard = ({ 
@@ -15,22 +15,22 @@ const FormCard = ({
 }) => (
     <Form className="card" onSubmit={onSubmit} action={action} method={method}>
         {errorMessage ? (
-            <Card.Alert 
+            <Alert 
                 color="danger" 
                 className="text-center" 
                 style={{ 
                     borderRadius: '3px 3px 0 0 ',
                     margin: '-1px'
                 }}
-            >{errorMessage}</Card.Alert> 
+            >{errorMessage}</Alert> 
         ) : null}
-        <Card.Body className="p-6">
-            <Card.Title style={{ fontSize: '1.3rem' }} className="text-center mb-0">{title}</Card.Title>
+        <CardBody className="p-6">
+            <CardTitle style={{ fontSize: '1.3rem' }} className="text-center mb-0">{title}</CardTitle>
             <p className="card-text login-subtitle" style={{ textAlign: pAlign || 'left' }}>
                 {text}
             </p>
             {children}
-        </Card.Body>
+        </CardBody>
     </Form>
 );
 

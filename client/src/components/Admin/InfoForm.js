@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Formik } from 'formik';
-import { Grid, Form } from 'tabler-react';
+import { Row, Col, Form, FormGroup, Input, Label, FormFeedback } from 'reactstrap';
+// import { Grid, Form } from 'tabler-react';
 import moment from 'moment';
 import axios from 'axios';
 import Selector from './LabForm/LabHour/Selector';
@@ -57,104 +58,121 @@ const InfoForm = ({
                 setFieldValue
             }) => (
                     <Form onSubmit={handleSubmit}>
-                        <Grid.Row>
-                            <Grid.Col width={12} lg={4}>
-                                <Form.Group label="Titolo">
-                                    <Form.Input
+                        <Row>
+                            <Col xs="12" lg="4">
+                                <FormGroup>
+                                    <Label for="title">Titolo</Label>
+                                    <Input
+                                        id="title"
                                         name="title" 
                                         value={values.title} 
-                                        error={errors.title} 
+                                        invalid={errors.title !== undefined} 
                                         touched={touched.title} 
                                         onChange={handleChange} 
                                         onBlur={handleBlur} 
                                         placeholder="Nome assemblea"
                                     />
-                                </Form.Group>
-                                <Form.Group label="Identificativo">
-                                    <Form.Input 
+                                    <FormFeedback>{errors.title}</FormFeedback>
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="_id">Identificativo</Label>
+                                    <Input 
                                         name="_id" 
                                         placeholder="Generato automaticamente"
                                         value={values._id} 
-                                        error={errors._id} 
+                                        invalid={errors._id !== undefined} 
                                         touched={touched._id} 
                                         onChange={handleChange} 
                                         onBlur={handleBlur}
                                         readOnly 
                                     />
-                                </Form.Group>
-                            </Grid.Col>
-                            <Grid.Col width={12} lg={4}>
-                                <Form.Group label="Data">
-                                    <Form.Input
+                                    <FormFeedback>{errors._id}</FormFeedback>
+                                </FormGroup>
+                            </Col>
+                            <Col xs="12" lg="4">
+                                <FormGroup>
+                                    <Label for="date">Data</Label>
+                                    <Input
                                         type="date" 
                                         name="date" 
+                                        id="date"
                                         value={moment(values.date).format('YYYY-MM-DD')} 
-                                        error={errors.date} 
+                                        invalid={errors.date !== undefined} 
                                         touched={touched.date} 
                                         onChange={handleChange} 
                                         onBlur={handleBlur} 
                                         className="mb-2"
                                     />
-                                </Form.Group>
-                            </Grid.Col>
-                            <Grid.Col width={12} lg={4}>
-                                <Form.Group label="Apertura iscrizioni">
-                                    <Grid.Row className="mb-2">
-                                        <Grid.Col width={12} lg={7}>
-                                            <Form.Input 
+                                    <FormFeedback>{errors.date}</FormFeedback>
+                                </FormGroup>
+                            </Col>
+                            <Col xs="12" lg="4">
+                                <FormGroup>
+                                    <Label for="subOpenDate">Apertura iscrizioni</Label>
+                                    <Row className="mb-2">
+                                        <Col xs="12" lg="7">
+                                            <Input 
                                                 type="date"
                                                 name="subOpenDate"
+                                                id="subOpenDate"
                                                 value={values.subOpenDate} 
                                                 touched={touched.subOpenDate} 
-                                                error={errors.subOpenDate} 
+                                                invalid={errors.subOpenDate !== undefined} 
                                                 onChange={handleChange} 
                                                 onBlur={handleBlur}
                                             />
-                                        </Grid.Col>
-                                        <Grid.Col width={12} lg={5}>
-                                            <Form.Input 
+                                            <FormFeedback>{errors.subOpenDate}</FormFeedback>
+                                        </Col>
+                                        <Col xs="12" lg="5">
+                                            <Input 
                                                 type="time"
                                                 name="subOpenTime"
+                                                id="subOpenTime"
                                                 value={values.subOpenTime} 
                                                 touched={touched.subOpenTime} 
-                                                error={errors.subOpenTime} 
+                                                invalid={errors.subOpenTime !== undefined} 
                                                 onChange={handleChange} 
                                                 onBlur={handleBlur}
                                             />
-                                        </Grid.Col>
-                                    </Grid.Row>
-                                </Form.Group>
-                                <Form.Group label="Chiusura iscrizioni">
-                                    <Grid.Row className="mb-2">
-                                        <Grid.Col width={12} lg={7}>
-                                            <Form.Input 
+                                            <FormFeedback>{errors.subOpenTime}</FormFeedback>
+                                        </Col>
+                                    </Row>
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="subCloseDate">Chiusura iscrizioni</Label>
+                                    <Row className="mb-2">
+                                        <Col xs="12" lg="7">
+                                            <Input 
                                                 type="date"
                                                 name="subCloseDate"
+                                                id="subCloseDate"
                                                 value={values.subCloseDate} 
                                                 touched={touched.subCloseDate} 
-                                                error={errors.subCloseDate} 
+                                                invalid={errors.subCloseDate !== undefined} 
                                                 onChange={handleChange} 
                                                 onBlur={handleBlur}
                                             />
-                                        </Grid.Col>
-                                        <Grid.Col width={12} lg={5}>
-                                            <Form.Input 
+                                            <FormFeedback>{errors.subCloseDate}</FormFeedback>
+                                        </Col>
+                                        <Col xs="12" lg="5">
+                                            <Input 
                                                 type="time"
                                                 name="subCloseTime"
                                                 value={values.subCloseTime} 
                                                 touched={touched.subCloseTime} 
-                                                error={errors.subCloseTime} 
+                                                invalid={errors.subCloseTime !== undefined} 
                                                 onChange={handleChange} 
                                                 onBlur={handleBlur}
                                             />
-                                        </Grid.Col>
-                                    </Grid.Row>
-                                </Form.Group>
-                            </Grid.Col>
-                        </Grid.Row>
-                        <Grid.Row>
-                            <Grid.Col>
-                                <Form.Group label="Classi partecipanti">
+                                        </Col>
+                                    </Row>
+                                </FormGroup>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <FormGroup>
+                                    <Label for="sections">Classi partecipanti</Label>
                                     <Selector 
                                         name={"sections"} 
                                         value={values.sections} 
@@ -162,16 +180,16 @@ const InfoForm = ({
                                         setValue={value => setFieldValue('sections', value)}
                                         error={errors.sections}
                                     />
-                                </Form.Group>
-                            </Grid.Col>
-                        </Grid.Row>
-                        <Grid.Row className="mt-4">
+                                </FormGroup>
+                            </Col>
+                        </Row>
+                        <Row className="mt-4">
                             {buttons.map((button, index) => (
-                                <Grid.Col md={2} className={index === 0 ? "offset-md-4" : null} key={index}>
+                                <Col md={2} className={index === 0 ? "offset-md-4" : null} key={index}>
                                     {button}
-                                </Grid.Col>
+                                </Col>
                             ))}
-                        </Grid.Row>
+                        </Row>
                     </Form>
                 )}
         />
