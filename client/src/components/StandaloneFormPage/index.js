@@ -1,20 +1,29 @@
-import React from 'react';
+import React from "react";
+import { Container, Row, Col } from "reactstrap";
+import SiteWrapper from "../Student/SiteWrapper";
 
-const StandaloneFormPage = ({ children, imageURL }) => (
-    <div className="page">
-        <div className="page-single">
-            <div className="container">
-                <div className="row">
-                    <div className="col col-login mx-auto">
-                        <div className="text-center mb-6">
-                            <img src={imageURL} className="h-8" alt="logo" />
-                        </div>
-                        {children}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+const StandaloneFormPage = ({ children }) => (
+	<SiteWrapper>
+		<div
+			style={{
+				position: "absolute",
+				top: window.innerWidth < 999 ? "10%" : "50%",
+				left: "50%",
+				transform:
+					"translate(-50%, " +
+					(window.innerWidth < 999 ? "0)" : "-50%)"),
+				width: "100%"
+			}}
+		>
+			<Container>
+				<Row>
+					<Col className="mx-auto" style={{ maxWidth: "24rem" }}>
+						{children}
+					</Col>
+				</Row>
+			</Container>
+		</div>
+	</SiteWrapper>
 );
 
 export default StandaloneFormPage;

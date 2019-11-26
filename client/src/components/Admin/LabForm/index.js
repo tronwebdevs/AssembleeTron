@@ -5,12 +5,12 @@ import {
 	createAssemblyLab
 } from "../../../actions/assemblyActions";
 import PropTypes from "prop-types";
+import { Card, CardBody, CardHeader } from "reactstrap";
 import { Formik } from "formik";
 import Form from "./Form";
-import { Card } from "tabler-react";
+import SectionsList from "../../../utils/SectionsList";
 
 const LabForm = ({
-	id,
 	lab,
 	action,
 	handleReset,
@@ -39,73 +39,95 @@ const LabForm = ({
 		} else {
 			setDisplayMessage({
 				type: "success",
-				message: `Laboratorio ${lab.ID} ${
+				message: `Laboratorio "${lab.title}" ${
 					action === "edit" ? "modificato" : "creato"
 				} con successo`
 			});
 		}
 	};
 
+	const completeSectionsList = assembly.info.sections;
+
 	return (
-		<div id="form-card-wrapper">
-			<Card className="m-0 p-0">
-				<Card.Body>
-					<Card.Title>
-						{action === "edit" ? "Modifica" : "Crea"} laboratorio
-					</Card.Title>
+		<div id="form-card-wrapper" style={{ boxShadow: "0 0 8px #9E9E9E" }}>
+			<Card className="m-0 p-0" outline={true} color={action === "edit" ? "warning" : "success"}>
+				<CardHeader>
+					<b>{action === "edit" ? "Modifica" : "Crea"} laboratorio</b>
+				</CardHeader>
+				<CardBody>
 					<Formik
 						enableReinitialize={true}
 						initialValues={{
-							ID: lab.ID || id,
+							_id: lab._id || "",
 							room: lab.room || "",
 							title: lab.title || "",
 							description: lab.description || "",
-							seatsH1: lab.seatsH1 || 0,
-							classesH1: (lab.classesH1 || []).map(cl => ({
+							seatsH1: lab.info ? lab.info.h1.seats : 0,
+							classesH1: (lab.info
+								? SectionsList.parse(
+										lab.info.h1.sections,
+										completeSectionsList
+								  ).getList()
+								: []
+							).map(cl => ({
 								label: cl,
 								value: cl
 							})),
-							seatsH2: lab.seatsH2 || 0,
-							classesH2: (lab.classesH2 || []).map(cl => ({
+							seatsH2: lab.info ? lab.info.h2.seats : 0,
+							classesH2: (lab.info
+								? SectionsList.parse(
+										lab.info.h2.sections,
+										completeSectionsList
+								  ).getList()
+								: []
+							).map(cl => ({
 								label: cl,
 								value: cl
 							})),
-							seatsH3: lab.seatsH3 || 0,
-							classesH3: (lab.classesH3 || []).map(cl => ({
+							seatsH3: lab.info ? lab.info.h3.seats : 0,
+							classesH3: (lab.info
+								? SectionsList.parse(
+										lab.info.h3.sections,
+										completeSectionsList
+								  ).getList()
+								: []
+							).map(cl => ({
 								label: cl,
 								value: cl
 							})),
-							seatsH4: lab.seatsH4 || 0,
-							classesH4: (lab.classesH4 || []).map(cl => ({
+							seatsH4: lab.info ? lab.info.h4.seats : 0,
+							classesH4: (lab.info
+								? SectionsList.parse(
+										lab.info.h4.sections,
+										completeSectionsList
+								  ).getList()
+								: []
+							).map(cl => ({
 								label: cl,
 								value: cl
 							})),
-							lastsTwoH: lab.lastsTwoH
+							two_h: lab.two_h
 						}}
 						validate={values => {
 							let errors = {};
-							if (values.ID !== lab.ID) {
+							if (values._id !== lab._id) {
 								const { labs } = assembly;
 								labs.forEach(lab => {
-									if (lab.ID === values.ID) {
-										errors.ID = "ID duplicato";
+									if (lab._id === values._id) {
+										errors._id = "ID duplicato";
 									}
 									if (lab.room === values.room.trim()) {
-										errors.room = `Classe identica al laboratorio ${
-											lab.ID
-										}`;
+										errors.room = `Aula identica al laboratorio "${lab.title}"`;
 									}
 									if (lab.title === values.title.trim()) {
-										errors.title = `Esiste gia' un laboratorio con questo titolo (${
-											lab.ID
-										})`;
+										errors.title = `Esiste gia' un laboratorio con questo titolo ("${lab.title}")`;
 									}
 									if (
 										lab.description ===
 											values.description.trim() &&
 										values.description !== "-"
 									) {
-										errors.description = "Classe duplicato";
+										errors.description = `Esiste gia' un laboratorio con questa descrizione ("${lab.title}")`;
 									}
 								});
 							}
@@ -126,36 +148,40 @@ const LabForm = ({
 						validateOnChange={false}
 						onSubmit={values => {
 							let lab = {
-								ID: values.ID,
+								_id: values._id,
 								room: values.room,
 								title: values.title,
 								description: values.description || "",
-								seatsH1: values.seatsH1 || 0,
-								classesH1: (values.classesH1 || []).map(
-									({ label }) => label
-								),
-								seatsH2: values.seatsH2 || 0,
-								classesH2: (values.classesH2 || []).map(
-									({ label }) => label
-								),
-								seatsH3: values.seatsH3 || 0,
-								classesH3: (values.classesH3 || []).map(
-									({ label }) => label
-								),
-								seatsH4: values.seatsH4 || 0,
-								classesH4: (values.classesH4 || []).map(
-									({ label }) => label
-								),
-								lastsTwoH: values.lastsTwoH
+								info: {},
+								two_h: values.two_h
 							};
+							for (let i = 1; i <= 4; i++) {
+								lab.info["h" + i] = {
+									seats: values["seatsH" + i],
+									sections: new SectionsList(
+										(values["classesH" + i] || []).map(
+											({ label }) => label
+										),
+										completeSectionsList
+									).minify()
+								};
+							}
 							if (action === "edit") {
-                                updateAssemblyLab(lab)
-                                    .then(newLab => fetchCallback("edit", newLab, null))
-                                    .catch(err => fetchCallback("edit", null, err));
+								updateAssemblyLab(lab)
+									.then(newLab =>
+										fetchCallback("edit", newLab, null)
+									)
+									.catch(err =>
+										fetchCallback("edit", null, err)
+									);
 							} else if (action === "create") {
-                                createAssemblyLab(lab)
-                                    .then(newLab => fetchCallback("create", newLab, null))
-                                    .catch(err => fetchCallback("create", null, err));
+								createAssemblyLab(lab)
+									.then(newLab =>
+										fetchCallback("create", newLab, null)
+									)
+									.catch(err =>
+										fetchCallback("create", null, err)
+									);
 							}
 						}}
 						onReset={() => {
@@ -183,26 +209,25 @@ const LabForm = ({
 								handleReset={handleReset}
 								isSubmitting={isSubmitting}
 								setFieldValue={setFieldValue}
-								classesLabels={
-                                    assembly.students
+								classesLabels={assembly.students
 									.filter(
 										(std, pos, arr) =>
-											arr.findIndex(s => s.classLabel === std.classLabel) === pos
+											arr.findIndex(
+												s => s.section === std.section
+											) === pos
 									)
-									.map(std => std.classLabel)
-                                    .sort()
-                                }
+									.map(std => std.section)
+									.sort()}
 							/>
 						)}
 					/>
-				</Card.Body>
+				</CardBody>
 			</Card>
 		</div>
 	);
 };
 
 LabForm.propTypes = {
-	id: PropTypes.number.isRequired,
 	lab: PropTypes.object.isRequired,
 	action: PropTypes.string.isRequired,
 	handleReset: PropTypes.func.isRequired,
@@ -218,4 +243,7 @@ const mapStateToProps = state => ({
 	assembly: state.assembly
 });
 
-export default connect(mapStateToProps, { updateAssemblyLab, createAssemblyLab })(LabForm);
+export default connect(mapStateToProps, {
+	updateAssemblyLab,
+	createAssemblyLab
+})(LabForm);

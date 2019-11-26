@@ -14,10 +14,11 @@ import {
 
 const initialState = {
     profile: {
-        ID: null,
+        _id: null,
+        studentId: null,
         name: null,
         surname: null,
-        classLabel: null
+        section: null
     },
     subscribed: false,
     labs: [],

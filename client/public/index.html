@@ -18,26 +18,18 @@
     <title>Assemblee Liceo Tron</title>
     <style>
         /* Extra CSS to fix tabler-react alpha lack*/
-        .page {
-            position: relative;
-            height: 100%;
-        }
-
-        .page-single {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-        }
-
         .navbar-toggler-icon {
-            background: transparent !important;
+            background-color: transparent !important;
         }
 
         .navbar .nav-link .icon {
             vertical-align: middle !important;
             margin-right: 2px;
+        }
+
+        .nav-link.active {
+            color: #467fcf !important;
+            background: transparent;
         }
 
         .card-title {
@@ -52,10 +44,20 @@
             line-height: 1.5rem !important;
         }
 
+        .root {
+            display: flex;
+            flex-flow: row wrap;
+        }
+
+        .root>* {
+            flex: 1 100%;
+        }
+
         @media screen and (max-width: 576px) {
             .navbar-nav {
                 flex-direction: column !important;
             }
+
             .navbar .nav-item {
                 display: block;
                 padding-left: 2rem;

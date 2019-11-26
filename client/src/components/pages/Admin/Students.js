@@ -1,28 +1,27 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Page, Grid, Card } from "tabler-react";
-import { SiteWrapper, StudentsTable, PageLoading } from '../../Admin/';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { Row, Col, Card } from "reactstrap";
+import { SiteWrapper, StudentsTable, PageLoading } from "../../Admin/";
 
 const Students = ({ assembly }) => {
+	const { students, pendings } = assembly;
 
-    const { students, pendings } = assembly;
-
-    return (
-        <SiteWrapper>
-            <Page.Content title="Studenti">
-                {pendings.assembly === false ? (
-                    <Grid.Row>
-                        <Grid.Col width={12}>
-                            <Card>
-                                <StudentsTable students={students}/>
-                            </Card>
-                        </Grid.Col>
-                    </Grid.Row>
-                ) : <PageLoading/>}
-            </Page.Content>
-        </SiteWrapper>
-    );
+	return (
+		<SiteWrapper title="Studenti">
+			{pendings.assembly === false ? (
+				<Row>
+					<Col xs="12">
+						<Card>
+							<StudentsTable students={students} />
+						</Card>
+					</Col>
+				</Row>
+			) : (
+				<PageLoading />
+			)}
+		</SiteWrapper>
+	);
 };
 
 Students.propTypes = {
@@ -30,7 +29,7 @@ Students.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    assembly: state.assembly
+	assembly: state.assembly
 });
 
 export default connect(mapStateToProps)(Students);

@@ -1,17 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Grid, Card } from 'tabler-react';
+import React from "react";
+import PropTypes from "prop-types";
+import { Col, Card } from "reactstrap";
 
 const StudentBadge = ({ student, ...rest }) => (
-    <Grid.Col width={12} {...rest}>
-        <Card className="text-center bg-primary text-white">
-            <h4 className="my-4">{student.name} {student.surname} - {student.classLabel}</h4>
-        </Card>
-    </Grid.Col>
+	<Col xs="12" {...rest}>
+		<Card className="text-center bg-primary text-white">
+			<h4 className="my-4">
+				{student.name} {student.surname} - {student.section}
+			</h4>
+		</Card>
+	</Col>
 );
 
 StudentBadge.propTypes = {
-    student: PropTypes.object.isRequired
+	student: PropTypes.object.isRequired
 };
 
 export default StudentBadge;

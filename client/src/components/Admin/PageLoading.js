@@ -1,16 +1,15 @@
 import React from "react";
-import { Spinner } from 'reactstrap';
-import { Grid } from 'tabler-react';
+import { Row, Col, Spinner } from "reactstrap";
 
 const PageLoading = () => (
-	<Grid.Row>
-		<Grid.Col width={12} className="text-center">
+	<Row>
+		<Col xs="12" className="text-center">
 			<Spinner
 				color="primary"
 				style={{ width: "4rem", height: "4rem" }}
 			/>
-		</Grid.Col>
-	</Grid.Row>
+		</Col>
+	</Row>
 );
 
 export default PageLoading;

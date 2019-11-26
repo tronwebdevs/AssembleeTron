@@ -119,7 +119,7 @@ export default function (state = initialState, { payload, type }) {
 				stats: {
 					labs: (payload.labs || []).length,
 					students: (payload.students || []).length,
-					subs: (payload.students || []).filter(std => std.subscribed !== null).length
+					subs: (payload.students || []).filter(std => std.labs !== null).length
 				},
 				pendings: {
 					...state.pendings,
