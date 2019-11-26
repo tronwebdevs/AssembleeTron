@@ -14,7 +14,7 @@ import {
 	CardBody,
 	Button,
 	ButtonGroup,
-	Alert
+	UncontrolledAlert
 } from "reactstrap";
 import { SiteWrapper } from "../../Admin/";
 
@@ -51,9 +51,9 @@ const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 			<Row>
 				{displayMessage.message !== null ? (
 					<Col xs="12">
-						<Alert color={displayMessage.type}>
+						<UncontrolledAlert color={displayMessage.type}>
 							{displayMessage.message}
-						</Alert>
+						</UncontrolledAlert>
 					</Col>
 				) : null}
 			</Row>

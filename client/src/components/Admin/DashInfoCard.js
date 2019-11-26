@@ -14,7 +14,7 @@ const DashInfoCard = ({ title, listItems, button }) => (
 						{listItems.map((item, index) => (
 							<li key={index}>
 								<Row className="align-items-center">
-									<Col sm="3">{item.title}</Col>
+									<Col xs="3">{item.title}</Col>
 									<Col>{item.text}</Col>
 								</Row>
 							</li>

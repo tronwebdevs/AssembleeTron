@@ -1,7 +1,6 @@
 import React from "react";
 import StandaloneFormPage from "../../StandaloneFormPage";
-import { FormGroup, Input, Button, Spinner } from "reactstrap";
-import TWIcon from "./tw-icon.png";
+import { FormGroup, FormFeedback, Input, Button, Spinner } from "reactstrap";
 
 import FormCard from "../../FormCard";
 
@@ -14,7 +13,7 @@ const LoginForm = ({
 	isSubmitting,
 	errorMessage
 }) => (
-	<StandaloneFormPage imageURL={TWIcon}>
+	<StandaloneFormPage>
 		<FormCard
 			title="Gestione"
 			text="Zona riservata"
@@ -31,8 +30,9 @@ const LoginForm = ({
 					onBlur={onBlur}
 					autoFocus={true}
 					value={values.password}
-					error={errors.password}
+					invalid={errors.password !== undefined}
 				/>
+				<FormFeedback>{errors.password}</FormFeedback>
 			</FormGroup>
 			<FormGroup className="mt-1">
 				<Button

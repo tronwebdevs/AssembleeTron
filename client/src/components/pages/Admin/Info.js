@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { Row, Col, Card, CardBody, Alert, Button } from "reactstrap";
+import {
+	Row,
+	Col,
+	Card,
+	CardBody,
+	UncontrolledAlert,
+	Button
+} from "reactstrap";
 import { updateAssemblyInfo } from "../../../actions/assemblyActions";
 import { SiteWrapper, InfoForm, InfoCard, PageLoading } from "../../Admin/";
 import moment from "moment";
@@ -158,9 +165,9 @@ const Info = ({ assembly, admin, updateAssemblyInfo }) => {
 			<Row>
 				{displayMessage.message ? (
 					<Col xs="12">
-						<Alert color={displayMessage.type}>
+						<UncontrolledAlert color={displayMessage.type}>
 							{displayMessage.message}
-						</Alert>
+						</UncontrolledAlert>
 					</Col>
 				) : (
 					""

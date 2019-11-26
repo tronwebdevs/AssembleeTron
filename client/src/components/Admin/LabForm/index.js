@@ -50,7 +50,7 @@ const LabForm = ({
 
 	return (
 		<div id="form-card-wrapper" style={{ boxShadow: "0 0 8px #9E9E9E" }}>
-			<Card className="m-0 p-0">
+			<Card className="m-0 p-0" outline={true} color={action === "edit" ? "warning" : "success"}>
 				<CardHeader>
 					<b>{action === "edit" ? "Modifica" : "Crea"} laboratorio</b>
 				</CardHeader>

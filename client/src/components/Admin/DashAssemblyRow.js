@@ -112,33 +112,6 @@ const DashAssemblyRow = ({ info }) => {
 					</Card>
 				</Col>
 			</Row>
-			<Row>
-				<Col xs="12">
-					<Card>
-						<CardHeader>
-							<b>Istruzioni</b>
-						</CardHeader>
-						<CardBody>
-							<span>
-								Per creare una nuova assemblea seguire i
-								seguenti passaggi:
-							</span>
-							<ol>
-								<li>
-									Eliminare l'asssemblea esistente (se
-									presente)
-								</li>
-								<li>
-									Creare la nuova assemblea inserendo titolo,
-									data, apertura e chuisura delle iscrizioni,
-									classi partecipanti all'assemblea
-								</li>
-								<li>Inserire i laboratori</li>
-							</ol>
-						</CardBody>
-					</Card>
-				</Col>
-			</Row>
 		</Fragment>
 	);
 };

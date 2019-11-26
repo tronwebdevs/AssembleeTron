@@ -277,9 +277,9 @@ export const requestBackup = (overwrite = false) => dispatch => {
 
 /**
  * Load assembly from backup
- * @param {string} uuid 
+ * @param {string} id
  */
-export const loadAssembly = uuid => dispatch => {
+export const loadAssembly = id => dispatch => {
 
     dispatch({
         type: REQUEST_ASSEMBLY_LOAD,
@@ -289,7 +289,7 @@ export const loadAssembly = uuid => dispatch => {
     const authToken = store.getState().admin.token;
 
     return new Promise((resolve, reject) => {
-        axios.post('/api/assembly/backups/load', { uuid }, {
+        axios.post('/api/assembly/backups/load', { _id: id }, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import {
 	Container,
 	Collapse,
@@ -6,15 +7,16 @@ import {
 	NavbarToggler,
 	NavbarBrand,
 	Nav,
-    NavItem
+	NavItem,
+	Button
 } from "reactstrap";
 import { NavLink } from "react-router-dom";
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import NavBarItems from "./NavBarItems";
-import TWIcon from './tw-icon.png';
+import TWIcon from "./tw-icon.png";
 
-const NavBar = () => {
+const NavBar = ({ logout }) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const toggle = () => setIsOpen(!isOpen);
@@ -22,30 +24,56 @@ const NavBar = () => {
 	return (
 		<header>
 			<Navbar color="white" light expand="md">
-                <Container>
-                    <NavbarBrand
-                        tag={() => (
-                            <NavLink to={{ pathname: '/gestore' }}>
-                                <img style={{ height: '40px', width: '40px' }} src={TWIcon} alt="TronWeb Logo" />
-                            </NavLink>
-                        )}
-                    />
-                    <NavbarToggler onClick={toggle}/>
-                    <Collapse isOpen={isOpen} navbar>
-                        <Nav className="ml-auto" navbar>
-                            {NavBarItems.map((item, index) => (
-                                <NavItem key={index}>
-                                    <NavLink to={{ pathname: item.to}} className="nav-link">
-                                        {item.value}
-                                    </NavLink>
-                                </NavItem>
-                            ))}
-                        </Nav>
-                    </Collapse>
-                </Container>
+				<Container>
+					<NavbarBrand
+						tag={() => (
+							<NavLink
+								to={{ pathname: "/gestore" }}
+								exact
+								activeClassName="active"
+							>
+								<img
+									style={{ height: "40px", width: "40px" }}
+									src={TWIcon}
+									alt="TronWeb Logo"
+								/>
+							</NavLink>
+						)}
+					/>
+					<NavbarToggler onClick={toggle} />
+					<Collapse isOpen={isOpen} navbar>
+						<Nav className="ml-auto" navbar>
+							{NavBarItems.map((item, index) => (
+								<NavItem key={index}>
+									<NavLink
+										to={{ pathname: item.to }}
+										className="nav-link"
+										exact
+										activeClassName="active"
+									>
+										{item.value}
+									</NavLink>
+								</NavItem>
+							))}
+							<NavItem className="ml-lg-3">
+								<Button color="danger" outline onClick={logout}>
+									Logout
+									<FontAwesomeIcon
+										icon={faSignOutAlt}
+										className="ml-2"
+									/>
+								</Button>
+							</NavItem>
+						</Nav>
+					</Collapse>
+				</Container>
 			</Navbar>
 		</header>
 	);
+};
+
+NavBar.propTypes = {
+	logout: PropTypes.func.isRequired
 };
 
 export default NavBar;

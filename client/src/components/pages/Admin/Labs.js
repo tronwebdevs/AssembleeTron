@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { deleteAssemblyLab } from "../../../actions/assemblyActions";
 import PropTypes from "prop-types";
-import { Row, Col, Card, CardBody, Button, Alert } from "reactstrap";
+import {
+	Row,
+	Col,
+	Card,
+	CardBody,
+	Button,
+	UncontrolledAlert
+} from "reactstrap";
 import { SiteWrapper, LabsTable, LabModal, PageLoading } from "../../Admin/";
 
 const Labs = ({ assembly, deleteAssemblyLab }) => {
@@ -23,9 +30,9 @@ const Labs = ({ assembly, deleteAssemblyLab }) => {
 			<Row>
 				{displayMessage.message ? (
 					<Col xs="12">
-						<Alert color={displayMessage.type}>
+						<UncontrolledAlert color={displayMessage.type}>
 							{displayMessage.message}
-						</Alert>
+						</UncontrolledAlert>
 					</Col>
 				) : null}
 			</Row>

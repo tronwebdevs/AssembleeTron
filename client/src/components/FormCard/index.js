@@ -18,6 +18,7 @@ const FormCard = ({
 			<Alert
 				color="danger"
 				className="text-center"
+				fade={false}
 				style={{
 					borderRadius: "3px 3px 0 0 ",
 					margin: "-1px"

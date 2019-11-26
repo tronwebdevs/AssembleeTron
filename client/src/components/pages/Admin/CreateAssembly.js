@@ -12,7 +12,7 @@ import {
 	CardHeader,
 	CardBody,
 	Button,
-	Alert
+	UncontrolledAlert
 } from "reactstrap";
 import { Link, Redirect } from "react-router-dom";
 import { SiteWrapper, InfoForm, ImportAssemblyCard } from "../../Admin/";
@@ -47,9 +47,9 @@ const CreateAssembly = ({
 			<Row>
 				{displayMessage.message ? (
 					<Col xs="12">
-						<Alert color={displayMessage.type}>
+						<UncontrolledAlert color={displayMessage.type}>
 							{displayMessage.message}
-						</Alert>
+						</UncontrolledAlert>
 					</Col>
 				) : null}
 			</Row>

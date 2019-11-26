@@ -2,7 +2,14 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { Row, Col, Card, CardHeader, CardBody, Alert } from "reactstrap";
+import {
+	Row,
+	Col,
+	Card,
+	CardHeader,
+	CardBody,
+	UncontrolledAlert
+} from "reactstrap";
 import {
 	SiteWrapper,
 	SmallCard,
@@ -66,15 +73,28 @@ const Dashboard = ({ assembly, errorMessage }) => {
 			</Row>
 		);
 
+	const assemblyLoadedAlert = loaded =>
+		loaded ? (
+			<Row>
+				<Col xs="12">
+					<UncontrolledAlert color="success">
+						Assemblea caricata con successo
+					</UncontrolledAlert>
+				</Col>
+			</Row>
+		) : null;
 	return (
 		<SiteWrapper title="Dashboard">
 			{errorMessage ? (
 				<Row>
 					<Col xs="12">
-						<Alert color="danger">{errorMessage}</Alert>
+						<UncontrolledAlert color="danger">
+							{errorMessage}
+						</UncontrolledAlert>
 					</Col>
 				</Row>
 			) : null}
+			{assemblyLoadedAlert(pendings.load === false)}
 			{pendings.assembly === false ? (
 				<React.Fragment>
 					<Row>
@@ -83,6 +103,34 @@ const Dashboard = ({ assembly, errorMessage }) => {
 						))}
 					</Row>
 					{renderAssemblyInfo()}
+					<Row>
+						<Col xs="12">
+							<Card>
+								<CardHeader>
+									<b>Istruzioni</b>
+								</CardHeader>
+								<CardBody>
+									<span className="d-block mb-1">
+										Per creare una nuova assemblea seguire i
+										seguenti passaggi:
+									</span>
+									<ol>
+										<li>
+											Eliminare l'asssemblea esistente (se
+											presente)
+										</li>
+										<li>
+											Creare la nuova assemblea inserendo
+											titolo, data, apertura e chuisura
+											delle iscrizioni, classi
+											partecipanti all'assemblea
+										</li>
+										<li>Inserire i laboratori</li>
+									</ol>
+								</CardBody>
+							</Card>
+						</Col>
+					</Row>
 				</React.Fragment>
 			) : (
 				<PageLoading />

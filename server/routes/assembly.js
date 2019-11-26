@@ -138,129 +138,123 @@ router.delete('/', isAdmin, (req, res, next) => {
     }
 });
 
-// /**
-//  * Get avabile backups
-//  * @method get
-//  * @public
-//  */
-// router.get('/backups', isAdmin, (req, res, next) => {
-//     if (!fs.existsSync(assembliesBackup)){
-//         fs.mkdirSync(assembliesBackup);
-//         res.status(200).json({
-//             code: 1,
-//             backups: [],
-//             token: req.jwtNewToken
-//         });
-//     } else {
-//         let files;
-//         fs.readdir(assembliesBackup)
-//             .then(result => {
-//                 files = result;
-//                 let promiseArray = [];
-//                 files.forEach(file => promiseArray.push(
-//                     fs.readFile(
-//                         path.join(assembliesBackup, file)
-//                     )
-//                 ));
-//                 return Promise.all(promiseArray);
-//             })
-//             .then(results => {
-//                 files = files.map((file, index) => JSON.parse(results[index]));
-//                 res.status(200).json({
-//                     code: 1,
-//                     backups: files,
-//                     token: req.jwtNewToken
-//                 })
-//             })
-//             .catch(err => next(err));
-//     }
-// });
+/**
+ * Get avabile backups
+ * @method get
+ * @public
+ */
+router.get('/backups', isAdmin, (req, res, next) => {
+    if (!fs.existsSync(assembliesBackup)){
+        fs.mkdirSync(assembliesBackup);
+        res.status(200).json({
+            code: 1,
+            backups: [],
+            token: req.jwtNewToken
+        });
+    } else {
+        let files;
+        fs.readdir(assembliesBackup)
+            .then(result => {
+                files = result;
+                let promiseArray = [];
+                files.forEach(file => promiseArray.push(
+                    fs.readFile(
+                        path.join(assembliesBackup, file)
+                    )
+                ));
+                return Promise.all(promiseArray);
+            })
+            .then(results => {
+                files = files.map((file, index) => JSON.parse(results[index]));
+                res.status(200).json({
+                    code: 1,
+                    backups: files,
+                    token: req.jwtNewToken
+                })
+            })
+            .catch(err => next(err));
+    }
+});
 
-// /**
-//  * Backup assembly into JSON local file
-//  * @method post
-//  * @public
-//  */
-// router.post('/backups', isAdmin, (req, res, next) => {
-//     const { overwrite } = req.body;
-//     console.log(overwrite);
-//     let info;
-//     getInfo()
-//         .then(result => {
-//             info = result.info;
-//             return getAllLabs();
-//         })
-//         .then(labs => {
-//             if (!fs.existsSync(assembliesBackup)){
-//                 fs.mkdirSync(assembliesBackup);
-//             }
-//             const file = path.join(assembliesBackup, info.uuid + '.json');
-//             if (fs.existsSync(file) && overwrite !== true) {
-//                 let error = new Error('Il backup di questa assemblea esiste gia\', sovrascriverlo?');
-//                 error.code = 2;
-//                 throw error;
-//             }
+/**
+ * Backup assembly into JSON local file
+ * @method post
+ * @public
+ */
+router.post('/backups', isAdmin, (req, res, next) => {
+    const { overwrite } = req.body;
+    let info;
+    Assembly.find()
+        .then(results => {
+            info = results[0];
+            return Laboratory.find();
+        })
+        .then(labs => {
+            if (!fs.existsSync(assembliesBackup)){
+                fs.mkdirSync(assembliesBackup);
+            }
+            const file = path.join(assembliesBackup, info._id + '.json');
+            if (fs.existsSync(file) && overwrite !== true) {
+                let error = new Error('Il backup di questa assemblea esiste gia\', sovrascriverlo?');
+                error.code = 2;
+                throw error;
+            }
 
-//             const assembly = {
-//                 info,
-//                 labs
-//             };
+            const assembly = {
+                info,
+                labs
+            };
             
-//             return fs.writeFile(file, JSON.stringify(assembly, null, 4), 'utf8');
-//         })
-//         .then(() => res.status(200).json({
-//             code: 1,
-//             message: 'Assemblea salvata con successo',
-//             token: req.jwtNewToken
-//         }))
-//         .catch(err => next(err));
-// });
+            return fs.writeFile(file, JSON.stringify(assembly, null, 4), 'utf8');
+        })
+        .then(() => res.status(200).json({
+            code: 1,
+            message: 'Assemblea salvata con successo',
+            token: req.jwtNewToken
+        }))
+        .catch(err => next(err));
+});
 
-// /**
-//  * Load assembly from local backup file
-//  * @method post
-//  * @public
-//  */
-// router.post('/backups/load', isAdmin, (req, res, next) => {
-//     const { uuid } = req.body;
-//     if (typeof uuid === 'string') {
-//         const file = path.join(assembliesBackup, uuid + '.json');
-//         let assemblyFile;
-//         let newAssembly = {};
-//         fs.readFile(file)
-//             .then(data => {
-//                 assemblyFile = JSON.parse(data);
-//                 const { info } = assemblyFile;
-//                 const { uuid, title, date, subOpen, subClose } = info;
-//                 return AssemblyInfo.create({
-//                     uuid, 
-//                     title, 
-//                     date, 
-//                     subOpen, 
-//                     subClose
-//                 });
-//             })
-//             .then(info => {
-//                 newAssembly.info = info;
-//                 let promiseArray = [];
-//                 assemblyFile.labs.forEach(lab => promiseArray.push(
-//                     createLab(lab)
-//                 ));
-//                 return Promise.all(promiseArray);
-//             })
-//             .then(results => {
-//                 newAssembly.labs = results;
-//                 res.status(200).json({
-//                     code: 1,
-//                     assembly: newAssembly,
-//                     token: req.jwtNewToken
-//                 });
-//             })
-//             .catch(err => next(err));
-//     } else {
-//         next(new Error('UUID non valido'));
-//     }
-// });
+/**
+ * Load assembly from local backup file
+ * @method post
+ * @public
+ */
+router.post('/backups/load', isAdmin, (req, res, next) => {
+    const { _id } = req.body;
+    if (typeof _id === 'string') {
+        const file = path.join(assembliesBackup, _id + '.json');
+        let assemblyFile;
+        let newAssembly = {};
+        fs.readFile(file)
+            .then(data => {
+                assemblyFile = JSON.parse(data);
+                const { info } = assemblyFile;
+                return new Assembly(info).save();
+            })
+            .then(info => {
+                newAssembly.info = info;
+                let promiseArray = [];
+                assemblyFile.labs.forEach(lab => 
+                    promiseArray.push(
+                        new Laboratory(lab).save()
+                    )
+                );
+                return Promise.all(promiseArray);
+            })
+            .then(results => {
+                newAssembly.labs = results;
+                res.status(200).json({
+                    code: 1,
+                    assembly: newAssembly,
+                    token: req.jwtNewToken
+                });
+            })
+            .catch(err => next(err));
+    } else {
+        next(new Error('Identificativo non valido'));
+    }
+});
 
 /**
  * Update assembly info
