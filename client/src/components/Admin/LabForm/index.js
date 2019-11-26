@@ -5,10 +5,10 @@ import {
 	createAssemblyLab
 } from "../../../actions/assemblyActions";
 import PropTypes from "prop-types";
+import { Card, CardBody, CardHeader } from "reactstrap";
 import { Formik } from "formik";
 import Form from "./Form";
-import { Card } from "tabler-react";
-import SectionsList from '../../../utils/SectionsList';
+import SectionsList from "../../../utils/SectionsList";
 
 const LabForm = ({
 	lab,
@@ -44,17 +44,17 @@ const LabForm = ({
 				} con successo`
 			});
 		}
-    };
-    
-    const completeSectionsList = assembly.info.sections;
+	};
+
+	const completeSectionsList = assembly.info.sections;
 
 	return (
 		<div id="form-card-wrapper" style={{ boxShadow: "0 0 8px #9E9E9E" }}>
 			<Card className="m-0 p-0">
-				<Card.Body>
-					<Card.Title>
-						{action === "edit" ? "Modifica" : "Crea"} laboratorio
-					</Card.Title>
+				<CardHeader>
+					<b>{action === "edit" ? "Modifica" : "Crea"} laboratorio</b>
+				</CardHeader>
+				<CardBody>
 					<Formik
 						enableReinitialize={true}
 						initialValues={{
@@ -63,22 +63,46 @@ const LabForm = ({
 							title: lab.title || "",
 							description: lab.description || "",
 							seatsH1: lab.info ? lab.info.h1.seats : 0,
-							classesH1: (lab.info ? SectionsList.parse(lab.info.h1.sections, completeSectionsList).getList() : []).map(cl => ({
+							classesH1: (lab.info
+								? SectionsList.parse(
+										lab.info.h1.sections,
+										completeSectionsList
+								  ).getList()
+								: []
+							).map(cl => ({
 								label: cl,
 								value: cl
 							})),
 							seatsH2: lab.info ? lab.info.h2.seats : 0,
-							classesH2: (lab.info ? SectionsList.parse(lab.info.h2.sections, completeSectionsList).getList() : []).map(cl => ({
+							classesH2: (lab.info
+								? SectionsList.parse(
+										lab.info.h2.sections,
+										completeSectionsList
+								  ).getList()
+								: []
+							).map(cl => ({
 								label: cl,
 								value: cl
 							})),
 							seatsH3: lab.info ? lab.info.h3.seats : 0,
-							classesH3: (lab.info ? SectionsList.parse(lab.info.h3.sections, completeSectionsList).getList() : []).map(cl => ({
+							classesH3: (lab.info
+								? SectionsList.parse(
+										lab.info.h3.sections,
+										completeSectionsList
+								  ).getList()
+								: []
+							).map(cl => ({
 								label: cl,
 								value: cl
 							})),
 							seatsH4: lab.info ? lab.info.h4.seats : 0,
-							classesH4: (lab.info ? SectionsList.parse(lab.info.h4.sections, completeSectionsList).getList() : []).map(cl => ({
+							classesH4: (lab.info
+								? SectionsList.parse(
+										lab.info.h4.sections,
+										completeSectionsList
+								  ).getList()
+								: []
+							).map(cl => ({
 								label: cl,
 								value: cl
 							})),
@@ -115,37 +139,49 @@ const LabForm = ({
 								errors.room = "L'aula non puo' restare vuota";
 							}
 							if (values.description.trim() === "") {
-								errors.description = "La descrizione non puo' restare vuota";
+								errors.description =
+									"La descrizione non puo' restare vuota";
 							}
 
 							return errors;
 						}}
 						validateOnChange={false}
 						onSubmit={values => {
-                            let lab = {
-                                _id: values._id,
+							let lab = {
+								_id: values._id,
 								room: values.room,
 								title: values.title,
-                                description: values.description || "",
-                                info: {},
-                                two_h: values.two_h
-                            };
-                            for (let i = 1; i <= 4; i++) {
-                                lab.info['h' + i] = {
-                                    seats: values['seatsH' + i],
-                                    sections: new SectionsList((values['classesH' + i] || []).map(
-                                        ({ label }) => label
-                                    ), completeSectionsList).minify()
-                                };
-                            }
+								description: values.description || "",
+								info: {},
+								two_h: values.two_h
+							};
+							for (let i = 1; i <= 4; i++) {
+								lab.info["h" + i] = {
+									seats: values["seatsH" + i],
+									sections: new SectionsList(
+										(values["classesH" + i] || []).map(
+											({ label }) => label
+										),
+										completeSectionsList
+									).minify()
+								};
+							}
 							if (action === "edit") {
-                                updateAssemblyLab(lab)
-                                    .then(newLab => fetchCallback("edit", newLab, null))
-                                    .catch(err => fetchCallback("edit", null, err));
+								updateAssemblyLab(lab)
+									.then(newLab =>
+										fetchCallback("edit", newLab, null)
+									)
+									.catch(err =>
+										fetchCallback("edit", null, err)
+									);
 							} else if (action === "create") {
-                                createAssemblyLab(lab)
-                                    .then(newLab => fetchCallback("create", newLab, null))
-                                    .catch(err => fetchCallback("create", null, err));
+								createAssemblyLab(lab)
+									.then(newLab =>
+										fetchCallback("create", newLab, null)
+									)
+									.catch(err =>
+										fetchCallback("create", null, err)
+									);
 							}
 						}}
 						onReset={() => {
@@ -173,19 +209,19 @@ const LabForm = ({
 								handleReset={handleReset}
 								isSubmitting={isSubmitting}
 								setFieldValue={setFieldValue}
-								classesLabels={
-                                    assembly.students
+								classesLabels={assembly.students
 									.filter(
 										(std, pos, arr) =>
-											arr.findIndex(s => s.section === std.section) === pos
+											arr.findIndex(
+												s => s.section === std.section
+											) === pos
 									)
 									.map(std => std.section)
-                                    .sort()
-                                }
+									.sort()}
 							/>
 						)}
 					/>
-				</Card.Body>
+				</CardBody>
 			</Card>
 		</div>
 	);
@@ -207,4 +243,7 @@ const mapStateToProps = state => ({
 	assembly: state.assembly
 });
 
-export default connect(mapStateToProps, { updateAssemblyLab, createAssemblyLab })(LabForm);
+export default connect(mapStateToProps, {
+	updateAssemblyLab,
+	createAssemblyLab
+})(LabForm);

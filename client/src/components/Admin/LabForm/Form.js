@@ -1,6 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Form, Grid, Button, Icon } from "tabler-react";
+import {
+	Row,
+	Col,
+	Form,
+	FormGroup,
+	FormFeedback,
+	Input,
+	CustomInput,
+	Button
+} from "reactstrap";
+import { Icon } from "tabler-react";
 import LabHour from "./LabHour/";
 
 const CustomForm = ({
@@ -16,55 +26,62 @@ const CustomForm = ({
 	classesLabels
 }) => (
 	<Form onSubmit={handleSubmit}>
-		<Form.Group>
-			<Grid.Row className="mb-2">
-				<Grid.Col width={12} md={7} className="mb-2 mb-md-0">
-					<Form.Input
+		<FormGroup>
+			<Row className="mb-2">
+				<Col xs="12" md="7" className="mb-2 mb-md-0">
+					<Input
+						type="text"
 						placeholder="Generato automaticamente"
 						name="_id"
 						value={values._id}
-						error={errors._id}
+						invalid={errors._id !== undefined}
 						readOnly
 						onChange={handleChange}
 					/>
-				</Grid.Col>
-				<Grid.Col width={12} md={5}>
-					<Form.Input
+					<FormFeedback>{errors._id}</FormFeedback>
+				</Col>
+				<Col xs="12" md="5">
+					<Input
+						type="text"
 						placeholder="Aula"
 						name="room"
 						value={values.room}
-						error={errors.room}
+						invalid={errors.room !== undefined}
 						onChange={handleChange}
 					/>
-				</Grid.Col>
-			</Grid.Row>
-            <Grid.Row className="mb-2">
-                <Grid.Col width={12}>
-					<Form.Input
+					<FormFeedback>{errors.room}</FormFeedback>
+				</Col>
+			</Row>
+			<Row className="mb-2">
+				<Col xs="12">
+					<Input
+						type="text"
 						placeholder="Titolo"
 						name="title"
 						value={values.title}
-						error={errors.title}
+						invalid={errors.title !== undefined}
 						onChange={handleChange}
 					/>
-				</Grid.Col>
-            </Grid.Row>
-			<Grid.Row>
-				<Grid.Col width={12}>
-					<Form.Textarea
+					<FormFeedback>{errors.title}</FormFeedback>
+				</Col>
+			</Row>
+			<Row>
+				<Col xs="12">
+					<Input
+						type="textarea"
 						placeholder="Descrizione"
 						rows="4"
 						name="description"
-						error={errors.description}
+						value={values.description}
+						invalid={errors.description !== undefined}
 						onChange={handleChange}
-					>
-						{values.description}
-					</Form.Textarea>
-				</Grid.Col>
-			</Grid.Row>
-		</Form.Group>
-		<Form.Group>
-			<Grid.Row>
+					/>
+					<FormFeedback>{errors.description}</FormFeedback>
+				</Col>
+			</Row>
+		</FormGroup>
+		<FormGroup>
+			<Row>
 				{[1, 2].map(h => (
 					<LabHour
 						key={h}
@@ -81,10 +98,10 @@ const CustomForm = ({
 						setFieldValue={setFieldValue}
 					/>
 				))}
-			</Grid.Row>
-		</Form.Group>
-		<Form.Group>
-			<Grid.Row>
+			</Row>
+		</FormGroup>
+		<FormGroup>
+			<Row>
 				{[3, 4].map(h => (
 					<LabHour
 						key={h}
@@ -101,20 +118,23 @@ const CustomForm = ({
 						setFieldValue={setFieldValue}
 					/>
 				))}
-			</Grid.Row>
-		</Form.Group>
-		<Form.Group>
-			<Form.Checkbox
+			</Row>
+		</FormGroup>
+		<FormGroup>
+			<CustomInput
+				type="checkbox"
 				name="two_h"
+				id="two_h"
 				label="Questo laboratorio dura 2 ore"
 				checked={values.two_h}
-				error={errors.two_h}
+				invalid={errors.two_h}
 				onChange={handleChange}
 			/>
-		</Form.Group>
-		<Form.Group>
-			<Grid.Row>
-				<Grid.Col width={3} offset={3} className="pr-1">
+			<FormFeedback>{errors.two_h}</FormFeedback>
+		</FormGroup>
+		<FormGroup>
+			<Row>
+				<Col xs={{ size: "3", offset: "3" }} className="pr-1">
 					<Button
 						type="submit"
 						block
@@ -123,20 +143,21 @@ const CustomForm = ({
 					>
 						Salva
 					</Button>
-				</Grid.Col>
-				<Grid.Col width={3} className="pl-1">
+				</Col>
+				<Col xs="3" className="pl-1">
 					<Button
 						type="button"
 						onClick={handleReset}
 						disabled={isSubmitting}
 						block
-						color="outline-danger"
+						outline
+						color="danger"
 					>
 						<Icon name="x" />
 					</Button>
-				</Grid.Col>
-			</Grid.Row>
-		</Form.Group>
+				</Col>
+			</Row>
+		</FormGroup>
 	</Form>
 );
 

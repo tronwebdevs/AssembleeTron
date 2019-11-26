@@ -1,5 +1,5 @@
-import React from 'react';
-import { Row, Col, Spinner } from 'reactstrap';
+import React from "react";
+import { Row, Col, Spinner } from "reactstrap";
 
 const PageLoading = () => (
 	<Row>

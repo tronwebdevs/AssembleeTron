@@ -1,22 +1,24 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { authAdmin } from '../../../actions/adminActions';
-import { Redirect } from 'react-router-dom';
-import { LoginFormCard } from '../../Admin/';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { authAdmin } from "../../../actions/adminActions";
+import { Redirect } from "react-router-dom";
+import { LoginFormCard } from "../../Admin/";
 
-const Login = ({ 
-    authAdmin,
-    admin, 
-    location
-}) => admin.authed ? (
-    <Redirect to={{ pathname: location.state.from.pathname || '/gestore/' }} />
-) : (
-    <LoginFormCard authAdmin={authAdmin} errorMessage={location.state ? location.state.message : null}/>
-);
+const Login = ({ authAdmin, admin, location }) =>
+	admin.authed ? (
+		<Redirect
+			to={{ pathname: location.state.from.pathname || "/gestore/" }}
+		/>
+	) : (
+		<LoginFormCard
+			authAdmin={authAdmin}
+			errorMessage={location.state ? location.state.message : null}
+		/>
+	);
 
 Login.protoTypes = {
-    authAdmin: PropTypes.func.isRequired,
+	authAdmin: PropTypes.func.isRequired,
 	admin: PropTypes.object.isRequired,
 	location: PropTypes.object
 };
