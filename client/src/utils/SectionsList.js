@@ -40,30 +40,32 @@ class SectionsList {
      * @see SectionsList
      */
     static parse(list, completeList) {
+        // Create new array variable to prevent from changing original array
+        let wList = [...list];
         let parsedList = [];
         // Check if arrays are identical
-        if (list === completeList) {
-            parsedList = list;
+        if (wList === completeList) {
+            parsedList = wList;
         } else {
             // Check if both arrays are empty
             if (completeList.length < 0) throw new Error('Complete list is empty!');
-            if (list.length < 0) throw new Error('Complete list is empty!');
+            if (wList.length < 0) throw new Error('Complete list is empty!');
 
             // Check if in the list array there is the tag ALL
-            let indexAll = list.indexOf('@a');
+            let indexAll = wList.indexOf('@a');
             if (indexAll !== -1) {
                 // Remove tag from list array
-                list.splice(indexAll, 1);
+                wList.splice(indexAll, 1);
                 // Set final array to contains all sections
                 parsedList = completeList;
             } else {
                 // Check for every grade if tag is present in the list array
                 let found = [];
                 for (let i = 1; i <= 5; i++) {
-                    let index = list.indexOf('@' + i);
+                    let index = wList.indexOf('@' + i);
                     if (index !== -1 && !found.includes(i)) {
                         // Remove tag from list array
-                        list.splice(index, 1);
+                        wList.splice(index, 1);
                         // Save tag to prevent recursion
                         found.push(i);
                         // Concat sections to final array
@@ -75,13 +77,13 @@ class SectionsList {
             }
 
             // Concat to final list sections prensets in the original array
-            parsedList = parsedList.concat(list);
+            parsedList = parsedList.concat(wList);
 
             // First filter sections to remove (es "3IC")
-            let exclude1 = list.filter(section => section[0] === '-');
+            let exclude1 = wList.filter(section => section[0] === '-');
             // Second filter section removed (es "-3IC")
             let exclude2 = exclude1.map(section => section.substr(1));
-            // Filter final list with sections to remove
+            // Filter final wList with sections to remove
             parsedList = parsedList.filter(section => !exclude1.includes(section) && !exclude2.includes(section));
         }
         // Return final array
