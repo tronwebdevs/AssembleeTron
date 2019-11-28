@@ -11,7 +11,7 @@ const Footer = () => (
 		}}
 	>
 		<Container className="text-center">
-			<span className="text-muted">
+			<span className="text-muted footer-span">
 				Copyright © {moment().format("YYYY")}{" "}
 				<a href="https://www.tronweb.it"> TronWeb</a> | Made by Davide
 				Testolin
