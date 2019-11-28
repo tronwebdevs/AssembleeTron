@@ -1,5 +1,49 @@
-body {
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
+/* Extra CSS to fix tabler-react alpha lack*/
+.navbar-toggler-icon {
+    background-color: transparent !important;
+}
+
+.navbar .nav-link .icon {
+    vertical-align: middle !important;
+    margin-right: 2px;
+}
+
+.nav-link.active {
+    color: #467fcf !important;
+    background: transparent;
+}
+
+.card-title {
+    line-height: normal !important;
+}
+
+.flex-fill {
+    width: 100% !important;
+}
+
+.page-title {
+    line-height: 1.5rem !important;
+}
+
+.root {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.root > * {
+    flex: 1 100%;
+}
+
+@media screen and (max-width: 576px) {
+    .navbar-nav {
+        flex-direction: column !important;
+    }
+
+    .navbar .nav-item {
+        display: block;
+        padding-left: 2rem;
+    }
+    span.footer-span {
+        font-size: .7rem;
+    }
 }

@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import { deleteAssemblyLab } from "../../../actions/assemblyActions";
+import {
+	deleteAssemblyLab,
+	fetchAllLabs
+} from "../../../actions/assemblyActions";
 import PropTypes from "prop-types";
 import {
 	Row,
@@ -12,7 +15,7 @@ import {
 } from "reactstrap";
 import { SiteWrapper, LabsTable, LabModal, PageLoading } from "../../Admin/";
 
-const Labs = ({ assembly, deleteAssemblyLab }) => {
+const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
 	const { labs, pendings } = assembly;
 
 	const [displayMessage, setDisplayMessage] = useState({
@@ -24,6 +27,10 @@ const Labs = ({ assembly, deleteAssemblyLab }) => {
 		lab: {}
 	});
 	const [showModal, setShowModal] = useState(false);
+
+	if (pendings.labs === undefined && assembly.exists === true) {
+		fetchAllLabs();
+	}
 
 	return (
 		<SiteWrapper title="Laboratori">
@@ -98,11 +105,14 @@ const Labs = ({ assembly, deleteAssemblyLab }) => {
 
 Labs.propTypes = {
 	assembly: PropTypes.object.isRequired,
-	deleteAssemblyLab: PropTypes.func.isRequired
+	deleteAssemblyLab: PropTypes.func.isRequired,
+	fetchAllLabs: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
 	assembly: state.assembly
 });
 
-export default connect(mapStateToProps, { deleteAssemblyLab })(Labs);
+export default connect(mapStateToProps, { deleteAssemblyLab, fetchAllLabs })(
+	Labs
+);

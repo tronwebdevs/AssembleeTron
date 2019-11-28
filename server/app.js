@@ -4,7 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/tron_assemblies', {
+mongoose.connect('mongodb://localhost/dissembly', {
     useNewUrlParser: true,
     useFindAndModify: false,
     useCreateIndex: true,

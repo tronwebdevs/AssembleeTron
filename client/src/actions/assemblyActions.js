@@ -563,7 +563,6 @@ export const fetchAssemblyGeneral = () => dispatch => {
 /**
  * Fetch all assembly labs
  * @public
- * @deprecated
  */
 export const fetchAllLabs = () => dispatch => {
 
@@ -572,8 +571,11 @@ export const fetchAllLabs = () => dispatch => {
         payload: 'labs'
     });
 
+    const authToken = store.getState().admin.token;
+
     axios.get('/api/assembly/labs', {
-        params: { action: 'getAll' }
+        params: { action: 'getAll' },
+        headers: { Authorization: `Bearer ${authToken}`}
     })
         .then(({ data }) => {
             if (data.code === 1) {
@@ -664,11 +666,9 @@ export const deleteAssembly = () => dispatch => {
     });
 
     const authToken = store.getState().admin.token;
-    const password = prompt('Conferma la password');
 
     return new Promise((resolve, reject) => {
-        axios.delete('/api/assembly', { 
-            data: { password },
+        axios.delete('/api/assembly', {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {

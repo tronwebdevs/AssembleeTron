@@ -1,27 +1,19 @@
-## Config file
+<p align="center">
+  <img width="170" height="170" src="https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png">
+</p>
 
-Config file example for the server
+# Dissembly
+Dissembly is a website build with the last technologies available for web development (React, Redux, ExpressJS, MongoDB) and it is meant to be a simple and flexible solution to the problem of subscription to the school assemblies.
+At the current state it can handle only school assemblies with 4 laboratories per day, but in future this limit could be raised up.
 
-```json
-{
-    "sequelize": {
-        "db_database": "database name",
-        "db_username": "username",
-        "db_password": "password",
-        "db_options": {
-            "host": "localhost",
-            "dialect": "mysql",
-            "pool": {
-                "max": 100,
-                "acquire": 30000,
-                "idle": 10000
-            },
-            "logging": false
-        }
-    },
-    "adminPassword": "admin password"
-}
+### Installation
+```
+$~ git clone https://github.com/SadTesto/AssembleeTron.git
+$~ cd client && npm i
+$~ cd server
+$~ npm i
+$~ cp config.example.json config.json
 ```
 
-## Licensing
+#### Licensing
 Copyright 2019 [TronWeb](https://www.tronweb.it)

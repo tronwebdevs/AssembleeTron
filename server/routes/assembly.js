@@ -69,28 +69,19 @@ router.get('/', isAdmin, (req, res, next) => {
     
     let labs;
     let students;
+    let subs;
 
-    Laboratory.find()
-        .then(results => {
-            labs = results;
-            return Student.find();
+    Laboratory.estimatedDocumentCount()
+        .then(result => {
+            labs = result;
+            return Student.estimatedDocumentCount();
         })
-        .then(results => {
-            students = results;
-            return Subscribed.find();
+        .then(result => {
+            students = result;
+            return Subscribed.estimatedDocumentCount();
         })
-        .then(subs => {
-            students = students.map(student => {
-                let sub = subs.find(s => s.studentId === student.studentId) || null;
-                student = student.toObject();
-                student.labs = sub !== null ? {
-                    h1: sub.h1, 
-                    h2: sub.h2, 
-                    h3: sub.h3, 
-                    h4: sub.h4
-                } : null;
-                return student;
-            });
+        .then(result => {
+            subs = result;
             return Assembly.find();
         })
         .then(results => 
@@ -99,6 +90,7 @@ router.get('/', isAdmin, (req, res, next) => {
                 info: results.length > 0 ? results[0] : null,
                 labs,
                 students,
+                subs,
                 token: req.jwtNewToken
             })
         )
@@ -120,22 +112,17 @@ router.get('/', isAdmin, (req, res, next) => {
  * @public
  */
 router.delete('/', isAdmin, (req, res, next) => {
-    const { password } = req.body;
-    if (password === adminPassword) {
-        Assembly
-            .deleteMany({})
-            .then(() => Laboratory.deleteMany({}))
-            .then(() => Subscribed.deleteMany({}))
-            .then(() => 
-                res.status(200).json({ 
-                    code: 1,
-                    token: req.jwtNewToken
-                })
-            )
-            .catch(err => next(err));
-    } else {
-        next(new Error('Autenticazione fallita'));
-    }
+    Assembly
+        .deleteMany({})
+        .then(() => Laboratory.deleteMany({}))
+        .then(() => Subscribed.deleteMany({}))
+        .then(() => 
+            res.status(200).json({ 
+                code: 1,
+                token: req.jwtNewToken
+            })
+        )
+        .catch(err => next(err));
 });
 
 /**
@@ -454,14 +441,29 @@ router.get('/students', isAdmin, (req, res, next) => {
             )
             .catch(err => next(err));
     } else if (action === 'getAll') {
+        let students;
         Student.find()
-            .then(students => 
+            .then(results => {
+                students = results.map(std => std.toObject());
+                return Subscribed.find();
+            })
+            .then(subs => {
+                students = students.map(student => {
+                    let sub = subs.find(s => s.studentId === student.studentId) || null;
+                    student.labs = sub !== null ? {
+                        h1: sub.h1, 
+                        h2: sub.h2, 
+                        h3: sub.h3, 
+                        h4: sub.h4
+                    } : null;
+                    return student;
+                });
                 res.status(200).json({
                     code: 1,
                     students,
                     token: req.jwtNewToken
-                })
-            )
+                });
+            })
             .catch(err => next(err));
     } else {
         next(new Error('Parametri non accettati'));

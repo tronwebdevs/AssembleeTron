@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { fetchStudents } from "../../../actions/assemblyActions";
 import PropTypes from "prop-types";
 import { Row, Col, Card, CardBody } from "reactstrap";
 import {
@@ -18,8 +19,12 @@ import {
 } from "recharts";
 import { SiteWrapper } from "../../Admin/";
 
-const Stats = ({ assembly }) => {
-	const { students } = assembly;
+const Stats = ({ assembly, fetchStudents }) => {
+    const { pendings, students } = assembly;
+    
+    if (pendings.students === undefined) {
+		fetchStudents();
+	}
 	const data = [
 		{ uv: 400, pv: 2400 },
 		{ uv: 300, pv: 2200 },
@@ -28,13 +33,13 @@ const Stats = ({ assembly }) => {
 	let sections = [];
 	students.forEach(student => {
 		const stdSec = sections.find(
-			section => section.name === student.classLabel
+			section => section.name === student.section
 		);
 		if (stdSec) {
 			stdSec.count++;
 		} else {
 			sections.push({
-				name: student.classLabel,
+				name: student.section,
 				count: 1
 			});
 		}
@@ -127,11 +132,12 @@ const Stats = ({ assembly }) => {
 };
 
 Stats.propTypes = {
-	assembly: PropTypes.object.isRequired
+    assembly: PropTypes.object.isRequired,
+    fetchStudents: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
 	assembly: state.assembly
 });
 
-export default connect(mapStateToProps)(Stats);
+export default connect(mapStateToProps, { fetchStudents })(Stats);

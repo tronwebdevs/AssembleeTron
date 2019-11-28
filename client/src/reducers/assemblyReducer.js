@@ -114,12 +114,10 @@ export default function (state = initialState, { payload, type }) {
 				...state,
 				exists: payload.exists || state.exists,
 				info: payload.info || {},
-				labs: payload.labs || [],
-				students: payload.students || [],
 				stats: {
-					labs: (payload.labs || []).length,
-					students: (payload.students || []).length,
-					subs: (payload.students || []).filter(std => std.labs !== null).length
+					labs: payload.labs,
+					students: payload.students,
+					subs: payload.subs
 				},
 				pendings: {
 					...state.pendings,
