@@ -209,15 +209,7 @@ const LabForm = ({
 								handleReset={handleReset}
 								isSubmitting={isSubmitting}
 								setFieldValue={setFieldValue}
-								classesLabels={assembly.students
-									.filter(
-										(std, pos, arr) =>
-											arr.findIndex(
-												s => s.section === std.section
-											) === pos
-									)
-									.map(std => std.section)
-									.sort()}
+								classesLabels={assembly.info.sections}
 							/>
 						)}
 					/>

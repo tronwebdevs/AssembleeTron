@@ -29,6 +29,7 @@ router.get('/info', (req, res, next) =>
             if (results.length === 0) {
                 throw new Error('Nessuna assemblea in programma');
             } else {
+                let error;
                 let assembly = results[0];
                 if (moment(assembly.date).diff(moment()) < 0) {
                     error.code = 0;
