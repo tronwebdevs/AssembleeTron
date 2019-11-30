@@ -23,5 +23,5 @@ export {
 	SiteWrapper,
 	LabsSelectorForm,
 	PageTitle,
-	LabsListCard
+    LabsListCard
 };

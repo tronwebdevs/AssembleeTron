@@ -147,6 +147,7 @@ class SectionsList {
                 }
             }
         }
+        finalList = finalList.sort().reverse();
         return finalList;
     }
 }

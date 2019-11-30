@@ -18,7 +18,7 @@ const InfoCard = ({ info, edit }) => (
 					/>
 				</FormGroup>
 				<FormGroup>
-					<Label>Identificativo</Label>
+					<Label className="form-label">Identificativo</Label>
 					<Input type="text" value={info._id} disabled />
 				</FormGroup>
 			</Col>

@@ -11,6 +11,7 @@ import {
 import moment from "moment";
 
 import FormCard from "../../FormCard";
+import StudentIdHelp from "./StudentIdHelp";
 
 const LoginForm = ({
 	onSubmit,
@@ -105,6 +106,7 @@ const LoginForm = ({
 				</Button>
 			</FormGroup>
 		</FormCard>
+        <StudentIdHelp />
 	</StandaloneFormPage>
 );
 

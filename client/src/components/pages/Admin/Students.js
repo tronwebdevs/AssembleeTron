@@ -1,9 +1,9 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { fetchStudents } from "../../../actions/assemblyActions";
 import { Row, Col, Card } from "reactstrap";
-import { SiteWrapper, StudentsTable, PageLoading } from "../../Admin/";
+import { StudentsTable, PageLoading } from "../../Admin/";
 
 const Students = ({ assembly, fetchStudents }) => {
 	const { students, pendings } = assembly;
@@ -13,7 +13,7 @@ const Students = ({ assembly, fetchStudents }) => {
 	}
 
 	return (
-		<SiteWrapper title="Studenti">
+		<Fragment>
 			{pendings.assembly === false && pendings.assembly === false ? (
 				<Row>
 					<Col xs="12">
@@ -25,7 +25,7 @@ const Students = ({ assembly, fetchStudents }) => {
 			) : (
 				<PageLoading />
 			)}
-		</SiteWrapper>
+		</Fragment>
 	);
 };
 

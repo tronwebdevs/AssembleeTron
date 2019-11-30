@@ -1,5 +1,6 @@
 import AuthRequired from "./AuthRequired/";
 import SmallCard from "./Dashboard/SmallCard";
+import CardsRow from "./Dashboard/CardsRow";
 import LabForm from "./LabForm/";
 import LabModal from "./LabModal/";
 import LoginFormCard from "./LoginFormCard/";
@@ -12,10 +13,13 @@ import InfoCard from "./InfoCard";
 import InfoForm from "./InfoForm";
 import LabsTable from "./LabsTable";
 import PageLoading from "./PageLoading";
+import AdminAlert from "./AdminAlert";
+import AssemblyInfo from "./AssemblyInfo";
 
 export {
 	AuthRequired,
 	SmallCard,
+	CardsRow,
 	LabForm,
 	LabModal,
 	LoginFormCard,
@@ -27,5 +31,7 @@ export {
 	InfoCard,
 	InfoForm,
 	LabsTable,
-	PageLoading
+	PageLoading,
+	AdminAlert,
+	AssemblyInfo
 };

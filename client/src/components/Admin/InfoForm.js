@@ -14,8 +14,15 @@ import moment from "moment";
 import axios from "axios";
 import Selector from "./LabForm/LabHour/Selector";
 
-const InfoForm = ({ info, authToken, setError, onSubmit, buttons }) => {
-	const [schoolSections, setSchoolSections] = useState([]);
+const InfoForm = ({
+	info,
+	authToken,
+	formDisabled = false,
+	setError,
+	onSubmit,
+	buttons
+}) => {
+    const [schoolSections, setSchoolSections] = useState([]);
 
 	useEffect(() => {
 		async function fetchBackups() {
@@ -50,7 +57,7 @@ const InfoForm = ({ info, authToken, setError, onSubmit, buttons }) => {
 				subCloseDate: moment(info.subscription.close).format(
 					"YYYY-MM-DD"
 				),
-				sections: info.sections.map(c => ({ label: c, value: c }))
+				sections: info.sections.sort().map(c => ({ label: c, value: c }))
 			}}
 			onSubmit={onSubmit}
 			render={({
@@ -76,7 +83,8 @@ const InfoForm = ({ info, authToken, setError, onSubmit, buttons }) => {
 									invalid={errors.title !== undefined}
 									onChange={handleChange}
 									onBlur={handleBlur}
-									placeholder="Nome assemblea"
+                                    placeholder="Nome assemblea"
+                                    disabled={formDisabled}
 								/>
 								<FormFeedback>{errors.title}</FormFeedback>
 							</FormGroup>
@@ -92,7 +100,7 @@ const InfoForm = ({ info, authToken, setError, onSubmit, buttons }) => {
 									invalid={errors._id !== undefined}
 									onChange={handleChange}
 									onBlur={handleBlur}
-									readOnly
+                                    readOnly={true}
 								/>
 								<FormFeedback>{errors._id}</FormFeedback>
 							</FormGroup>
@@ -112,7 +120,8 @@ const InfoForm = ({ info, authToken, setError, onSubmit, buttons }) => {
 									invalid={errors.date !== undefined}
 									onChange={handleChange}
 									onBlur={handleBlur}
-									className="mb-2"
+                                    className="mb-2"
+                                    disabled={formDisabled}
 								/>
 								<FormFeedback>{errors.date}</FormFeedback>
 							</FormGroup>
@@ -133,7 +142,8 @@ const InfoForm = ({ info, authToken, setError, onSubmit, buttons }) => {
 												errors.subOpenDate !== undefined
 											}
 											onChange={handleChange}
-											onBlur={handleBlur}
+                                            onBlur={handleBlur}
+                                            disabled={formDisabled}
 										/>
 										<FormFeedback>
 											{errors.subOpenDate}
@@ -149,7 +159,8 @@ const InfoForm = ({ info, authToken, setError, onSubmit, buttons }) => {
 												errors.subOpenTime !== undefined
 											}
 											onChange={handleChange}
-											onBlur={handleBlur}
+                                            onBlur={handleBlur}
+                                            disabled={formDisabled}
 										/>
 										<FormFeedback>
 											{errors.subOpenTime}
@@ -173,7 +184,8 @@ const InfoForm = ({ info, authToken, setError, onSubmit, buttons }) => {
 												undefined
 											}
 											onChange={handleChange}
-											onBlur={handleBlur}
+                                            onBlur={handleBlur}
+                                            disabled={formDisabled}
 										/>
 										<FormFeedback>
 											{errors.subCloseDate}
@@ -189,7 +201,8 @@ const InfoForm = ({ info, authToken, setError, onSubmit, buttons }) => {
 												undefined
 											}
 											onChange={handleChange}
-											onBlur={handleBlur}
+                                            onBlur={handleBlur}
+                                            disabled={formDisabled}
 										/>
 									</Col>
 								</Row>
@@ -209,7 +222,8 @@ const InfoForm = ({ info, authToken, setError, onSubmit, buttons }) => {
 									setValue={value =>
 										setFieldValue("sections", value)
 									}
-									error={errors.sections}
+                                    error={errors.sections}
+                                    isDisabled={formDisabled}
 								/>
 							</FormGroup>
 						</Col>
@@ -235,7 +249,8 @@ const InfoForm = ({ info, authToken, setError, onSubmit, buttons }) => {
 
 InfoForm.propTypes = {
 	info: PropTypes.object.isRequired,
-	authToken: PropTypes.string.isRequired,
+    authToken: PropTypes.string.isRequired,
+    formDisabled: PropTypes.bool,
 	setError: PropTypes.func.isRequired,
 	onSubmit: PropTypes.func.isRequired,
 	buttons: PropTypes.array.isRequired

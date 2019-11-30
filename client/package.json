@@ -21,7 +21,6 @@
     "react-select": "^3.0.8",
     "react-table": "^6.10.3",
     "reactstrap": "^8.1.1",
-    "recharts": "^1.8.5",
     "rect": "^1.2.1",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",

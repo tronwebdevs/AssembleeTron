@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import {
@@ -15,7 +15,7 @@ import {
 	UncontrolledAlert
 } from "reactstrap";
 import { Link, Redirect } from "react-router-dom";
-import { SiteWrapper, InfoForm, ImportAssemblyCard } from "../../Admin/";
+import { InfoForm, ImportAssemblyCard } from "../../Admin/";
 import moment from "moment";
 
 const CreateAssembly = ({
@@ -43,7 +43,7 @@ const CreateAssembly = ({
 	}
 
 	return (
-		<SiteWrapper title="Crea Assemblea">
+		<Fragment>
 			<Row>
 				{displayMessage.message ? (
 					<Col xs="12">
@@ -209,7 +209,7 @@ const CreateAssembly = ({
 					/>
 				</Col>
 			</Row>
-		</SiteWrapper>
+		</Fragment>
 	);
 };
 

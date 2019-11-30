@@ -13,7 +13,7 @@ const FormCard = ({
 	pAlign,
 	errorMessage
 }) => (
-	<Form className="card" onSubmit={onSubmit} action={action} method={method}>
+	<Form className="card mb-0" onSubmit={onSubmit} action={action} method={method}>
 		{errorMessage ? (
 			<Alert
 				color="danger"

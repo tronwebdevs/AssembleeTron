@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Redirect, Link } from "react-router-dom";
@@ -16,7 +16,6 @@ import {
 	ButtonGroup,
 	UncontrolledAlert
 } from "reactstrap";
-import { SiteWrapper } from "../../Admin/";
 
 const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 	const [displayMessage, setDisplayMessage] = useState({
@@ -47,7 +46,7 @@ const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 	};
 
 	return (
-		<SiteWrapper title="Elimina Assemblea">
+		<Fragment>
 			<Row>
 				{displayMessage.message !== null ? (
 					<Col xs="12">
@@ -168,7 +167,7 @@ const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 					</Card>
 				</Col>
 			</Row>
-		</SiteWrapper>
+		</Fragment>
 	);
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import { connect } from "react-redux";
 import {
 	deleteAssemblyLab,
@@ -10,10 +10,9 @@ import {
 	Col,
 	Card,
 	CardBody,
-	Button,
-	UncontrolledAlert
+	Button
 } from "reactstrap";
-import { SiteWrapper, LabsTable, LabModal, PageLoading } from "../../Admin/";
+import { LabsTable, LabModal, PageLoading, AdminAlert } from "../../Admin/";
 
 const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
 	const { labs, pendings } = assembly;
@@ -26,25 +25,34 @@ const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
 		action: "create",
 		lab: {}
 	});
-	const [showModal, setShowModal] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
 	if (pendings.labs === undefined && assembly.exists === true) {
 		fetchAllLabs();
-	}
+    }
+    
+    let isPageLoading = true;
+    if (pendings.assembly === false) {
+        if (assembly.exists === true) {
+            if (pendings.labs === false) {
+                isPageLoading = false;
+            }
+        } else {
+            isPageLoading = false;
+        }
+    } else {
+        isPageLoading = false;
+    }
 
 	return (
-		<SiteWrapper title="Laboratori">
-			<Row>
-				{displayMessage.message ? (
-					<Col xs="12">
-						<UncontrolledAlert color={displayMessage.type}>
-							{displayMessage.message}
-						</UncontrolledAlert>
-					</Col>
-				) : null}
-			</Row>
-			{pendings.assembly === false ? (
-				<React.Fragment>
+		<Fragment>
+            <AdminAlert 
+                display={displayMessage.message !== null} 
+                message={displayMessage.message} 
+                type={displayMessage.type}
+            />
+            {isPageLoading === false ? (
+				<Fragment>
 					<Row>
 						<Col xs="12" xl={assembly.exists ? "9" : "12"}>
 							<Card>
@@ -95,11 +103,11 @@ const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
 						setDisplayMessage={setDisplayMessage}
 						setLabDisplay={setLabDisplay}
 					/>
-				</React.Fragment>
+				</Fragment>
 			) : (
 				<PageLoading />
 			)}
-		</SiteWrapper>
+		</Fragment>
 	);
 };
 

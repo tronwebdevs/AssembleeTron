@@ -452,10 +452,8 @@ router.get('/students', isAdmin, (req, res, next) => {
                 students = students.map(student => {
                     let sub = subs.find(s => s.studentId === student.studentId) || null;
                     student.labs = sub !== null ? {
-                        h1: sub.h1, 
-                        h2: sub.h2, 
-                        h3: sub.h3, 
-                        h4: sub.h4
+                        ...sub.toObject(),
+                        studentId: undefined
                     } : null;
                     return student;
                 });
