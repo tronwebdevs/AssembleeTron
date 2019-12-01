@@ -5,7 +5,7 @@ import { Row, Col, Card, CardBody, Button } from "reactstrap";
 import { updateAssemblyInfo } from "../../../actions/assemblyActions";
 import { InfoForm, PageLoading, AdminAlert } from "../../Admin/";
 import moment from "moment";
-import InfoFormValidation from "../../../utils/InfoFormValidation";
+import { validateInfoForm } from "../../../utils/";
 
 const Info = ({ assembly, admin, updateAssemblyInfo }) => {
 	const { pendings, info, stats } = assembly;
@@ -37,10 +37,11 @@ const Info = ({ assembly, admin, updateAssemblyInfo }) => {
 											{ setSubmitting, setErrors }
 										) => {
 											if (pendings.update_info !== true) {
-                                                const errors = InfoFormValidation.validate(
+                                                const errors = validateInfoForm(
                                                     values, 
                                                     info.sections, 
-                                                    stats.labs
+                                                    stats.labs,
+                                                    true
                                                 );
 												if (Object.entries(errors).length === 0) {
 													updateAssemblyInfo({

@@ -92,7 +92,8 @@ const CustomForm = ({
 							classes: values["classesH" + h]
 						}}
 						errors={{
-							seats: errors["seatsH" + h]
+                            seats: errors["seatsH" + h],
+                            classes: errors["classesH" + h],
 						}}
 						handleChange={handleChange}
 						setFieldValue={setFieldValue}
@@ -112,7 +113,8 @@ const CustomForm = ({
 							classes: values["classesH" + h]
 						}}
 						errors={{
-							seats: errors["seatsH" + h]
+                            seats: errors["seatsH" + h],
+                            classes: errors["classesH" + h],
 						}}
 						handleChange={handleChange}
 						setFieldValue={setFieldValue}

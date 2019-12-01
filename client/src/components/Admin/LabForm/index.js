@@ -106,7 +106,7 @@ const LabForm = ({
 								label: cl,
 								value: cl
 							})),
-							two_h: lab.two_h
+							two_h: lab.two_h || false
 						}}
 						validate={values => {
 							let errors = {};
@@ -141,7 +141,34 @@ const LabForm = ({
 							if (values.description.trim() === "") {
 								errors.description =
 									"La descrizione non puo' restare vuota";
-							}
+                            }
+                            
+                            if (values.two_h === true) {
+                                for (let i = 1; i <= 4; i++) {
+                                    if (i % 2 !== 0) {
+                                        if (values["seatsH" + i] !== values["seatsH" + (i + 1)]) {
+                                            errors["seatsH" + (i + 1)] = 
+                                                "Il numero posti di questa ora deve essere " + 
+                                                "uguale a quello dell'ora precedente";
+                                        }
+                                        if (
+                                            values["classesH" + i].length !== 0 &&
+                                            (values["classesH" + i].length !== values["classesH" + (i + 1)].length ||
+                                            values["classesH" + i]
+                                                .filter(
+                                                    sec => values["classesH" + (i + 1)]
+                                                        .find(
+                                                            ({ value }) => value === sec.value
+                                                        ) !== undefined
+                                                ).length === 0)
+                                        ) {
+                                            errors["classesH" + (i + 1)] = 
+                                                "Le classi partecipati di quest'ora devono essere " + 
+                                                "uguali a quelle dell'ora precedente";
+                                        }
+                                    }
+                                }
+                            }
 
 							return errors;
 						}}

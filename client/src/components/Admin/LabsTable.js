@@ -60,10 +60,10 @@ const LabsTable = ({
 											behavior: "smooth"
 										});
 										deleteAssemblyLab(lab._id)
-											.then(labID =>
+											.then(labTitle =>
 												setDisplayMessage({
 													type: "success",
-													message: `Laboratorio ${labID} eliminato con successo`
+													message: `Laboratorio "${labTitle}" eliminato con successo`
 												})
 											)
 											.catch(({ message }) =>

@@ -403,7 +403,7 @@ router.delete('/labs', isAdmin, (req, res, next) => {
                 if (lab) {
                     res.status(200).json({
                         code: 1,
-                        labID: lab._id,
+                        lab,
                         token: req.jwtNewToken
                     });
                 } else {

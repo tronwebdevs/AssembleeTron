@@ -82,7 +82,7 @@ const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
 											outline
 											block
 											onClick={() =>
-												alert("Not implemented yet")
+												alert("Funzione in arrivo")
 											}
 										>
 											Controlla

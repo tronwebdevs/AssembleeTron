@@ -11,8 +11,7 @@ import {
 	Button
 } from "reactstrap";
 import { NavLink } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { FaSignOutAlt } from "react-icons/fa";
 import NavBarItems from "./NavBarItems";
 import TWIcon from "./tw-icon.png";
 
@@ -58,10 +57,7 @@ const NavBar = ({ logout }) => {
 							<NavItem className="ml-lg-3">
 								<Button color="danger" outline onClick={logout}>
 									Logout
-									<FontAwesomeIcon
-										icon={faSignOutAlt}
-										className="ml-2"
-									/>
+									<FaSignOutAlt className="ml-2"/>
 								</Button>
 							</NavItem>
 						</Nav>

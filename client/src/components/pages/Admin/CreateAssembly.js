@@ -16,6 +16,7 @@ import {
 } from "reactstrap";
 import { Link, Redirect } from "react-router-dom";
 import { InfoForm, ImportAssemblyCard } from "../../Admin/";
+import { validateInfoForm } from "../../../utils/";
 import moment from "moment";
 
 const CreateAssembly = ({
@@ -30,7 +31,7 @@ const CreateAssembly = ({
 	});
 
 	const authToken = admin.token;
-	const { exists, pendings } = assembly;
+	const { exists, pendings, info, stats } = assembly;
 
 	if (
 		pendings.create_info === false &&
@@ -63,97 +64,39 @@ const CreateAssembly = ({
 							<InfoForm
 								info={{
 									title: "",
-									date: moment().format("YYYY") + "-01-01",
+									date: moment().startOf("year"),
 									subscription: {
-										open:
-											moment().format("YYYY") +
-											"-01-01 14:00",
-										close:
-											moment().format("YYYY") +
-											"-01-01 20:00"
+										open: moment().startOf("year"),
+										close: moment().startOf("year")
 									},
 									sections: []
 								}}
 								onSubmit={(
-									{
-										_id,
-										title,
-										date,
-										subOpenDate,
-										subOpenTime,
-										subCloseDate,
-										subCloseTime,
-										sections
-									},
-									{ setSubmitting, setErrors }
-								) => {
+                                    values,
+                                    { setSubmitting, setErrors }
+                                ) => {
 									if (pendings.create_info === undefined) {
-										let errors = {};
-										if (
-											title === null ||
-											title.trim() === ""
-										) {
-											errors.title =
-												"Il titolo non puo' restare vuoto";
-										}
-										let dateMoment = moment(date);
-										let subOpenMoment = moment(
-											subOpenDate + " " + subOpenTime
-										);
-										let subCloseMoment = moment(
-											subCloseDate + " " + subCloseTime
-										);
+										const errors = validateInfoForm(
+                                            values, 
+                                            info.sections, 
+                                            stats.labs,
+                                            false
+                                        );
 
-										if (dateMoment.diff(moment()) < 0) {
-											errors.date =
-												"La data dell'assemblea non puo' essere passata";
-										}
-
-										if (subOpenMoment.diff(moment()) < 0) {
-											errors.subOpenDate =
-												"Le iscrizioni non possono essere gia' aperte";
-										} else if (
-											subOpenMoment.diff(dateMoment) > 0
-										) {
-											errors.subOpenDate =
-												"Le iscrizioni non possono aprire dopo la data dell'assemblea";
-										}
-
-										if (subCloseMoment.diff(moment()) < 0) {
-											errors.subCloseDate =
-												"Le iscrizioni non possono essere gia' chiuse";
-										} else if (
-											subCloseMoment.diff(dateMoment) > 0
-										) {
-											errors.subCloseDate =
-												"Le iscrizioni non possono chiudere dopo la data dell'assemblea";
-										} else if (
-											subCloseMoment.diff(subOpenMoment) <
-											0
-										) {
-											errors.subCloseDate =
-												"Le iscrizioni non possono chiudere prima di iniziare";
-										}
-
-										if (sections.length <= 0) {
-											errors.sections =
-												"Nessuna classe potrà partecipare all'assemblea";
-										}
-
-										if (
-											Object.entries(errors).length === 0
-										) {
+										if (Object.entries(errors).length === 0) {
 											createAssemblyInfo({
-												_id,
-												title,
-												date,
-												subscription: {
-													open: subOpenMoment.format(),
-													close: subCloseMoment.format()
-												},
-												sections: sections.map(
-													({ value }) => value
-												)
+												...values,
+                                                subOpen: moment(
+                                                    values.subOpenDate + " " + 
+                                                    values.subOpenTime
+                                                ).format(),
+                                                subClose: moment(
+                                                    values.subCloseDate + " " + 
+                                                    values.subCloseTime
+                                                ).format(),
+                                                sections: values.sections.map(
+                                                    ({ value }) => value
+                                                )
 											})
 												.then(() =>
 													setSubmitting(false)

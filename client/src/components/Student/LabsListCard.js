@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Card, CardHeader, CardBody, Button, Collapse } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { FaChevronUp } from "react-icons/fa";
 import LabShow from "./LabShow";
 import posed from "react-pose";
 
@@ -41,7 +40,7 @@ const LabsListCard = ({ labs }) => {
 					}}
 				>
 					<Box pose={labsCollapse ? "open" : "close"}>
-						<FontAwesomeIcon icon={faChevronUp} />
+						<FaChevronUp />
 					</Box>
 				</Button>
 			</CardHeader>

@@ -4,7 +4,8 @@ import {
 	Input,
 	InputGroup,
 	InputGroupAddon,
-	InputGroupText
+    InputGroupText,
+    FormFeedback
 } from "reactstrap";
 import Selector from "./Selector";
 
@@ -26,15 +27,17 @@ const LabHour = ({
 				type="number"
 				name={"seatsH" + h}
 				value={values.seats}
-				error={errors.seats}
+				invalid={errors.seats !== undefined}
 				onChange={handleChange}
 			/>
+            <FormFeedback>{errors.seats}</FormFeedback>
 		</InputGroup>
 		<Selector
 			name={"classesH" + h}
 			value={values.classes}
 			classes={classes}
-			setValue={value => setFieldValue("classesH" + h, value)}
+            setValue={value => setFieldValue("classesH" + h, value)}
+            error={errors.classes}
 		/>
 	</Col>
 );

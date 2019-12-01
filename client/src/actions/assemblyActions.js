@@ -469,13 +469,13 @@ export const deleteAssemblyLab = labID => dispatch => {
                 if (data.code === 1) {
                     dispatch({
                         type: LAB_DELETED,
-                        payload: labs.filter(lab => lab._id !== data.labID)
+                        payload: labs.filter(lab => lab._id !== data.lab._id)
                     });
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
                         payload: data.token
                     });
-                    resolve(data.labID);
+                    resolve(data.lab.title);
                 } else {
                     let error = new Error(data.message || 'Errore inaspettato');
                     error.from = data.from || "";
