@@ -13,9 +13,9 @@ import {
 	CardHeader,
 	CardBody,
 	Button,
-	ButtonGroup,
-	UncontrolledAlert
+	ButtonGroup
 } from "reactstrap";
+import { AdminAlert } from "../../Admin/";
 
 const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 	const [displayMessage, setDisplayMessage] = useState({
@@ -43,19 +43,61 @@ const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 			message
 		});
 		target.disabled = false;
-	};
+    };
+    
+    const handleBackup = e => {
+        e.preventDefault();
+        let { target } = e;
+        target.disabled = true;
+        requestBackup()
+            .then(msg =>
+                backupCompleted(target, msg)
+            )
+            .catch(({ message, code }) => {
+                if (code === 2) {
+                    if (window.confirm(message) === true) {
+                        requestBackup(true)
+                            .then(
+                                msg => backupCompleted(target, msg)
+                            )
+                            .catch(
+                                ({ message }) => backupError(target, message)
+                            );
+                    } else {
+                        setDisplayMessage({
+                            type: "success",
+                            message: "Operazione annullata"
+                        });
+                        target.disabled = false;
+                    }
+                } else {
+                    backupError(target, message);
+                }
+            });
+    };
+
+    const handleDelete = e => {
+        e.preventDefault();
+        let { target } = e;
+        target.disabled = true;
+        deleteAssembly()
+            .catch(({ message }) => {
+                setDisplayMessage({
+                    type: "danger",
+                    message
+                });
+                target.disabled = false;
+            }
+        );
+    };
 
 	return (
 		<Fragment>
-			<Row>
-				{displayMessage.message !== null ? (
-					<Col xs="12">
-						<UncontrolledAlert color={displayMessage.type}>
-							{displayMessage.message}
-						</UncontrolledAlert>
-					</Col>
-				) : null}
-			</Row>
+			<AdminAlert 
+                display={displayMessage.message !== null} 
+                message={displayMessage.message} 
+                type={displayMessage.type}
+            />
 			<Row>
 				<Col xs="12" xl="6">
 					<Card>
@@ -72,51 +114,7 @@ const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 								<Button
 									outline
 									color="primary"
-									onClick={e => {
-										e.preventDefault();
-										let { target } = e;
-										target.disabled = true;
-										requestBackup()
-											.then(msg =>
-												backupCompleted(target, msg)
-											)
-											.catch(({ message, code }) => {
-												if (code === 2) {
-													if (
-														window.confirm(
-															message
-														) === true
-													) {
-														requestBackup(true)
-															.then(msg =>
-																backupCompleted(
-																	target,
-																	msg
-																)
-															)
-															.catch(
-																({ message }) =>
-																	backupError(
-																		target,
-																		message
-																	)
-															);
-													} else {
-														setDisplayMessage({
-															type: "success",
-															message:
-																"Operazione annullata"
-														});
-														target.disabled = false;
-													}
-												} else {
-													backupError(
-														target,
-														message
-													);
-												}
-											});
-									}}
+									onClick={handleBackup}
 								>
 									Backup
 								</Button>
@@ -145,20 +143,7 @@ const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 								<Button
 									outline
 									color="danger"
-									onClick={e => {
-										e.preventDefault();
-										let { target } = e;
-										target.disabled = true;
-										deleteAssembly().catch(
-											({ message }) => {
-												setDisplayMessage({
-													type: "danger",
-													message
-												});
-												target.disabled = false;
-											}
-										);
-									}}
+									onClick={handleDelete}
 								>
 									Si
 								</Button>

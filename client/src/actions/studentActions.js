@@ -119,11 +119,14 @@ export const fetchAvabileLabs = section => (dispatch, getState) => {
             params: { section },
             headers: { Authorization: `Bearer ${authToken}`}
         })
-            .then(({ data }) => {
+            .then(({ data, headers }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: STUDENT_LABS_FETCHED,
-                        payload: data
+                        payload: {
+                            ...data,
+                            token: headers.token
+                        }
                     });
                     resolve();
                 } else {
@@ -134,7 +137,7 @@ export const fetchAvabileLabs = section => (dispatch, getState) => {
                 if (err.response && err.response.data && err.response.data.message) {
                     const { data } = err.response;
                     err.message = data.message;
-                    err.token = data.token;
+                    err.token = err.response.headers.token;
                 }
                 dispatch({
                     type: ERROR_IN_STUDENT_LABS_FETCH,
@@ -168,11 +171,14 @@ export const subscribeLabs = (studentID, labs) => (dispatch, getState) => {
         axios.post('/api/students/' + studentID + '/labs', { labs }, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
-            .then(({ data }) => {
+            .then(({ data, headers }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: STUDENT_SUBED,
-                        payload: data
+                        payload: {
+                            ...data,
+                            token: headers.token
+                        }
                     });
                     resolve();
                 } else {
@@ -191,7 +197,7 @@ export const subscribeLabs = (studentID, labs) => (dispatch, getState) => {
                     if (data.target && data.target !== 0) {
                         err.target = data.target;
                     }
-                    err.token = data.token
+                    err.token = err.response.headers.token
                 }
                 dispatch({
                     type: ERROR_IN_STUDENT_LABS_UPDATE,

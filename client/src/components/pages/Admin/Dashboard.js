@@ -6,8 +6,7 @@ import {
 	Col,
 	Card,
 	CardHeader,
-	CardBody,
-	UncontrolledAlert
+	CardBody
 } from "reactstrap";
 import {
     AssemblyInfo,
@@ -43,62 +42,67 @@ const Dashboard = ({ assembly, errorMessage }) => {
         }
     ];
 
-	const assemblyLoadedAlert = loaded =>
-		loaded ? (
-			<Row>
-				<Col xs="12">
-					<UncontrolledAlert color="success">
-						Assemblea caricata con successo
-					</UncontrolledAlert>
-				</Col>
-			</Row>
-        ) : null;
-    
-	return (
-		<Fragment>
+    const assemblyLogAlert = pendings => {
+        let text = null;
+        if (pendings.load === false) {
+            text = "caricata";
+        } else if (pendings.create_info === false) {
+            text = "creata";
+        } else if (pendings.delete_assembly === false) {
+            text = "eliminata";
+        }
+        return text ? (
             <AdminAlert 
-                display={errorMessage !== null} 
-                message={errorMessage}
+                type="success"
+                display={true} 
+                message={`Assemblea ${text} con successo`}
             />
-			{assemblyLoadedAlert(pendings.load === false)}
-			{pendings.assembly === false ? (
-				<Fragment>
-					<CardsRow cards={cards} />
-					<AssemblyInfo exists={assembly.exists} info={info} />
-					<Row>
-						<Col xs="12">
-							<Card>
-								<CardHeader>
-									<b>Istruzioni</b>
-								</CardHeader>
-								<CardBody>
-									<span className="d-block mb-1">
-										Per creare una nuova assemblea seguire i
-										seguenti passaggi:
-									</span>
-									<ol>
-										<li>
-											Eliminare l'asssemblea esistente (se
-											presente)
-										</li>
-										<li>
-											Creare la nuova assemblea inserendo
-											titolo, data, apertura e chuisura
-											delle iscrizioni, classi
-											partecipanti all'assemblea
-										</li>
-										<li>Inserire i laboratori</li>
-									</ol>
-								</CardBody>
-							</Card>
-						</Col>
-					</Row>
-				</Fragment>
-			) : (
-				<PageLoading />
-			)}
-		</Fragment>
-	);
+        ) : null;
+    }
+    
+    if (pendings.assembly === false) {
+        return (
+            <Fragment>
+                <AdminAlert 
+                    display={errorMessage !== null} 
+                    message={errorMessage}
+                />
+                {assemblyLogAlert(pendings)}
+                <CardsRow cards={cards} />
+                <AssemblyInfo exists={assembly.exists} info={info} />
+                <Row>
+                    <Col xs="12">
+                        <Card>
+                            <CardHeader>
+                                <b>Istruzioni</b>
+                            </CardHeader>
+                            <CardBody>
+                                <span className="d-block mb-1">
+                                    Per creare una nuova assemblea seguire i
+                                    seguenti passaggi:
+                                </span>
+                                <ol>
+                                    <li>
+                                        Eliminare l'asssemblea esistente (se
+                                        presente)
+                                    </li>
+                                    <li>
+                                        Creare la nuova assemblea inserendo
+                                        titolo, data, apertura e chuisura
+                                        delle iscrizioni, classi
+                                        partecipanti all'assemblea
+                                    </li>
+                                    <li>Inserire i laboratori</li>
+                                </ol>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                </Row>
+            </Fragment>
+        );
+    } else {
+        return <PageLoading />;
+    }
 };
 
 Dashboard.propTypes = {

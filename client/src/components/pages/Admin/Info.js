@@ -14,72 +14,70 @@ const Info = ({ assembly, admin, updateAssemblyInfo }) => {
 	const [displayMessage, setDisplayMessage] = useState({
 		type: null,
 		message: null
-	});
+    });
 
-	return (
-		<Fragment>
-			<AdminAlert
-				display={displayMessage.message !== null}
-				message={displayMessage.message}
-				type={displayMessage.type}
-			/>
-            {pendings.assembly === false ||
-             pendings.info === false ? (
-				<Row>
+    const handleSubmit = (values, { setSubmitting, setErrors }) => {
+        if (pendings.update_info !== true) {
+            const errors = validateInfoForm(
+                values, 
+                info.sections, 
+                stats.labs,
+                true
+            );
+            if (Object.entries(errors).length === 0) {
+                updateAssemblyInfo({
+                    ...values,
+                    subOpen: moment(
+                        values.subOpenDate + " " + 
+                        values.subOpenTime
+                    ).format(),
+                    subClose: moment(
+                        values.subCloseDate + " " + 
+                        values.subCloseTime
+                    ).format(),
+                    sections: values.sections.map(
+                        ({ value }) => value
+                    )
+                })
+                    .then(message =>
+                        setDisplayMessage({
+                            type: "success",
+                            message
+                        })
+                    )
+                    .catch(({ message }) =>
+                        setDisplayMessage({
+                            type: "danger",
+                            message
+                        })
+                    )
+                    .finally(() => {
+                        setEdit(false);
+                        setSubmitting(false);
+                    });
+            } else {
+                setSubmitting(false);
+                setErrors(errors);
+            }
+        }
+    };
+    
+    if (pendings.assembly === false || pendings.info === false) {
+        return (
+            <Fragment>
+                <AdminAlert
+                    display={displayMessage.message !== null}
+                    message={displayMessage.message}
+                    type={displayMessage.type}
+                />
+                <Row>
 					<Col xs="12">
 						<Card>
 							<CardBody>
 								{assembly.exists === true ? (
 									<InfoForm
 										info={info}
-										onSubmit={(
-											values,
-											{ setSubmitting, setErrors }
-										) => {
-											if (pendings.update_info !== true) {
-                                                const errors = validateInfoForm(
-                                                    values, 
-                                                    info.sections, 
-                                                    stats.labs,
-                                                    true
-                                                );
-												if (Object.entries(errors).length === 0) {
-													updateAssemblyInfo({
-														...values,
-														subOpen: moment(
-                                                            values.subOpenDate + " " + 
-                                                            values.subOpenTime
-                                                        ).format(),
-														subClose: moment(
-                                                            values.subCloseDate + " " + 
-                                                            values.subCloseTime
-                                                        ).format(),
-														sections: values.sections.map(
-															({ value }) => value
-														)
-													})
-														.then(message =>
-															setDisplayMessage({
-																type: "success",
-																message
-															})
-														)
-														.catch(({ message }) =>
-															setDisplayMessage({
-																type: "danger",
-																message
-															})
-														)
-														.finally(() => {
-															setEdit(false);
-                                                            setSubmitting(false);
-														});
-												} else {
-													setSubmitting(false);
-													setErrors(errors);
-												}
-											}
-										}}
+										onSubmit={handleSubmit}
 										buttons={edit === true ? [
 											<Button
 												type="button"
@@ -130,11 +128,11 @@ const Info = ({ assembly, admin, updateAssemblyInfo }) => {
 						</Card>
 					</Col>
 				</Row>
-			) : (
-				<PageLoading />
-			)}
-		</Fragment>
-	);
+            </Fragment>
+        )
+    } else {
+        return <PageLoading />;
+    }
 };
 
 Info.propTypes = {

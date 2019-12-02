@@ -4,7 +4,7 @@ import { Badge } from "reactstrap";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 
-const StudentsTable = ({ students }) => {
+const StudentsTable = ({ students, loading }) => {
 	const columns = [
 		{
 			Header: "ID",
@@ -58,13 +58,15 @@ const StudentsTable = ({ students }) => {
 			ofText="di"
 			rowsText="righe"
 			pageJumpText="vai alla pagina"
-			rowsSelectorText="studenti per pagina"
+            rowsSelectorText="studenti per pagina"
+            loading={loading}
 		/>
 	);
 };
 
 StudentsTable.propTypes = {
-	students: PropTypes.array.isRequired
+    students: PropTypes.array.isRequired,
+    loading: PropTypes.bool.isRequired
 };
 
 export default StudentsTable;

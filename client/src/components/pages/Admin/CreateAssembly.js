@@ -11,11 +11,10 @@ import {
 	Card,
 	CardHeader,
 	CardBody,
-	Button,
-	UncontrolledAlert
+	Button
 } from "reactstrap";
 import { Link, Redirect } from "react-router-dom";
-import { InfoForm, ImportAssemblyCard } from "../../Admin/";
+import { AdminAlert, InfoForm, ImportAssemblyCard } from "../../Admin/";
 import { validateInfoForm } from "../../../utils/";
 import moment from "moment";
 
@@ -31,7 +30,48 @@ const CreateAssembly = ({
 	});
 
 	const authToken = admin.token;
-	const { exists, pendings, info, stats } = assembly;
+    const { exists, pendings, info, stats } = assembly;
+    
+    const handleSubmit = (values, { setSubmitting, setErrors }) => {
+        if (pendings.create_info === undefined) {
+            const errors = validateInfoForm(
+                values, 
+                info.sections, 
+                stats.labs,
+                false
+            );
+
+            if (Object.entries(errors).length === 0) {
+                createAssemblyInfo({
+                    ...values,
+                    subOpen: moment(
+                        values.subOpenDate + " " + 
+                        values.subOpenTime
+                    ).format(),
+                    subClose: moment(
+                        values.subCloseDate + " " + 
+                        values.subCloseTime
+                    ).format(),
+                    sections: values.sections.map(
+                        ({ value }) => value
+                    )
+                })
+                    .then(() =>
+                        setSubmitting(false)
+                    )
+                    .catch(({ message }) => {
+                        setSubmitting(false);
+                        setDisplayMessage({
+                            type: "danger",
+                            message
+                        });
+                    });
+            } else {
+                setSubmitting(false);
+                setErrors(errors);
+            }
+        }
+    };
 
 	if (
 		pendings.create_info === false &&
@@ -45,15 +85,11 @@ const CreateAssembly = ({
 
 	return (
 		<Fragment>
-			<Row>
-				{displayMessage.message ? (
-					<Col xs="12">
-						<UncontrolledAlert color={displayMessage.type}>
-							{displayMessage.message}
-						</UncontrolledAlert>
-					</Col>
-				) : null}
-			</Row>
+            <AdminAlert 
+                display={displayMessage.message !== null} 
+                message={displayMessage.message} 
+                type={displayMessage.type}
+            />
 			<Row>
 				<Col xs="12">
 					<Card>
@@ -71,49 +107,7 @@ const CreateAssembly = ({
 									},
 									sections: []
 								}}
-								onSubmit={(
-                                    values,
-                                    { setSubmitting, setErrors }
-                                ) => {
-									if (pendings.create_info === undefined) {
-										const errors = validateInfoForm(
-                                            values, 
-                                            info.sections, 
-                                            stats.labs,
-                                            false
-                                        );
-
-										if (Object.entries(errors).length === 0) {
-											createAssemblyInfo({
-												...values,
-                                                subOpen: moment(
-                                                    values.subOpenDate + " " + 
-                                                    values.subOpenTime
-                                                ).format(),
-                                                subClose: moment(
-                                                    values.subCloseDate + " " + 
-                                                    values.subCloseTime
-                                                ).format(),
-                                                sections: values.sections.map(
-                                                    ({ value }) => value
-                                                )
-											})
-												.then(() =>
-													setSubmitting(false)
-												)
-												.catch(({ message }) => {
-													setSubmitting(false);
-													setDisplayMessage({
-														type: "danger",
-														message
-													});
-												});
-										} else {
-											setSubmitting(false);
-											setErrors(errors);
-										}
-									}
-								}}
+								onSubmit={handleSubmit}
 								buttons={[
 									<Link
 										className="btn btn-block btn-outline-danger"

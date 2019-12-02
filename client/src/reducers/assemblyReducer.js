@@ -47,7 +47,11 @@ import {
 
 	FETCH_STUDENTS_PENDING,
 	STUDENTS_FETCHED,
-	ERROR_IN_STUDENTS_FETCH,
+    ERROR_IN_STUDENTS_FETCH,
+    
+    REQUEST_ASSEMBLY_PDF,
+    ASSEMBLY_PDF_COMPLETED,
+    ERROR_IN_ASSEMBLY_PDF,
 } from '../actions/types.js';
 
 
@@ -78,6 +82,7 @@ export default function (state = initialState, { payload, type }) {
         case UPDATE_LAB_PENDING:
         case DELETE_LAB_PENDING:
         case FETCH_STUDENTS_PENDING:
+        case REQUEST_ASSEMBLY_PDF:
             return {
                 ...state,
                 pendings: {
@@ -137,7 +142,8 @@ export default function (state = initialState, { payload, type }) {
 					students: state.stats.students
 				},
 				pendings: {
-					...state.pendings,
+                    assembly: false,
+                    labs: false,
 					delete_assembly: false
 				}
 			};
@@ -240,7 +246,15 @@ export default function (state = initialState, { payload, type }) {
                     ...state.pendings,
                     students: false
                 }
-			};
+            };
+        case ASSEMBLY_PDF_COMPLETED:
+            return {
+                ...state,
+                pendings: {
+                    ...state.pendings,
+                    generate_pdf: false
+                }
+            }
         case ERROR_IN_ASSEMBLY_DELETE:
         case ERROR_IN_ASSEMBLY_BACKUP:
         case ERROR_IN_ASSEMBLY_LOAD:
@@ -252,6 +266,7 @@ export default function (state = initialState, { payload, type }) {
 		case ERROR_IN_LAB_UPDATE:
 		case ERROR_IN_LAB_DELETE:
 		case ERROR_IN_STUDENTS_FETCH:
+        case ERROR_IN_ASSEMBLY_PDF:
             return {
                 ...state,
                 pendings: {

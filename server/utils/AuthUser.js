@@ -21,7 +21,7 @@ const processRequest = (req, res, next) => {
                             if (err) {
                                 next(err);
                             } else {
-                                req.jwtNewToken = token;
+                                res.setHeader('Token', token);
                                 req.userType = decoded.type;
                                 req.userID = decoded.id;
                                 next();

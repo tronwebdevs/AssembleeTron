@@ -1,42 +1,35 @@
-import { NavLink, withRouter } from "react-router-dom";
-
 const rootPath = '/gestore';
 
 const NavBarItems = [
     {
         value: "Home",
         to: rootPath + "/",
-        icon: "home",
-        LinkComponent: withRouter(NavLink),
-        useExact: true,
+        icon: "home"
     },
     {
         value: "Informazioni",
         to: rootPath + "/informazioni",
-        icon: "info",
-        LinkComponent: withRouter(NavLink),
-        useExact: true,
+        icon: "info"
     },
     {
         value: "Laboratori",
         to: rootPath + "/laboratori",
-        icon: "list",
-        LinkComponent: withRouter(NavLink),
-        useExact: true,
+        icon: "list"
     },
     {
         value: "Studenti",
         to: rootPath + "/studenti",
-        icon: "users",
-        LinkComponent: withRouter(NavLink),
-        useExact: true,
+        icon: "users"
     },
     {
         value: "Statistiche",
         to: rootPath + "/statistiche",
-        icon: "bar-chart-2",
-        LinkComponent: withRouter(NavLink),
-        useExact: true,
+        icon: "bar-chart-2"
+    },
+    {
+        value: "Esporta",
+        to: rootPath + "/esporta",
+        icon: "download"
     }
 ];
 

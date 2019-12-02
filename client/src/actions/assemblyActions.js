@@ -48,11 +48,16 @@ import {
 	FETCH_STUDENTS_PENDING,
 	STUDENTS_FETCHED,
     ERROR_IN_STUDENTS_FETCH,
+
+    REQUEST_ASSEMBLY_PDF,
+    ASSEMBLY_PDF_COMPLETED,
+    ERROR_IN_ASSEMBLY_PDF,
     
     UPDATE_ADMIN_TOKEN
 } from '../actions/types.js';
 import store from '../store';
 import axios from 'axios';
+import FileSaver from 'file-saver';
 
 /**
  * Fetch assembly info
@@ -133,7 +138,7 @@ export const createAssemblyInfo = info => dispatch => {
         axios.post('/api/assembly/info', { info }, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
-            .then(({ data }) => {
+            .then(({ data, headers }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: INFO_CREATED,
@@ -141,7 +146,7 @@ export const createAssemblyInfo = info => dispatch => {
                     });
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: data.token
+                        payload: headers.token
                     });
                     resolve();
                 } else {
@@ -153,7 +158,7 @@ export const createAssemblyInfo = info => dispatch => {
                     err.message = err.response.data.message;
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.data.token
+                        payload: err.response.headers.token
                     });
                 }
                 dispatch({
@@ -186,7 +191,7 @@ export const updateAssemblyInfo = info => dispatch => {
         axios.put('/api/assembly/info', { info }, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
-            .then(({ data }) => {
+            .then(({ data, headers }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: INFO_UPDATED,
@@ -194,7 +199,7 @@ export const updateAssemblyInfo = info => dispatch => {
                     });
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: data.token
+                        payload: headers.token
                     });
                     resolve('Informazioni aggiornate con successo');
                 } else {
@@ -206,7 +211,7 @@ export const updateAssemblyInfo = info => dispatch => {
                     err.message = err.response.data.message;
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.data.token
+                        payload: err.response.headers.token
                     });
                 }
                 dispatch({
@@ -238,7 +243,7 @@ export const requestBackup = (overwrite = false) => dispatch => {
         axios.post('/api/assembly/backups', { overwrite }, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
-            .then(({ data }) => {
+            .then(({ data, headers }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: ASSEMBLY_BACKUP_COMPLETED,
@@ -246,7 +251,7 @@ export const requestBackup = (overwrite = false) => dispatch => {
                     });
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: data.token
+                        payload: headers.token
                     });
                     resolve(data.message);
                 } else {
@@ -260,7 +265,7 @@ export const requestBackup = (overwrite = false) => dispatch => {
                     err.code = data.code;
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: data.token
+                        payload: err.response.headers.token
                     });
                 }
                 dispatch({
@@ -292,7 +297,7 @@ export const loadAssembly = id => dispatch => {
         axios.post('/api/assembly/backups/load', { _id: id }, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
-            .then(({ data }) => {
+            .then(({ data, headers }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: ASSEMBLY_LOAD_COMPLETED,
@@ -300,7 +305,7 @@ export const loadAssembly = id => dispatch => {
                     });
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: data.token
+                        payload: headers.token
                     });
                     resolve();
                 } else {
@@ -312,7 +317,7 @@ export const loadAssembly = id => dispatch => {
                     err.message = err.response.data.message;
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.data.token
+                        payload: err.response.headers.token
                     });
                 }
                 dispatch({
@@ -347,7 +352,7 @@ export const createAssemblyLab = lab => dispatch => {
         axios.post('/api/assembly/labs', { lab }, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
-            .then(({ data }) => {
+            .then(({ data, headers }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: LAB_CREATED,
@@ -355,7 +360,7 @@ export const createAssemblyLab = lab => dispatch => {
                     });
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: data.token
+                        payload: headers.token
                     });
                     resolve(data.lab);
                 } else {
@@ -369,7 +374,7 @@ export const createAssemblyLab = lab => dispatch => {
                     err.message = err.response.data.message;
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.data.token
+                        payload: err.response.headers.token
                     });
                 }
                 dispatch({
@@ -404,7 +409,7 @@ export const updateAssemblyLab = lab => dispatch => {
         axios.put('/api/assembly/labs', { lab }, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
-            .then(({ data }) => {
+            .then(({ data, headers }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: LAB_UPDATED,
@@ -417,7 +422,7 @@ export const updateAssemblyLab = lab => dispatch => {
                     });
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: data.token
+                        payload: headers.token
                     });
                     resolve(data.lab);
                 } else {
@@ -429,7 +434,7 @@ export const updateAssemblyLab = lab => dispatch => {
                     err.message = err.response.data.message;
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.data.token
+                        payload: err.response.headers.token
                     });
                 }
                 dispatch({
@@ -465,7 +470,7 @@ export const deleteAssemblyLab = labID => dispatch => {
             data: { _id: labID },
             headers: { Authorization: `Bearer ${authToken}`}
         })
-            .then(({ data }) => {
+            .then(({ data, headers }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: LAB_DELETED,
@@ -473,7 +478,7 @@ export const deleteAssemblyLab = labID => dispatch => {
                     });
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: data.token
+                        payload: headers.token
                     });
                     resolve(data.lab.title);
                 } else {
@@ -487,7 +492,7 @@ export const deleteAssemblyLab = labID => dispatch => {
                     err.message = err.response.data.message;
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.data.token
+                        payload: err.response.headers.token
                     });
                 }
                 dispatch({
@@ -519,7 +524,7 @@ export const fetchAssemblyGeneral = () => dispatch => {
         axios.get('/api/assembly/', {
             headers: { Authorization: `Bearer ${authToken}`}
         })
-            .then(({ data }) => {
+            .then(({ data, headers }) => {
                 switch (data.code) {
                     case 0:
                     case 1:
@@ -532,7 +537,7 @@ export const fetchAssemblyGeneral = () => dispatch => {
                         });
                         dispatch({
                             type: UPDATE_ADMIN_TOKEN,
-                            payload: data.token
+                            payload: headers.token
                         });
                         resolve();
                         break;
@@ -545,7 +550,7 @@ export const fetchAssemblyGeneral = () => dispatch => {
                     err.message = err.response.data.message;
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.data.token
+                        payload: err.response.headers.token
                     });
                 }
                 dispatch({
@@ -577,11 +582,15 @@ export const fetchAllLabs = () => dispatch => {
         params: { action: 'getAll' },
         headers: { Authorization: `Bearer ${authToken}`}
     })
-        .then(({ data }) => {
+        .then(({ data, headers }) => {
             if (data.code === 1) {
                 dispatch({
                     type: LABS_FETCHED,
                     payload: data.labList
+                });
+                dispatch({
+                    type: UPDATE_ADMIN_TOKEN,
+                    payload: headers.token
                 });
             } else {
                 throw new Error(data.message || 'Errore inaspettato');
@@ -592,7 +601,7 @@ export const fetchAllLabs = () => dispatch => {
                 err.message = err.response.data.message;
                 dispatch({
                     type: UPDATE_ADMIN_TOKEN,
-                    payload: err.response.data.token
+                    payload: err.response.headers.token
                 });
             }
             dispatch({
@@ -622,7 +631,7 @@ export const fetchStudents = () => dispatch => {
         params: { action: 'getAll' },
         headers: { Authorization: `Bearer ${authToken}`}
     })
-        .then(({ data }) => {
+        .then(({ data, headers }) => {
             if (data.code === 1) {
                 dispatch({
                     type: STUDENTS_FETCHED,
@@ -630,7 +639,7 @@ export const fetchStudents = () => dispatch => {
                 });
                 dispatch({
                     type: UPDATE_ADMIN_TOKEN,
-                    payload: data.token
+                    payload: headers.token
                 });
             } else {
                 throw new Error(data.message || 'Errore inaspettato');
@@ -641,7 +650,7 @@ export const fetchStudents = () => dispatch => {
                 err.message = err.response.data.message;
                 dispatch({
                     type: UPDATE_ADMIN_TOKEN,
-                    payload: err.response.data.token
+                    payload: err.response.headers.token
                 });
             }
             dispatch({
@@ -671,7 +680,7 @@ export const deleteAssembly = () => dispatch => {
         axios.delete('/api/assembly', {
             headers: { Authorization: `Bearer ${authToken}`}
         })
-            .then(({ data }) => {
+            .then(({ data, headers }) => {
                 if (data.code === 1) {
                     dispatch({
                         type: ASSEMBLY_DELETED,
@@ -679,7 +688,7 @@ export const deleteAssembly = () => dispatch => {
                     });
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: data.token
+                        payload: headers.token
                     });
                     resolve();
                 } else {
@@ -691,7 +700,7 @@ export const deleteAssembly = () => dispatch => {
                     err.message = err.response.data.message;
                     dispatch({
                         type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.data.token
+                        payload: err.response.headers.token
                     });
                 }
                 dispatch({
@@ -705,3 +714,53 @@ export const deleteAssembly = () => dispatch => {
             });
     });
 };
+
+export const generatePdf = () => dispatch => {
+    dispatch({
+        type: REQUEST_ASSEMBLY_PDF,
+        payload: 'generate_pdf'
+    });
+
+    const { admin, assembly } = store.getState()
+    const authToken = admin.token;
+    let refreshedToken;
+
+    return new Promise((resolve, reject) => {
+        axios.get('/api/assembly/export', {
+            headers: { Authorization: `Bearer ${authToken}`},
+            responseType: 'blob',
+        })
+            .then(({ data, headers }) => {
+                refreshedToken = headers.token;
+                return FileSaver.saveAs(data, assembly.info.title + '.pdf');
+            })
+            .then(() => {
+                dispatch({
+                    type: ASSEMBLY_PDF_COMPLETED,
+                    payload: {}
+                });
+                dispatch({
+                    type: UPDATE_ADMIN_TOKEN,
+                    payload: refreshedToken
+                });
+                resolve('Operazione completata con successo');
+            })
+            .catch(err => {
+                if (err.response && err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: err.response.headers.token
+                    });
+                }
+                dispatch({
+                    type: ERROR_IN_ASSEMBLY_PDF,
+                    payload: {
+                        message: err.message,
+                        fetch: 'generate_pdf'
+                    }
+                });
+                reject(err);
+            });
+    });
+}

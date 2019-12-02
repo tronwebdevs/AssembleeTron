@@ -10,6 +10,7 @@ import Info from "./Info";
 import Labs from "./Labs";
 import Students from "./Students";
 import Stats from "./Stats";
+import Export from "./Export";
 import DeleteAssembly from "./DeleteAssembly";
 import CreateAssembly from "./CreateAssembly";
 
@@ -66,6 +67,11 @@ const AdminWrapper = () => (
                             <AuthRequired
                                 path={rootPath + "/statistiche"}
                                 component={Stats}
+                                exact
+                            />
+                            <AuthRequired
+                                path={rootPath + "/esporta"}
+                                component={Export}
                                 exact
                             />
                             <AuthRequired

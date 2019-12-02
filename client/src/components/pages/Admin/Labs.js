@@ -10,7 +10,8 @@ import {
 	Col,
 	Card,
 	CardBody,
-	Button
+    Button,
+    Spinner
 } from "reactstrap";
 import { LabsTable, LabModal, PageLoading, AdminAlert } from "../../Admin/";
 
@@ -30,85 +31,77 @@ const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
 	if (pendings.labs === undefined && assembly.exists === true) {
 		fetchAllLabs();
     }
-    
-    let isPageLoading = true;
-    if (pendings.assembly === false) {
-        if (assembly.exists === true) {
-            if (pendings.labs === false) {
-                isPageLoading = false;
-            }
-        } else {
-            isPageLoading = false;
-        }
-    } else {
-        isPageLoading = false;
-    }
 
-	return (
-		<Fragment>
-            <AdminAlert 
-                display={displayMessage.message !== null} 
-                message={displayMessage.message} 
-                type={displayMessage.type}
-            />
-            {isPageLoading === false ? (
-				<Fragment>
-					<Row>
-						<Col xs="12" xl={assembly.exists ? "9" : "12"}>
-							<Card>
-								<LabsTable
-									labs={labs}
-									setLabDisplay={setLabDisplay}
-									deleteAssemblyLab={deleteAssemblyLab}
-									setDisplayMessage={setDisplayMessage}
-									setShowModal={setShowModal}
-								/>
-							</Card>
-						</Col>
-						{assembly.exists ? (
-							<Col xs="12" xl="3">
-								<Card>
-									<CardBody>
-										<Button
-											type="button"
-											color="success"
-											block
-											onClick={() => setShowModal(true)}
-										>
-											Crea
-										</Button>
-										<Button
-											color="warning"
-											outline
-											block
-											onClick={() =>
-												alert("Funzione in arrivo")
-											}
-										>
-											Controlla
-										</Button>
-									</CardBody>
-								</Card>
-							</Col>
-						) : null}
-					</Row>
-					<LabModal
-						showModal={showModal}
-						handleClose={() => setShowModal(false)}
-						lab={labDisplay.lab}
-						action={labDisplay.action}
-						handleReset={() =>
-							setLabDisplay({ action: "create", lab: {} })
-						}
-						setDisplayMessage={setDisplayMessage}
-						setLabDisplay={setLabDisplay}
-					/>
-				</Fragment>
-			) : (
-				<PageLoading />
-			)}
-		</Fragment>
-	);
+    if (pendings.assembly === false) {
+        return (
+            <Fragment>
+                <AdminAlert 
+                    display={displayMessage.message !== null} 
+                    message={displayMessage.message} 
+                    type={displayMessage.type}
+                />
+                <Row>
+                    <Col xs="12" xl={assembly.exists ? "9" : "12"}>
+                        <Card>
+                            {pendings.labs === false || assembly.exists === false ? (
+                                <LabsTable
+                                    labs={labs}
+                                    setLabDisplay={setLabDisplay}
+                                    deleteAssemblyLab={deleteAssemblyLab}
+                                    setDisplayMessage={setDisplayMessage}
+                                    setShowModal={setShowModal}
+                                />    
+                            ) : (
+                                <Spinner
+                                    color="primary"
+                                    style={{ width: "3rem", height: "3rem" }}
+                                />
+                            )}
+                        </Card>
+                    </Col>
+                    {assembly.exists === true ? (
+                        <Col xs="12" xl="3">
+                            <Card>
+                                <CardBody>
+                                    <Button
+                                        type="button"
+                                        color="success"
+                                        block
+                                        onClick={() => setShowModal(true)}
+                                    >
+                                        Crea
+                                    </Button>
+                                    <Button
+                                        color="warning"
+                                        outline
+                                        block
+                                        onClick={() =>
+                                            alert("Funzione in arrivo")
+                                        }
+                                    >
+                                        Controlla
+                                    </Button>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    ) : null}
+                </Row>
+                <LabModal
+                    showModal={showModal}
+                    handleClose={() => setShowModal(false)}
+                    lab={labDisplay.lab}
+                    action={labDisplay.action}
+                    handleReset={() =>
+                        setLabDisplay({ action: "create", lab: {} })
+                    }
+                    setDisplayMessage={setDisplayMessage}
+                    setLabDisplay={setLabDisplay}
+                />
+            </Fragment>
+        );
+    } else {
+        return <PageLoading />;
+    }
 };
 
 Labs.propTypes = {

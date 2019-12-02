@@ -28,4 +28,5 @@ app.config.json
 .vs-code/
 
 backups/
+pdfs/
 config.json

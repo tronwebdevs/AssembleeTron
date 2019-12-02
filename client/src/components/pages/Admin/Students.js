@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { fetchStudents } from "../../../actions/assemblyActions";
@@ -12,21 +12,22 @@ const Students = ({ assembly, fetchStudents }) => {
 		fetchStudents();
 	}
 
-	return (
-		<Fragment>
-			{pendings.assembly === false && pendings.assembly === false ? (
-				<Row>
-					<Col xs="12">
-						<Card>
-							<StudentsTable students={students} />
-						</Card>
-					</Col>
-				</Row>
-			) : (
-				<PageLoading />
-			)}
-		</Fragment>
-	);
+    if (pendings.assembly === false) {
+        return (
+            <Row>
+                <Col xs="12">
+                    <Card>
+                        <StudentsTable 
+                            students={students} 
+                            loading={pendings.students === true}
+                        />
+                    </Card>
+                </Col>
+            </Row>
+        );
+    } else {
+        return <PageLoading />;
+    }
 };
 
 Students.propTypes = {

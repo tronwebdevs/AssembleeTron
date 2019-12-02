@@ -6,7 +6,7 @@ import { Redirect } from "react-router-dom";
 import { LoginFormCard } from "../../Admin/";
 
 const Login = ({ authAdmin, admin, location }) =>
-	admin.authed ? (
+	admin.authed === true && admin.token ? (
 		<Redirect
 			to={{ pathname: location.state.from.pathname || "/gestore/" }}
 		/>

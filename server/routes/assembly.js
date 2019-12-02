@@ -4,6 +4,7 @@ const router = express.Router();
 const moment = require('moment');
 const fs = require('fs-extra');
 const path = require('path');
+const PDFDocument = require('../utils/PDFDocumentsWithTable');
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Types;
 
@@ -15,8 +16,8 @@ const Subscribed = require('../models/Subscribed');
 const authUser = require('../utils/AuthUser');
 const { isAdmin, isStudent } = require('../utils/CheckUserType');
 
-const { adminPassword } = require('../config');
-const assembliesBackup = path.join(__dirname, '../backups');
+const assembliesBackups = path.join(__dirname, '../backups');
+const assembliesPdfs = path.join(__dirname, '../pdfs');
 
 /**
  * Get assembly info
@@ -86,23 +87,23 @@ router.get('/', isAdmin, (req, res, next) => {
             return Assembly.find();
         })
         .then(results => 
-            res.status(200).json({
-                code: results.length > 0 ? 1 : 0,
-                info: results.length > 0 ? results[0] : null,
-                labs,
-                students,
-                subs,
-                token: req.jwtNewToken
-            })
+            res.status(200)
+                .json({
+                    code: results.length > 0 ? 1 : 0,
+                    info: results.length > 0 ? results[0] : null,
+                    labs,
+                    students,
+                    subs
+                })
         )
         .catch(err => 
-            res.status(err.status || 500).json({
-                code: err.code !== undefined ? err.code : -1,
-                message: err.message,
-                labs,
-                students,
-                token: req.jwtNewToken
-            })
+            res.status(err.status || 500)
+                .json({
+                    code: err.code !== undefined ? err.code : -1,
+                    message: err.message,
+                    labs,
+                    students
+                })
         );
 });
 
@@ -118,10 +119,11 @@ router.delete('/', isAdmin, (req, res, next) => {
         .then(() => Laboratory.deleteMany({}))
         .then(() => Subscribed.deleteMany({}))
         .then(() => 
-            res.status(200).json({ 
-                code: 1,
-                token: req.jwtNewToken
-            })
+            res
+                .status(200)
+                .json({ 
+                    code: 1
+                })
         )
         .catch(err => next(err));
 });
@@ -132,33 +134,33 @@ router.delete('/', isAdmin, (req, res, next) => {
  * @public
  */
 router.get('/backups', isAdmin, (req, res, next) => {
-    if (!fs.existsSync(assembliesBackup)){
-        fs.mkdirSync(assembliesBackup);
-        res.status(200).json({
-            code: 1,
-            backups: [],
-            token: req.jwtNewToken
-        });
+    if (!fs.existsSync(assembliesBackups)){
+        fs.mkdirSync(assembliesBackups);
+        res.status(200)
+            .json({
+                code: 1,
+                backups: []
+            });
     } else {
         let files;
-        fs.readdir(assembliesBackup)
+        fs.readdir(assembliesBackups)
             .then(result => {
                 files = result;
                 let promiseArray = [];
                 files.forEach(file => promiseArray.push(
                     fs.readFile(
-                        path.join(assembliesBackup, file)
+                        path.join(assembliesBackups, file)
                     )
                 ));
                 return Promise.all(promiseArray);
             })
             .then(results => {
                 files = files.map((file, index) => JSON.parse(results[index]));
-                res.status(200).json({
-                    code: 1,
-                    backups: files,
-                    token: req.jwtNewToken
-                })
+                res.status(200)
+                    .json({
+                        code: 1,
+                        backups: files
+                    })
             })
             .catch(err => next(err));
     }
@@ -178,10 +180,10 @@ router.post('/backups', isAdmin, (req, res, next) => {
             return Laboratory.find();
         })
         .then(labs => {
-            if (!fs.existsSync(assembliesBackup)){
-                fs.mkdirSync(assembliesBackup);
+            if (!fs.existsSync(assembliesBackups)){
+                fs.mkdirSync(assembliesBackups);
             }
-            const file = path.join(assembliesBackup, info._id + '.json');
+            const file = path.join(assembliesBackups, info._id + '.json');
             if (fs.existsSync(file) && overwrite !== true) {
                 let error = new Error('Il backup di questa assemblea esiste gia\', sovrascriverlo?');
                 error.code = 2;
@@ -195,11 +197,13 @@ router.post('/backups', isAdmin, (req, res, next) => {
             
             return fs.writeFile(file, JSON.stringify(assembly, null, 4), 'utf8');
         })
-        .then(() => res.status(200).json({
-            code: 1,
-            message: 'Assemblea salvata con successo',
-            token: req.jwtNewToken
-        }))
+        .then(() => 
+            res.status(200)
+                .json({
+                code: 1,
+                message: 'Assemblea salvata con successo'
+            })
+        )
         .catch(err => next(err));
 });
 
@@ -211,7 +215,7 @@ router.post('/backups', isAdmin, (req, res, next) => {
 router.post('/backups/load', isAdmin, (req, res, next) => {
     const { _id } = req.body;
     if (typeof _id === 'string') {
-        const file = path.join(assembliesBackup, _id + '.json');
+        const file = path.join(assembliesBackups, _id + '.json');
         let assemblyFile;
         let newAssembly = {};
         fs.readFile(file)
@@ -232,16 +236,78 @@ router.post('/backups/load', isAdmin, (req, res, next) => {
             })
             .then(results => {
                 newAssembly.labs = results;
-                res.status(200).json({
-                    code: 1,
-                    assembly: newAssembly,
-                    token: req.jwtNewToken
-                });
+                res.status(200)
+                    .json({
+                        code: 1,
+                        assembly: newAssembly
+                    });
             })
             .catch(err => next(err));
     } else {
         next(new Error('Identificativo non valido'));
     }
+});
+
+router.get('/export', (req, res, next) => {
+    if (!fs.existsSync(assembliesPdfs)){
+        fs.mkdirSync(assembliesPdfs);
+    }
+    const doc = new PDFDocument;
+    let file;
+    let labs;
+    let students;
+    let stream;
+    Assembly.find()
+        .then(results => {
+            file = path.join(assembliesPdfs, results[0]._id + '.pdf');
+            stream = doc.pipe(fs.createWriteStream(file));
+            return Laboratory.find();
+        })
+        .then(results => {
+            labs = results;
+            return Student.find();
+        })
+        .then(results => {
+            students = results.map(std => std.toObject());
+            return Subscribed.find();
+        })
+        .then(subs => {
+            subs = subs.map(sub => {
+                let std = students.find(s => s.studentId === sub.studentId) || null;
+                return {
+                    ...std,
+                    labs: { ...sub.toObject() }
+                };
+            });
+
+            labs.forEach((lab, index, arr) => {
+                for (let i = 1; i <= 4; i++) {
+                    let labStudents = [];
+
+                    doc.fontSize(24).text(lab.title + ' - ora ' + i).fontSize(16);
+                    subs.filter(
+                        sub => sub.labs['h' + i].equals(lab._id)
+                    ).forEach(sub => labStudents.push([sub.name, sub.surname, sub.section]));
+
+                    doc.moveDown().table({
+                        headers: ['Nome', 'Cognome', 'Classe'],
+                        rows: labStudents
+                    }).moveDown();
+
+                    if (!(i === 4 && index === (arr.length - 1))) {
+                        doc.addPage();
+                    }
+                }
+            });
+            doc.end();
+            stream.on('finish', () => {
+                const data = fs.readFileSync(file);
+                res.status(200)
+                    .contentType('application/pdf')
+                    .end(data);
+            });
+        })
+        .catch(err => next(err));
 });
 
 /**
@@ -270,11 +336,11 @@ router.put('/info', isAdmin, (req, res, next) => {
     }, { new: true })
         .then(result => {
             if (result) {
-                res.status(200).json({
-                    code: 1,
-                    info: result,
-                    token: req.jwtNewToken
-                })
+                res.status(200)
+                    .json({
+                        code: 1,
+                        info: result
+                    });
             } else {
                 throw new Error('Assemblea non trovata (id: ' + _id + ')');
             }
@@ -293,11 +359,11 @@ router.post('/info', isAdmin, (req, res, next) => {
 
     new Assembly(info).save()
         .then(assembly => 
-            res.status(200).json({
-                code: 1,
-                info: assembly,
-                token: req.jwtNewToken
-            })
+            res.status(200)
+                .json({
+                    code: 1,
+                    info: assembly
+                })
         )
         .catch(err => next(err));
 });
@@ -316,21 +382,21 @@ router.get('/labs', isStudent, (req, res, next) => {
         Laboratory
             .countDocuments()
             .then(c => 
-                res.status(200).json({
-                    code: 1,
-                    labs: c,
-                    token: req.jwtNewToken
-                })
+                res.status(200)
+                    .json({
+                        code: 1,
+                        labs: c
+                    })
             )
             .catch(err => next(err));
     } else if (action === 'getAll') {
         Laboratory.find()
             .then(labs =>
-                res.status(200).json({
-                    code: 1,
-                    labList: labs,
-                    token: req.jwtNewToken
-                })
+                res.status(200)
+                    .json({
+                        code: 1,
+                        labList: labs
+                    })
             )
             .catch(err => next(err));
     } else {
@@ -350,11 +416,11 @@ router.put('/labs', isAdmin, (req, res, next) => {
         Laboratory.findByIdAndUpdate(lab._id, lab, { new: true })
             .then(result => {
                 if (result) {
-                    res.status(200).json({
-                        code: 1,
-                        lab: result,
-                        token: req.jwtNewToken
-                    });
+                    res.status(200)
+                        .json({
+                            code: 1,
+                            lab: result
+                        });
                 } else {
                     throw new Error('Laboratorio non trovato (' + lab._id + ')');
                 }
@@ -377,11 +443,11 @@ router.post('/labs', isAdmin, (req, res, next) => {
     if (lab) {
         new Laboratory(lab).save()
             .then(newLab => 
-                res.status(200).json({
-                    code: 1,
-                    lab: newLab,
-                    token: req.jwtNewToken
-                })
+                res.status(200)
+                    .json({
+                        code: 1,
+                        lab: newLab
+                    })
             )
             .catch(err => next(err));
     } else {
@@ -401,11 +467,11 @@ router.delete('/labs', isAdmin, (req, res, next) => {
         Laboratory.findByIdAndDelete(_id)
             .then(lab => {
                 if (lab) {
-                    res.status(200).json({
-                        code: 1,
-                        lab,
-                        token: req.jwtNewToken
-                    });
+                    res.status(200)
+                        .json({
+                            code: 1,
+                            lab
+                        });
                 } else {
                     throw new Error('Laboratorio non trovato (' + _id + ')');
                 }
@@ -433,12 +499,12 @@ router.get('/students', isAdmin, (req, res, next) => {
                 return Subscribed.estimatedDocumentCount();
             })
             .then(c => 
-                res.status(200).json({
-                    code: 1,
-                    students: stdCount,
-                    subs: c,
-                    token: req.jwtNewToken
-                })
+                res.status(200)
+                    .json({
+                        code: 1,
+                        students: stdCount,
+                        subs: c
+                    })
             )
             .catch(err => next(err));
     } else if (action === 'getAll') {
@@ -457,40 +523,16 @@ router.get('/students', isAdmin, (req, res, next) => {
                     } : null;
                     return student;
                 });
-                res.status(200).json({
-                    code: 1,
-                    students,
-                    token: req.jwtNewToken
-                });
+                res.status(200)
+                    .json({
+                        code: 1,
+                        students
+                    });
             })
             .catch(err => next(err));
     } else {
         next(new Error('Parametri non accettati'));
     }
 });
-
-/* UTILS FUNCTIONS */
-/**
- * Get assembly info
- * @param {boolean} forseResponse 
- * @private
- * @deprecated
- */
-const getInfo = (forseResponse = false) => ({});
-
-/**
- * Get assembly laboratories
- * @private
- * @deprecated
- */
-const getAllLabs = () => ({});
-
-/**
- * Create new laboratory
- * @param {object} lab 
- * @private
- * @deprecated
- */
-const createLab = lab => ({});
 
 module.exports = router;

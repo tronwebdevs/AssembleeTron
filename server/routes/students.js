@@ -6,14 +6,12 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 const { ObjectId } = mongoose.Types;
 
-const Assembly = require('../models/Assembly');
 const Laboratory = require('../models/Laboratory');
 const Student = require('../models/Student');
 const Subscribed = require('../models/Subscribed');
 
 const authUser = require('../utils/AuthUser');
 const { isStudent, isAdmin } = require('../utils/CheckUserType');
-const SectionsList = require('../utils/SectionsList');
 const { fetchAvabileLabs } = require('../utils/LabsFunctions');
 
 const { privateKey } = require('../config');
@@ -32,8 +30,7 @@ router.get('/labs', authUser, isStudent, (req, res, next) => {
             .then(result => 
                 res.status(200).json({
                     code: 1,
-                    labs: result,
-                    token: req.jwtNewToken
+                    labs: result
                 })
             )
             .catch(err => next(err));
@@ -51,8 +48,7 @@ router.get('/sections', authUser, isAdmin, (req, res, next) =>
         .then(sections =>
             res.status(200).json({
                 code: 1,
-                sections,
-                token: req.jwtNewToken
+                sections
             })
         )
         .catch(err => next(err))
@@ -313,22 +309,19 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
             .then(sub => 
                 res.status(200).json({
                     code: 1,
-                    labs,
-                    token: req.jwtNewToken
+                    labs
                 })
             )
             .catch(err => res.status(err.status || 500).json({
                 code: -1,
                 message: err.message,
-                target: err.target || 0,
-                token: req.jwtNewToken
+                target: err.target || 0
             }));
     } else {
         res.status(400).json({
             code: -1,
             message: 'Laboratori nulli',
-            target: 0,
-            token: req.jwtNewToken
+            target: 0
         });
     }
 });
