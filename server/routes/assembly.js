@@ -356,6 +356,10 @@ router.put('/info', isAdmin, (req, res, next) => {
  */
 router.post('/info', isAdmin, (req, res, next) => {
     const { info } = req.body;
+    info.subscription = {
+        open: info.subOpen,
+        close: info.subClose,
+    };
 
     new Assembly(info).save()
         .then(assembly => 
