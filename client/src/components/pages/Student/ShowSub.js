@@ -1,8 +1,9 @@
-import React from "react";
+import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { logout } from "../../../actions/studentActions";
 import { Redirect } from "react-router-dom";
-import { Row } from "reactstrap";
+import { Row, Col, Button } from "reactstrap";
 import {
 	LabsTable,
 	Badge,
@@ -10,9 +11,8 @@ import {
 	PageTitle,
 	SiteWrapper
 } from "../../Student/";
-import moment from "moment";
 
-const ConfirmSub = ({ student, assembly }) => {
+const ConfirmSub = ({ student, assembly, logout }) => {
 	const { profile, labs } = student;
 
 	if (profile.studentId === null) {
@@ -21,25 +21,39 @@ const ConfirmSub = ({ student, assembly }) => {
 		return <Redirect to={{ pathname: "/iscrizione" }} />;
 	}
 
-	const { date } = assembly.info;
+	const { title } = assembly.info;
 	const notSub = labs.every(labID => labID === -1);
 
-	return (
-		<SiteWrapper>
-			<Row>
-				<PageTitle
-					title={
-						"Iscrizioni per l'Assemblea d'Istituto del " +
-						moment(date).format("DD/MM/YYYY")
-					}
-				/>
-			</Row>
-			<Row>
-				<Badge student={profile} lg={{ size: "4", offset: "4" }} />
-			</Row>
-			{notSub ? <NotPartCard /> : <LabsTable labs={labs} />}
-		</SiteWrapper>
-	);
+    if (assembly.pendings.info === false) {
+
+        return (
+            <SiteWrapper>
+                <Row>
+                    <PageTitle
+                        title={`Iscrizioni per l'${title}`}
+                    />
+                </Row>
+                <Row>
+                    <Badge student={profile} lg={{ size: "4", offset: "4" }} />
+                </Row>
+                {notSub ? <NotPartCard /> : <LabsTable labs={labs} />}
+                <Row>
+                    <Col xs="12">
+                        <Button
+                            outline
+                            block
+                            color="danger"
+                            onClick={() => logout()}
+                        >
+                            Esci
+                        </Button>
+                    </Col>
+                </Row>
+            </SiteWrapper>
+        );
+    } else {
+        return <Fragment></Fragment>;
+    }
 };
 
 ConfirmSub.propTypes = {
@@ -52,4 +66,4 @@ const mapStateToProps = state => ({
 	assembly: state.assembly
 });
 
-export default connect(mapStateToProps)(ConfirmSub);
+export default connect(mapStateToProps, { logout })(ConfirmSub);

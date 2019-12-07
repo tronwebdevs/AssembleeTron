@@ -12,7 +12,9 @@ const processRequest = (req, res, next) => {
             if (method === 'Bearer' && bearerToken) {
                 jwt.verify(bearerToken, privateKey, (err, decoded) => {
                     if (err) {
-                        next(new Error('Token di autenticaztione errato'));
+                        let error = new Error('Token di autenticaztione errato');
+                        error.status = 401;
+                        next(error);
                     } else {
                         jwt.sign({
                             id: decoded.id,

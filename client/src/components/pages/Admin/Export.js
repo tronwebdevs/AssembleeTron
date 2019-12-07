@@ -41,7 +41,7 @@ const Export = ({ assembly, generatePdf }) => {
     if (pendings.assembly === false) {
         let enableExport = false;
         if (assembly.exists) {
-            enableExport = moment().diff(moment(info.subscription.open)) < 0;
+            enableExport = moment().diff(moment(info.subscription.close)) > 0;
         }
         return (
             <Fragment>

@@ -10,6 +10,7 @@ import SiteWrapper from "./SiteWrapper";
 import LabsSelectorForm from "./LabsSelectorForm/";
 import PageTitle from "./PageTitle";
 import LabsListCard from "./LabsListCard";
+import StudentRoute from "./StudentRoute";
 
 export {
 	Badge,
@@ -23,5 +24,6 @@ export {
 	SiteWrapper,
 	LabsSelectorForm,
 	PageTitle,
-    LabsListCard
+    LabsListCard,
+    StudentRoute
 };

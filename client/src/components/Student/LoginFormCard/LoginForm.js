@@ -24,10 +24,8 @@ const LoginForm = ({
 }) => (
 	<StandaloneFormPage>
 		<FormCard
-			title={
-				"Iscrizioni per l'Assemblea d'Istituto del " +
-				moment(assemblyInfo.date).format("DD/MM/YYYY")
-			}
+			title={`Iscrizioni per l'${assemblyInfo.title}`}
+            subtitle={moment(assemblyInfo.date).format("DD/MM/YYYY")}
 			text={true ? "Inserisci la tua matricola per entrare:" : ""}
 			onSubmit={onSubmit}
 		>
@@ -49,7 +47,7 @@ const LoginForm = ({
                     </Grid.Row>
                 </Card.Alert>
             </Form.Group> */}
-			<FormGroup>
+			<FormGroup className="mb-1">
 				<Input
 					type="text"
 					placeholder="Matricola"

@@ -27,32 +27,34 @@ const assembliesPdfs = path.join(__dirname, '../pdfs');
 router.get('/info', (req, res, next) =>
     Assembly.find()
         .then(results => {
+            let noAssemblyError = new Error('Nessuna assemblea in programma');
+            noAssemblyError.code = 0;
             if (results.length === 0) {
-                throw new Error('Nessuna assemblea in programma');
+                throw noAssemblyError;
             } else {
-                let error = new Error();
                 let assembly = results[0];
                 if (moment(assembly.date).diff(moment()) < 0) {
-                    error.code = 0;
-                    error.message = 'Nessuna assemblea in programma';
-                    throw error;
+                    throw noAssemblyError;
                 } else {
+                    let response = {
+                        code: -1,
+                        message: null,
+                        info: assembly.toObject()
+                    };
+                    
                     if (moment(assembly.subscription.open).diff(moment()) > 0) {
-                        error.code = 1;
-                        error.message = 'La iscrizioni sono attualmente chiuse, torna più tardi';
-                        throw error;
+                        response.code = 1;
+                        response.message = 'La iscrizioni sono attualmente chiuse, torna più tardi';
                     } else {
                         if (moment(assembly.subscription.close).diff(moment()) > 0) {
-                            res.status(200).json({
-                                code: 2,
-                                info: assembly.toObject()
-                            });
+                            response.code = 2;
                         } else {
-                            error.code = 3;
-                            error.message = 'La iscrizioni sono terminate';
-                            throw error;
+                            response.code = 3;
+                            response.message = 'La iscrizioni sono terminate';
                         }
                     }
+
+                    res.status(200).json(response);
                 }
             }
         })
@@ -248,6 +250,11 @@ router.post('/backups/load', isAdmin, (req, res, next) => {
     }
 });
 
+/**
+ * Export assembly into PDF file
+ * @method get
+ * @public
+ */
 router.get('/export', (req, res, next) => {
     if (!fs.existsSync(assembliesPdfs)){
         fs.mkdirSync(assembliesPdfs);
@@ -372,7 +379,6 @@ router.post('/info', isAdmin, (req, res, next) => {
         .catch(err => next(err));
 });
 
-// TODO: TEST
 /**
  * Get assembly laboratories
  * @method get

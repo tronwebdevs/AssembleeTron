@@ -9,7 +9,8 @@ import {
     ERROR_IN_STUDENT_AUTH,
     ERROR_IN_STUDENT_LABS_UPDATE,
     ERROR_IN_STUDENT_LABS_FETCH,
-    FETCH_STUDENT_PENDING
+    FETCH_STUDENT_PENDING,
+    STUDENT_LOGOUT
 } from '../actions/types.js';
 import axios from 'axios';
 
@@ -34,7 +35,7 @@ export const authStudent = (studentID, part) => dispatch => {
             error.target = 'studentID';
             throw error;
         }
-        if (isNaN(part)) {
+        if (isNaN(part) || (part !== 0 && part !== 1)) {
             let error = new Error('Parametro di partecipazione errato');
             error.target = 'part';
             throw error;
@@ -102,21 +103,21 @@ export const authStudent = (studentID, part) => dispatch => {
 
 /**
  * Fetch avabile laboratories for a specific class
- * @param {string} section 
  * @public
  */
-export const fetchAvabileLabs = section => (dispatch, getState) => {
+export const fetchAvabileLabs = () => (dispatch, getState) => {
 
     dispatch({
         type: FETCH_STUDENT_PENDING,
         payload: 'labs_avabile'
     });
 
-    const authToken = getState().student.token;
+    const { profile, token } = getState().student;
+    const authToken = token;
 
     return new Promise((resolve, reject) => {
         axios.get('/api/students/labs', {
-            params: { section },
+            params: { section: profile.section },
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data, headers }) => {
@@ -134,10 +135,19 @@ export const fetchAvabileLabs = section => (dispatch, getState) => {
                 }
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    const { data } = err.response;
-                    err.message = data.message;
-                    err.token = err.response.headers.token;
+                if (err.response) {
+                    if (err.response.status === 401) {
+                        dispatch({
+                            type: STUDENT_LOGOUT,
+                            payload: null
+                        });
+                        reject(err);
+                    }
+                    if (err.response.data && err.response.data.message) {
+                        const { data } = err.response;
+                        err.message = data.message;
+                        err.token = err.response.headers.token;
+                    }
                 }
                 dispatch({
                     type: ERROR_IN_STUDENT_LABS_FETCH,
@@ -211,3 +221,12 @@ export const subscribeLabs = (studentID, labs) => (dispatch, getState) => {
             });
     });
 };
+
+/**
+ * Logout
+ * @public
+ */
+export const logout = () => dispatch => dispatch({
+    type: STUDENT_LOGOUT,
+    payload: null
+});

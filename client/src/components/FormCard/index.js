@@ -8,7 +8,8 @@ const FormCard = ({
 	onSubmit,
 	action,
 	method,
-	title,
+    title,
+    subtitle,
 	text,
 	pAlign,
 	errorMessage
@@ -30,12 +31,13 @@ const FormCard = ({
 		<CardBody className="p-6">
 			<CardTitle
 				style={{ fontSize: "1.3rem" }}
-				className="text-center mb-0"
+				className="text-center mb-1"
 			>
-				{title}
+				<b>{title}</b>
 			</CardTitle>
+            <small className="d-block text-center text-muted mb-3">{subtitle}</small>
 			<p
-				className="card-text login-subtitle"
+				className="card-text login-subtitle mb-1"
 				style={{ textAlign: pAlign || "left" }}
 			>
 				{text}
@@ -50,7 +52,8 @@ FormCard.propTypes = {
 	onSubmit: PropTypes.func,
 	action: PropTypes.string,
 	method: PropTypes.string,
-	title: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    subtitle: PropTypes.string,
 	text: PropTypes.string,
 	pAlign: PropTypes.string,
 	errorMessage: PropTypes.string

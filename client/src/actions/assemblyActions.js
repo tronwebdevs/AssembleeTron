@@ -53,12 +53,14 @@ import {
     ASSEMBLY_PDF_COMPLETED,
     ERROR_IN_ASSEMBLY_PDF,
     
-    UPDATE_ADMIN_TOKEN
+    UPDATE_ADMIN_TOKEN,
+    ADMIN_LOGOUT
 } from '../actions/types.js';
 import store from '../store';
 import axios from 'axios';
 import FileSaver from 'file-saver';
 
+// FIXME: this dude
 /**
  * Fetch assembly info
  * @public
@@ -87,9 +89,7 @@ export const fetchAssemblyInfo = () => dispatch => {
                     case 3:
                         dispatch({
                             type: ASSEMBLY_SUBS_CLOSE,
-                            payload: {
-                                message: data.message
-                            }
+                            payload: data.info
                         });
                         reject(new Error(data.message));
                         break;
@@ -111,7 +111,7 @@ export const fetchAssemblyInfo = () => dispatch => {
                 dispatch({
                     type: ERROR_IN_INFO_FETCH,
                     payload: {
-                        message: err.message,
+                        message: err.message || 'Errore sconosciuto',
                         fetch: 'info'
                     }
                 });
@@ -154,17 +154,26 @@ export const createAssemblyInfo = info => dispatch => {
                 }
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
-                    dispatch({
-                        type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.headers.token
-                    });
+                if (err.response) {
+                    if (err.response.status === 401) {
+                        dispatch({
+                            type: ADMIN_LOGOUT,
+                            payload: null
+                        });
+                        reject(err);
+                    }
+                    if (err.response.data && err.response.data.message) {
+                        err.message = err.response.data.message;
+                        dispatch({
+                            type: UPDATE_ADMIN_TOKEN,
+                            payload: err.response.headers.token
+                        });
+                    }
                 }
                 dispatch({
                     type: ERROR_IN_INFO_CREATE,
                     payload: {
-                        message: err.message,
+                        message: err.message || 'Errore sconosciuto',
                         fetch: 'create_info'
                     }
                 });
@@ -207,17 +216,26 @@ export const updateAssemblyInfo = info => dispatch => {
                 }
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
-                    dispatch({
-                        type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.headers.token
-                    });
+                if (err.response) {
+                    if (err.response.status === 401) {
+                        dispatch({
+                            type: ADMIN_LOGOUT,
+                            payload: null
+                        });
+                        reject(err);
+                    }
+                    if (err.response.data && err.response.data.message) {
+                        err.message = err.response.data.message;
+                        dispatch({
+                            type: UPDATE_ADMIN_TOKEN,
+                            payload: err.response.headers.token
+                        });
+                    }
                 }
                 dispatch({
                     type: ERROR_IN_INFO_UPDATE,
                     payload: {
-                        message: err.message,
+                        message: err.message || 'Errore sconosciuto',
                         fetch: 'update_info'
                     }
                 });
@@ -259,20 +277,29 @@ export const requestBackup = (overwrite = false) => dispatch => {
                 }
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    const { data } = err.response;
-                    err.message = data.message;
-                    err.code = data.code;
-                    dispatch({
-                        type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.headers.token
-                    });
+                if (err.response) {
+                    if (err.response.status === 401) {
+                        dispatch({
+                            type: ADMIN_LOGOUT,
+                            payload: null
+                        });
+                        reject(err);
+                    }
+                    if (err.response.data && err.response.data.message) {
+                        const { data } = err.response;
+                        err.message = data.message;
+                        err.code = data.code;
+                        dispatch({
+                            type: UPDATE_ADMIN_TOKEN,
+                            payload: err.response.headers.token
+                        });
+                    }
                 }
                 dispatch({
                     type: ERROR_IN_ASSEMBLY_BACKUP,
                     payload: {
-                        fetch: 'backup',
-                        message: err.message
+                        message: err.message || 'Errore sconosciuto',
+                        fetch: 'backup'
                     }
                 });
                 reject(err);
@@ -313,18 +340,27 @@ export const loadAssembly = id => dispatch => {
                 }
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
-                    dispatch({
-                        type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.headers.token
-                    });
+                if (err.response) {
+                    if (err.response.status === 401) {
+                        dispatch({
+                            type: ADMIN_LOGOUT,
+                            payload: null
+                        });
+                        reject(err);
+                    }
+                    if (err.response.data && err.response.data.message) {
+                        err.message = err.response.data.message;
+                        dispatch({
+                            type: UPDATE_ADMIN_TOKEN,
+                            payload: err.response.headers.token
+                        });
+                    }
                 }
                 dispatch({
                     type: ERROR_IN_ASSEMBLY_LOAD,
                     payload: {
-                        fetch: 'load',
-                        message: err.message
+                        message: err.message || 'Errore sconosciuto',
+                        fetch: 'load'
                     }
                 });
                 reject(err);
@@ -370,17 +406,26 @@ export const createAssemblyLab = lab => dispatch => {
                 }
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
-                    dispatch({
-                        type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.headers.token
-                    });
+                if (err.response) {
+                    if (err.response.status === 401) {
+                        dispatch({
+                            type: ADMIN_LOGOUT,
+                            payload: null
+                        });
+                        reject(err);
+                    }
+                    if (err.response.data && err.response.data.message) {
+                        err.message = err.response.data.message;
+                        dispatch({
+                            type: UPDATE_ADMIN_TOKEN,
+                            payload: err.response.headers.token
+                        });
+                    }
                 }
                 dispatch({
                     type: ERROR_IN_LAB_CREATE,
                     payload: {
-                        message: err.message,
+                        message: err.message || 'Errore sconosciuto',
                         fetch: 'create_lab'
                     }
                 });
@@ -430,17 +475,26 @@ export const updateAssemblyLab = lab => dispatch => {
                 }
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
-                    dispatch({
-                        type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.headers.token
-                    });
+                if (err.response) {
+                    if (err.response.status === 401) {
+                        dispatch({
+                            type: ADMIN_LOGOUT,
+                            payload: null
+                        });
+                        reject(err);
+                    }
+                    if (err.response.data && err.response.data.message) {
+                        err.message = err.response.data.message;
+                        dispatch({
+                            type: UPDATE_ADMIN_TOKEN,
+                            payload: err.response.headers.token
+                        });
+                    }
                 }
                 dispatch({
                     type: ERROR_IN_LAB_UPDATE,
                     payload: {
-                        message: err.message,
+                        message: err.message || 'Errore sconosciuto',
                         fetch: 'update_lab'
                     }
                 });
@@ -488,17 +542,26 @@ export const deleteAssemblyLab = labID => dispatch => {
                 }
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
-                    dispatch({
-                        type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.headers.token
-                    });
+                if (err.response) {
+                    if (err.response.status === 401) {
+                        dispatch({
+                            type: ADMIN_LOGOUT,
+                            payload: null
+                        });
+                        reject(err);
+                    }
+                    if (err.response.data && err.response.data.message) {
+                        err.message = err.response.data.message;
+                        dispatch({
+                            type: UPDATE_ADMIN_TOKEN,
+                            payload: err.response.headers.token
+                        });
+                    }
                 }
                 dispatch({
                     type: ERROR_IN_LAB_DELETE,
                     payload: {
-                        message: err.message,
+                        message: err.message || 'Errore sconosciuto',
                         fetch: 'delete_lab'
                     }
                 });
@@ -546,17 +609,26 @@ export const fetchAssemblyGeneral = () => dispatch => {
                 }
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
-                    dispatch({
-                        type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.headers.token
-                    });
+                if (err.response) {
+                    if (err.response.status === 401) {
+                        dispatch({
+                            type: ADMIN_LOGOUT,
+                            payload: null
+                        });
+                        reject(err);
+                    }
+                    if (err.response.data && err.response.data.message) {
+                        err.message = err.response.data.message;
+                        dispatch({
+                            type: UPDATE_ADMIN_TOKEN,
+                            payload: err.response.headers.token
+                        });
+                    }
                 }
                 dispatch({
                     type: ERROR_IN_ASSEMBLY_FETCH,
                     payload: {
-                        message: err.message,
+                        message: err.message || 'Errore sconosciuto',
                         fetch: 'assembly'
                     }
                 });
@@ -565,6 +637,7 @@ export const fetchAssemblyGeneral = () => dispatch => {
     });
 };
 
+// FIXME: this too
 /**
  * Fetch all assembly labs
  * @public
@@ -607,7 +680,7 @@ export const fetchAllLabs = () => dispatch => {
             dispatch({
                 type: ERROR_IN_LABS_FETCH,
                 payload: {
-                    message: err.message,
+                    message: err.message || 'Errore sconosciuto',
                     fetch: 'labs'
                 }
             });
@@ -646,20 +719,35 @@ export const fetchStudents = () => dispatch => {
             }
         })
         .catch(err => {
-            if (err.response && err.response.data && err.response.data.message) {
-                err.message = err.response.data.message;
-                dispatch({
-                    type: UPDATE_ADMIN_TOKEN,
-                    payload: err.response.headers.token
-                });
-            }
-            dispatch({
-                type: ERROR_IN_STUDENTS_FETCH,
-                payload: {
-                    message: err.message,
-                    fetch: 'students'
+            if (err.response) {
+                if (err.response.status === 401) {
+                    dispatch({
+                        type: ADMIN_LOGOUT,
+                        payload: null
+                    });
+                    dispatch({
+                        type: ERROR_IN_STUDENTS_FETCH,
+                        payload: {
+                            message: err.message || 'Errore sconosciuto',
+                            fetch: 'students'
+                        }
+                    });
+                } else if (err.response.data && err.response.data.message) {
+                    err.message = err.response.data.message;
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: err.response.headers.token
+                    });
+                } else {
+                    dispatch({
+                        type: ERROR_IN_STUDENTS_FETCH,
+                        payload: {
+                            message: err.message || 'Errore sconosciuto',
+                            fetch: 'students'
+                        }
+                    });
                 }
-            })
+            }
         });
 };
 
@@ -696,17 +784,26 @@ export const deleteAssembly = () => dispatch => {
                 }
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
-                    dispatch({
-                        type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.headers.token
-                    });
+                if (err.response) {
+                    if (err.response.status === 401) {
+                        dispatch({
+                            type: ADMIN_LOGOUT,
+                            payload: null
+                        });
+                        reject(err);
+                    }
+                    if (err.response.data && err.response.data.message) {
+                        err.message = err.response.data.message;
+                        dispatch({
+                            type: UPDATE_ADMIN_TOKEN,
+                            payload: err.response.headers.token
+                        });
+                    }
                 }
                 dispatch({
                     type: ERROR_IN_ASSEMBLY_DELETE,
                     payload: {
-                        message: err.message,
+                        message: err.message || 'Errore sconosciuto',
                         fetch: 'delete_assembly'
                     }
                 });
@@ -746,17 +843,26 @@ export const generatePdf = () => dispatch => {
                 resolve('Operazione completata con successo');
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
-                    dispatch({
-                        type: UPDATE_ADMIN_TOKEN,
-                        payload: err.response.headers.token
-                    });
+                if (err.response) {
+                    if (err.response.status === 401) {
+                        dispatch({
+                            type: ADMIN_LOGOUT,
+                            payload: null
+                        });
+                        reject(err);
+                    }
+                    if (err.response.data && err.response.data.message) {
+                        err.message = err.response.data.message;
+                        dispatch({
+                            type: UPDATE_ADMIN_TOKEN,
+                            payload: err.response.headers.token
+                        });
+                    }
                 }
                 dispatch({
                     type: ERROR_IN_ASSEMBLY_PDF,
                     payload: {
-                        message: err.message,
+                        message: err.message || 'Errore sconosciuto',
                         fetch: 'generate_pdf'
                     }
                 });

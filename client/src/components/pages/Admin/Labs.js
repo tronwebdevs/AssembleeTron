@@ -52,10 +52,12 @@ const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
                                     setShowModal={setShowModal}
                                 />    
                             ) : (
-                                <Spinner
-                                    color="primary"
-                                    style={{ width: "3rem", height: "3rem" }}
-                                />
+                                <div className="py-5 text-center">
+                                    <Spinner
+                                        color="secondary"
+                                        style={{ width: "3rem", height: "3rem" }}
+                                    />
+                                </div>
                             )}
                         </Card>
                     </Col>

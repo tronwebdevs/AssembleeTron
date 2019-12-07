@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { fetchAssemblyInfo } from "../../../actions/assemblyActions";
 import { Redirect } from "react-router-dom";
-
 import { LoginCard, LoginFormCard } from "../../Student/";
 
-const Home = ({ student, assembly, fetchAssemblyInfo }) => {
-    const [error, setError] = useState(null);
+const Home = ({ student, assembly, errorMessage }) => {
+    const { pendings, info } = assembly;
 
     const redirectAuthedStudent = labsLength => (
         <Redirect
@@ -18,27 +16,28 @@ const Home = ({ student, assembly, fetchAssemblyInfo }) => {
     );
 
     if (student.profile.studentId === null) {
-        if (assembly.pendings.info === false) {
-            if (error) {
-                return <LoginCard title={error} />;
-            } else if (!assembly.info.date) {
-                return <LoginCard title={"Errore inaspettato"} text="Contatta il TronWeb per maggiori informazioni" />;
+        if (pendings.info === false) {
+            if (errorMessage) {
+                if (assembly.exists === true) {
+                    return <LoginCard title={info.title} text={errorMessage} />;
+                } else {
+                    return <LoginCard title={errorMessage} />;
+                }
             } else {
-                return <LoginFormCard info={assembly.info} />;
+                return <LoginFormCard info={info} />;
             }
-        } else if (assembly.pendings.info === undefined) {
-            fetchAssemblyInfo().catch(({ message }) => setError(message));
+        } else {
+            return <Fragment></Fragment>;
         }
-        return <React.Fragment></React.Fragment>;
     } else {
         return redirectAuthedStudent(student.labs.length);
     }
 };
 
 Home.propTypes = {
-    fetchAssemblyInfo: PropTypes.func.isRequired,
     student: PropTypes.object.isRequired,
-    assembly: PropTypes.object.isRequired
+    assembly: PropTypes.object.isRequired,
+    errorMessage: PropTypes.string
 };
 
 const mapStateToProps = state => ({
@@ -46,4 +45,4 @@ const mapStateToProps = state => ({
     assembly: state.assembly
 });
 
-export default connect(mapStateToProps, { fetchAssemblyInfo })(Home);
+export default connect(mapStateToProps)(Home);

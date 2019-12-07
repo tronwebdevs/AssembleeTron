@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Error404Page } from "tabler-react";
+import { StudentRoute } from "../../Student/";
 
 import Home from "./Home";
 import LabsSelect from "./LabsSelect";
@@ -10,9 +11,21 @@ const Student = () => (
 	<BrowserRouter>
 		<React.Fragment>
 			<Switch>
-				<Route path="/" component={Home} exact />
-				<Route path="/iscrizione" component={LabsSelect} exact />
-				<Route path="/conferma" component={ShowSub} exact />
+                <StudentRoute
+                    path="/"
+                    component={Home}
+                    exact
+                />
+                <StudentRoute
+                    path="/iscrizione"
+                    component={LabsSelect}
+                    exact
+                />
+                <StudentRoute
+                    path="/conferma"
+                    component={ShowSub}
+                    exact
+                />
 				<Route
 					component={props => (
 						<Error404Page

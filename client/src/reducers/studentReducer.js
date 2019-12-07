@@ -9,7 +9,8 @@ import {
     ERROR_IN_STUDENT_AUTH,
     ERROR_IN_STUDENT_LABS_UPDATE,
     ERROR_IN_STUDENT_LABS_FETCH,
-    FETCH_STUDENT_PENDING
+    FETCH_STUDENT_PENDING,
+    STUDENT_LOGOUT
 } from '../actions/types.js';
 
 const initialState = {
@@ -107,7 +108,9 @@ export default function(state = initialState, { payload, type }) {
                     [payload.fetch]: false
                 },
                 token: payload.token !== null && payload.token !== undefined ? payload.token : state.token
-			};
+            };
+        case STUDENT_LOGOUT:
+            return initialState;
         default:
             return state;
     }
