@@ -294,7 +294,7 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
         
                 labs.forEach((lab, index) => {
                     if ( (lab.info['h' + (index + 1)].seats - results[index] - 1 ) < 0) {
-                        error.target = (index + i);
+                        error.target = (index + 1);
                         throw error;
                     }
                 });
