@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { createBrowserHistory } from "history";
+import ReactGA from "react-ga";
 import { Provider } from "react-redux";
 import { Error404Page } from "tabler-react";
 import "./index.css";
@@ -9,9 +11,15 @@ import store from "../../store";
 import Admin from "../pages/Admin/";
 import Student from "../pages/Student/";
 
+let history = createBrowserHistory();
+history.listen(location => {
+    ReactGA.set({ page: location.pathname });
+    ReactGA.pageview(location.pathname);
+});
+
 const App = () => (
 	<Provider store={store}>
-		<BrowserRouter>
+		<BrowserRouter history={history}>
 			<React.Fragment>
 				<Switch>
 					<Route path="/gestore" component={Admin} />
