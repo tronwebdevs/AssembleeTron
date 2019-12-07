@@ -17,30 +17,6 @@ import {
 
 const Dashboard = ({ assembly, errorMessage }) => {
     const { stats, info, pendings } = assembly;
-    
-    const cards = [
-        {
-            color: "blue",
-            icon: "list",
-            link: "/gestore/laboratori",
-            title: stats.labs.toString(),
-            subtitle: "Laboratori"
-        },
-        {
-            color: "green",
-            icon: "users",
-            link: "/gestore/studenti",
-            title: stats.subs.toString(),
-            subtitle: "Partecipanti"
-        },
-        {
-            color: "red",
-            icon: "users",
-            link: "/gestore/studenti",
-            title: stats.students.toString(),
-            subtitle: "Studenti"
-        }
-    ];
 
     const assemblyLogAlert = pendings => {
         let text = null;
@@ -59,8 +35,32 @@ const Dashboard = ({ assembly, errorMessage }) => {
             />
         ) : null;
     }
+    let cards = [];
     
     if (pendings.assembly === false) {
+        cards = [
+            {
+                color: "blue",
+                icon: "list",
+                link: "/gestore/laboratori",
+                title: stats.labs.toString(),
+                subtitle: "Laboratori"
+            },
+            {
+                color: "green",
+                icon: "users",
+                link: "/gestore/studenti",
+                title: stats.subs.toString(),
+                subtitle: "Partecipanti"
+            },
+            {
+                color: "red",
+                icon: "users",
+                link: "/gestore/studenti",
+                title: stats.students.toString(),
+                subtitle: "Studenti"
+            }
+        ];
         return (
             <Fragment>
                 <AdminAlert 
