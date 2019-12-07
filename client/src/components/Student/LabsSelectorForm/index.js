@@ -50,7 +50,8 @@ const LabsSelectorForm = ({
 							setGlobalError(message);
 						} else {
 							setGlobalError(null);
-							setErrors({ ["h" + target]: message });
+                            setErrors({ ["h" + target]: message });
+                            values["h" + target] = "default";
 						}
 						fetchAvabileLabs(profile.section)
 							.then(() => setSubmitting(false))
