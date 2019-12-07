@@ -36,19 +36,21 @@ const ConfirmSub = ({ student, assembly, logout }) => {
                 <Row>
                     <Badge student={profile} lg={{ size: "4", offset: "4" }} />
                 </Row>
-                {notSub ? <NotPartCard /> : <LabsTable labs={labs} />}
-                <Row>
-                    <Col xs="12">
-                        <Button
-                            outline
-                            block
-                            color="danger"
-                            onClick={() => logout()}
-                        >
-                            Esci
-                        </Button>
-                    </Col>
-                </Row>
+                {notSub ? <NotPartCard /> : <LabsTable labs={labs} logout={logout}/>}
+                {notSub ? (
+                    <Row>
+                        <Col xs="12">
+                            <Button
+                                outline
+                                block
+                                color="danger"
+                                onClick={() => logout()}
+                            >
+                                Esci
+                            </Button>
+                        </Col>
+                    </Row>
+                ): null}
             </SiteWrapper>
         );
     } else {
@@ -58,7 +60,8 @@ const ConfirmSub = ({ student, assembly, logout }) => {
 
 ConfirmSub.propTypes = {
 	student: PropTypes.object.isRequired,
-	assembly: PropTypes.object.isRequired
+    assembly: PropTypes.object.isRequired,
+    logout: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({

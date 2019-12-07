@@ -1,7 +1,8 @@
 import React from "react";
-import { Row, Col, Card, CardBody } from "reactstrap";
+import PropTypes from "prop-types";
+import { Row, Col, Card, CardBody, Button } from "reactstrap";
 
-const InfoBox = () => (
+const InfoBox = ({ logout }) => (
 	<Row>
 		<Col>
 			<Card>
@@ -13,12 +14,27 @@ const InfoBox = () => (
 						</p>
 						<p className="font-weight-bold mb-1">
 							Potrai visualizzarla nuovamente inserendo la tua
-							matricola nella <a href="/">pagina di login</a>
+							matricola nella{" "}
+                            <Button 
+                                color="link" 
+                                onClick={logout}
+                                className="p-0 mb-1"
+                                style={{
+                                    textTransform: 'lowercase'
+                                }}
+                            >pagina di login</Button>
 						</p>
 						<p className="mb-0">
 							Per disiscriverti dall'assemblea vai alla{" "}
-							<a href="/">pagina di login</a> e seleziona "Non
-							partecipo"
+							<Button 
+                                color="link" 
+                                onClick={logout}
+                                className="p-0 mb-1"
+                                style={{
+                                    textTransform: 'lowercase'
+                                }}
+                            >pagina di login</Button>{" "}
+                            e seleziona "Non partecipo"
 						</p>
 					</small>
 				</CardBody>
@@ -26,5 +42,9 @@ const InfoBox = () => (
 		</Col>
 	</Row>
 );
+
+InfoBox.propTypes = {
+    logout: PropTypes.func.isRequired
+};
 
 export default InfoBox;

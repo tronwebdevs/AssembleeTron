@@ -1,10 +1,10 @@
-import React from "react";
+import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import { Row, Col, Card, CardBody } from "reactstrap";
 import InfoBox from "./InfoBox";
 
-const LabsTable = ({ labs }) => (
-	<>
+const LabsTable = ({ labs, logout }) => (
+	<Fragment>
 		<Row>
 			<Col>
 				<Card>
@@ -48,12 +48,13 @@ const LabsTable = ({ labs }) => (
 				</Card>
 			</Col>
 		</Row>
-		<InfoBox />
-	</>
+		<InfoBox logout={logout}/>
+	</Fragment>
 );
 
 LabsTable.propTypes = {
-	labs: PropTypes.array.isRequired
+    labs: PropTypes.array.isRequired,
+    logout: PropTypes.func.isRequired
 };
 
 export default LabsTable;
