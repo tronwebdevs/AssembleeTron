@@ -51,7 +51,7 @@ const Export = ({ assembly, generatePdf }) => {
                     type={displayMessage.type}
                 />
                 <Row>
-                    <Col xs="6">
+                    <Col xs="12" md="6">
                         <Card>
                             <CardHeader>
                                 <b>PDF</b>
@@ -76,7 +76,7 @@ const Export = ({ assembly, generatePdf }) => {
                             </CardBody>
                         </Card>
                     </Col>
-                    <Col xs="6">
+                    <Col xs="12" md="6">
                         <Card>
                             <CardHeader>
                                 <b>SQL</b>

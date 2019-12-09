@@ -4,7 +4,7 @@ import { Formik } from "formik";
 
 import LoginForm from "./LoginForm";
 
-const LoginFormCard = ({ authAdmin, errorMessage }) => (
+const LoginFormCard = ({ fetchAssembly, authAdmin, errorMessage }) => (
 	<Formik
 		initialValues={{
 			password: ""
@@ -18,7 +18,7 @@ const LoginFormCard = ({ authAdmin, errorMessage }) => (
 		}}
 		onSubmit={(values, { setSubmitting, setErrors }) =>
 			authAdmin(values.password)
-				.then(() => setSubmitting(false))
+                .then(() => setSubmitting(false))
 				.catch(({ message }) => {
 					setSubmitting(false);
 					setErrors({ password: message });
@@ -48,6 +48,7 @@ const LoginFormCard = ({ authAdmin, errorMessage }) => (
 );
 
 LoginFormCard.propTypes = {
+    fetchAssembly: PropTypes.func.isRequired,
 	authAdmin: PropTypes.func.isRequired,
 	errorMessage: PropTypes.string
 };

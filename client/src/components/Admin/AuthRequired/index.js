@@ -11,20 +11,23 @@ const AuthRequired = ({
 	fetchAssemblyGeneral,
 	...rest
 }) => {
-	const [error, setError] = useState(null);
+    const [error, setError] = useState(null);
+
+    const { pendings, authed, token } = admin;
 
 	if (
 		assembly.pendings.assembly === undefined &&
-		admin.pendings.auth === false
+        pendings.auth === false &&
+        token !== null
 	) {
-		fetchAssemblyGeneral().catch(err => setError(err.message));
+		fetchAssemblyGeneral().catch(err => err.status !== 401 ? setError(err.message) : null);
 	}
 
 	return (
 		<Route
 			{...rest}
 			render={props =>
-				admin.authed ? (
+				authed ? (
 					<Component {...props} errorMessage={error} />
 				) : (
 					<Redirect

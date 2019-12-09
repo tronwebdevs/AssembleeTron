@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import ReactGA from "react-ga";
 import { Provider } from "react-redux";
@@ -19,7 +19,7 @@ history.listen(location => {
 
 const App = () => (
 	<Provider store={store}>
-		<BrowserRouter history={history}>
+		<Router history={history}>
 			<React.Fragment>
 				<Switch>
 					<Route path="/gestore" component={Admin} />
@@ -38,7 +38,7 @@ const App = () => (
 					/>
 				</Switch>
 			</React.Fragment>
-		</BrowserRouter>
+		</Router>
 	</Provider>
 );
 

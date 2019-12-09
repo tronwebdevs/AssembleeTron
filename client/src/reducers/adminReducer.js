@@ -46,7 +46,12 @@ export default function (state = initialState, { type, payload }) {
                 }
             }
         case ADMIN_LOGOUT:
-            return initialState;
+            return {
+                ...initialState,
+                pendings: {
+                    loggedout: false
+                }
+            };
         default:
             return state;
     }

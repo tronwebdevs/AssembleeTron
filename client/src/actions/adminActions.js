@@ -32,8 +32,9 @@ export const authAdmin = password => dispatch => {
                 }
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
+                const { response } = err;
+                if (response && response.data && response.data.message) {
+                    err.message = response.data.message;
                 }
                 dispatch({
                     type: ERROR_IN_ADMIN_AUTH,

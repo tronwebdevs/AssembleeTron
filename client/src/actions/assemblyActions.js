@@ -139,8 +139,9 @@ export const fetchAssemblyInfo = () => dispatch => {
                 }
             })
             .catch(err => {
-                if (err.response && err.response.data && err.response.data.message) {
-                    err.message = err.response.data.message;
+                const { response } = err;
+                if (response && response.data && response.data.message) {
+                    err.message = response.data.message;
                 }
                 dispatch({
                     type: ERROR_IN_INFO_FETCH,
@@ -494,7 +495,8 @@ export const fetchAssemblyGeneral = () => dispatch => {
                             type: ASSEMBLY_FETCHED,
                             payload: {
                                 ...data,
-                                exists: data.code === 0 ? false : true
+                                exists: data.code === 0 ? false : true,
+                                pending: false
                             }
                         });
                         dispatch({
@@ -508,9 +510,34 @@ export const fetchAssemblyGeneral = () => dispatch => {
                 }
             })
             .catch(err => {
-                handleError(err, dispatch, {
+                const { response } = err;
+                let pending = false;
+                if (response) {
+                    const { data, headers, status } = response;
+                    err.status = status;
+                    if (data && data.message) {
+                        err.message = data.message;
+                        if (status === 401) {
+                            pending = undefined;
+                            dispatch({
+                                type: ADMIN_LOGOUT,
+                                payload: null
+                            });
+                        } else {
+                            dispatch({
+                                type: UPDATE_ADMIN_TOKEN,
+                                payload: headers.token
+                            });
+                        }
+                    }
+                }
+                dispatch({
                     type: ERROR_IN_ASSEMBLY_FETCH,
-                    fetch: 'assembly'
+                    payload: {
+                        message: err.message || 'Errore sconosciuto',
+                        fetch: 'assembly',
+                        pending
+                    }
                 });
                 reject(err);
             });
@@ -679,4 +706,4 @@ export const generatePdf = () => dispatch => {
                 reject(err);
             });
     });
-}
+};

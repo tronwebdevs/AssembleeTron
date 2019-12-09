@@ -120,13 +120,13 @@ export default function (state = initialState, { payload, type }) {
 				exists: payload.exists || state.exists,
 				info: payload.info || {},
 				stats: {
-					labs: payload.labs,
-					students: payload.students,
-					subs: payload.subs
+					labs: payload.labs || 0,
+					students: payload.students || 0,
+					subs: payload.subs || 0
 				},
 				pendings: {
 					...state.pendings,
-					assembly: false
+					assembly: payload.pending
 				}
 			};
 		case ASSEMBLY_DELETED:
