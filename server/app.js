@@ -2,6 +2,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost/dissembly', {
@@ -18,6 +19,9 @@ app.disable('x-powered-by');
 app.use(require('helmet')());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors({
+    origin: 'https://assemblee.tronweb.it'
+}));
 
 app.use('/api/students', require('./routes/students'));
 app.use('/api/assembly', require('./routes/assembly'));
