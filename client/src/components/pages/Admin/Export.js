@@ -51,7 +51,7 @@ const Export = ({ assembly, generatePdf }) => {
                     type={displayMessage.type}
                 />
                 <Row>
-                    <Col xs="12" md="6">
+                    <Col xs="12">
                         <Card>
                             <CardHeader>
                                 <b>PDF</b>
@@ -73,18 +73,6 @@ const Export = ({ assembly, generatePdf }) => {
                                         <Spinner color="light" size="sm" />
                                     ) : "Genera PDF"}
                                 </Button>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col xs="12" md="6">
-                        <Card>
-                            <CardHeader>
-                                <b>SQL</b>
-                            </CardHeader>
-                            <CardBody>
-                                <span className="d-block text-center text-muted">
-                                    Coming Soon
-                                </span>
                             </CardBody>
                         </Card>
                     </Col>

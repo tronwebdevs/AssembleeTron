@@ -13,7 +13,7 @@ mongoose.connect('mongodb://localhost/dissembly', {
 .then(() => console.log('Connected successfully to the database'))
 .catch(err => console.error('Connection error: ', err));
 
-app.set('port', 5001);
+app.set('port', process.argv[2] || 5001);
 app.disable('x-powered-by');
 app.use(require('helmet')());
 app.use(bodyParser.urlencoded({ extended: true }));
