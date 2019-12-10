@@ -34,7 +34,9 @@ router.post('/auth', (req, res, next) => {
             });
         }
     } else {
-        next(new Error('Parametri non validi'));
+        let error = new Error('Parametri non validi');
+        error.status = 410;
+        next(error);
     }
 });
 

@@ -29,6 +29,7 @@ router.get('/info', (req, res, next) =>
         .then(results => {
             let noAssemblyError = new Error('Nessuna assemblea in programma');
             noAssemblyError.code = 0;
+            noAssemblyError.status = 200;
             if (results.length === 0) {
                 throw noAssemblyError;
             } else {

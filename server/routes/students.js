@@ -35,7 +35,9 @@ router.get('/labs', authUser, isStudent, (req, res, next) => {
             )
             .catch(err => next(err));
     } else {
-        next(new Error('Parametri non validi'));
+        let error = new Error('Parametri non validi');
+        error.status = 400;
+        next();
     }
 });
 
@@ -232,10 +234,13 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
     let labs = [ h1, h2, h3, h4 ];
 
     if (h1 && h2 && h3 && h4) {
+        let error = new Error();
         Subscribed.find({ studentId: studentID })
             .then(subs => {
                 if (subs.length > 0) {
-                    throw new Error('Sei gia\' iscritto a questa assemblea');
+                    error.message = 'Sei gia\' iscritto a questa assemblea';
+                    error.status = 409;
+                    throw error;
                 } else {
                     return Laboratory.find({ 
                         $or: [
@@ -259,8 +264,8 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
                     return null;
                 });
                 // "Per i progetti da 2 ore seleziona la prima e la seconda ora o la terza e la quarta ora"
-                let error = new Error('Questo laboratori deve essere uguale a quello dell\'ora ');
-                error.status = 410;
+                error.message = 'Questo laboratori deve essere uguale a quello dell\'ora ';
+                error.status = 400;
 
                 let promiseArray = [];
                 labs.forEach((lab, index) => {
@@ -289,7 +294,7 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
                 return Promise.all(promiseArray);
             })
             .then(results => {
-                let error = new Error('Posti esauriti per questo laboratorio');
+                error.message = 'Posti esauriti per questo laboratorio';
                 error.status = 410;
         
                 labs.forEach((lab, index) => {
