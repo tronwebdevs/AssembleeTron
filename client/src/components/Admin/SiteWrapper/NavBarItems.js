@@ -16,11 +16,11 @@ const NavBarItems = [
         to: rootPath + "/laboratori",
         icon: "list"
     },
-    // {
-    //     value: "Studenti",
-    //     to: rootPath + "/studenti",
-    //     icon: "users"
-    // },
+    {
+        value: "Studenti",
+        to: rootPath + "/studenti",
+        icon: "users"
+    },
     {
         value: "Statistiche",
         to: rootPath + "/statistiche",

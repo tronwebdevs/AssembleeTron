@@ -25,7 +25,6 @@ const ConfirmSub = ({ student, assembly, logout }) => {
 	const notSub = labs.every(labID => labID === -1);
 
     if (assembly.pendings.info === false) {
-
         return (
             <SiteWrapper>
                 <Row>
@@ -39,7 +38,7 @@ const ConfirmSub = ({ student, assembly, logout }) => {
                 {notSub ? <NotPartCard /> : <LabsTable labs={labs} logout={logout}/>}
                 {notSub ? (
                     <Row>
-                        <Col xs="12">
+                        <Col xs="12" md={{size: "2", offset: "5"}}>
                             <Button
                                 outline
                                 block

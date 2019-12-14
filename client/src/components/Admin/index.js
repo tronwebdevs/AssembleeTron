@@ -7,7 +7,7 @@ import LoginFormCard from "./LoginFormCard/";
 import SiteWrapper from "./SiteWrapper/";
 import StudentsTable from "./StudentsTable";
 import DashAssemblyRow from "./DashAssemblyRow";
-import DashInfoCard from "./DashInfoCard";
+import ListCard from "./ListCard";
 import ImportAssemblyCard from "./ImportAssemblyCard";
 import InfoCard from "./InfoCard";
 import InfoForm from "./InfoForm";
@@ -15,6 +15,7 @@ import LabsTable from "./LabsTable";
 import PageLoading from "./PageLoading";
 import AdminAlert from "./AdminAlert";
 import AssemblyInfo from "./AssemblyInfo";
+import StudentsSectionsTable from "./StudentsSectionsTable";
 
 export {
 	AuthRequired,
@@ -26,12 +27,13 @@ export {
 	SiteWrapper,
 	StudentsTable,
 	DashAssemblyRow,
-	DashInfoCard,
+	ListCard,
 	ImportAssemblyCard,
 	InfoCard,
 	InfoForm,
 	LabsTable,
 	PageLoading,
 	AdminAlert,
-	AssemblyInfo
+    AssemblyInfo,
+    StudentsSectionsTable
 };

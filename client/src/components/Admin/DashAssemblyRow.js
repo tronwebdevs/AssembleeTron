@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { Row, Col, Card, CardBody, CardHeader, Badge } from "reactstrap";
 import moment from "moment";
-import DashInfoCard from "./DashInfoCard";
+import ListCard from "./ListCard";
 
 const DashAssemblyRow = ({ info }) => {
 	const displayDaysLeft = days => {
@@ -19,9 +19,9 @@ const DashAssemblyRow = ({ info }) => {
 	return (
 		<Fragment>
 			<Row>
-				<DashInfoCard
+				<ListCard
 					title="Informazioni"
-					listItems={[
+					items={[
 						{
 							title: "Nome",
 							text: info.title || "Assemblea Senza Nome"
@@ -44,9 +44,10 @@ const DashAssemblyRow = ({ info }) => {
 									</small>
 								</Fragment>
 							)
-						}
+                        },
+                        { title: "Classi", text: info.sections.length }
 					]}
-					button={
+					buttons={
 						<Link
 							to="/gestore/informazioni"
 							className="btn btn-block btn-outline-primary"
@@ -55,9 +56,9 @@ const DashAssemblyRow = ({ info }) => {
 						</Link>
 					}
 				/>
-				<DashInfoCard
+				<ListCard
 					title="Iscrizioni"
-					listItems={[
+					items={[
 						{
 							title: "Stato",
 							text:
@@ -83,7 +84,7 @@ const DashAssemblyRow = ({ info }) => {
 							)
 						}
 					]}
-					button={
+					buttons={
 						<Link
 							to="/gestore/statistiche"
 							className="btn btn-block btn-outline-info"
@@ -99,8 +100,9 @@ const DashAssemblyRow = ({ info }) => {
 						</CardHeader>
 						<CardBody>
 							<p>
-								Rimuovi tutti i laboratori ed elimina
-								l'assemblea
+								Rimuovi tutti i laboratori, gli iscritti 
+                                ed elimina l'assemblea (necessario prima
+                                di creare una nuova assemblea)
 							</p>
 							<Link
 								to="/gestore/elimina"
