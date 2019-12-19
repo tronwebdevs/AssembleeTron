@@ -292,7 +292,6 @@ router.get('/export', (req, res, next) => {
                 for (let i = 1; i <= 4; i++) {
                     let labStudents = [];
 
-                    doc.fontSize(24).text(lab.title + ' - ora ' + i).fontSize(16);
                     subs.filter(
                         sub => {
                             if (sub.labs['h' + i]) {
@@ -304,11 +303,12 @@ router.get('/export', (req, res, next) => {
                     ).forEach(sub => labStudents.push([sub.name, sub.surname, sub.section]));
 
                     if (labStudents.length !== 0) {
+                        doc.fontSize(24).text(lab.title + ' - ora ' + i).fontSize(16);
                         doc.moveDown().table({
                             headers: ['Nome', 'Cognome', 'Classe'],
                             rows: labStudents
                         }).moveDown();
-                        
+
                         if (!(i === 4 && index === (arr.length - 1))) {
                             doc.addPage();
                         }
