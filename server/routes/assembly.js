@@ -303,14 +303,17 @@ router.get('/export', (req, res, next) => {
                         }
                     ).forEach(sub => labStudents.push([sub.name, sub.surname, sub.section]));
 
-                    doc.moveDown().table({
-                        headers: ['Nome', 'Cognome', 'Classe'],
-                        rows: labStudents
-                    }).moveDown();
-
-                    if (!(i === 4 && index === (arr.length - 1))) {
-                        doc.addPage();
+                    if (labStudents.length !== 0) {
+                        doc.moveDown().table({
+                            headers: ['Nome', 'Cognome', 'Classe'],
+                            rows: labStudents
+                        }).moveDown();
+                        
+                        if (!(i === 4 && index === (arr.length - 1))) {
+                            doc.addPage();
+                        }
                     }
+
                 }
             });
             doc.end();
