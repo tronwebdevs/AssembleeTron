@@ -19,8 +19,8 @@ const LabsTable = ({
 				{ content: "#", className: "w-1" },
 				{ content: "Titolo" },
 				{ content: "Aula" },
-				{ content: null },
-				{ content: null }
+				{ content: null, className: "w-2" },
+				{ content: null, className: "w-2" }
 			]}
 			bodyItems={labs.map((lab, index) => ({
 				key: lab._id,

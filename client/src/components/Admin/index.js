@@ -15,6 +15,8 @@ import LabsTable from "./LabsTable";
 import PageLoading from "./PageLoading";
 import AdminAlert from "./AdminAlert";
 import AssemblyInfo from "./AssemblyInfo";
+import LabsCheckModal from "./LabModal/LabsCheckModal";
+import LabsTutorial from "./LabsTutorial";
 import StudentsSectionsTable from "./StudentsSectionsTable";
 
 export {
@@ -35,5 +37,7 @@ export {
 	PageLoading,
 	AdminAlert,
     AssemblyInfo,
+    LabsCheckModal,
+    LabsTutorial,
     StudentsSectionsTable
 };

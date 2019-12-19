@@ -82,7 +82,7 @@ const Dashboard = ({ assembly, errorMessage }) => {
                                     Per creare una nuova assemblea seguire i
                                     seguenti passaggi:
                                 </span>
-                                <ol>
+                                <ol style={{ paddingLeft: 30 }}>
                                     <li>
                                         Eliminare l'asssemblea esistente (se
                                         presente) attraverso il bottone presente

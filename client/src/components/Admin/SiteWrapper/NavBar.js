@@ -49,6 +49,11 @@ const NavBar = ({ logout }) => {
 										className="nav-link"
 										exact
 										activeClassName="active"
+										onClick={() =>
+											window.innerWidth < 992
+												? toggle()
+												: null
+										}
 									>
 										{item.value}
 									</NavLink>
@@ -57,7 +62,7 @@ const NavBar = ({ logout }) => {
 							<NavItem className="ml-lg-3">
 								<Button color="danger" outline onClick={logout}>
 									Logout
-									<FaSignOutAlt className="ml-2"/>
+									<FaSignOutAlt className="ml-2" />
 								</Button>
 							</NavItem>
 						</Nav>

@@ -132,7 +132,7 @@ const InfoForm = ({
 									Apertura iscrizioni
 								</Label>
 								<Row className="mb-2">
-									<Col xs="12" lg="7">
+									<Col xs="12" lg="7" className="mb-2 mb-md-0">
 										<Input
 											type="date"
 											name="subOpenDate"
@@ -173,7 +173,7 @@ const InfoForm = ({
 									Chiusura iscrizioni
 								</Label>
 								<Row className="mb-2">
-									<Col xs="12" lg="7">
+									<Col xs="12" lg="7" className="mb-2 mb-md-0">
 										<Input
 											type="date"
 											name="subCloseDate"

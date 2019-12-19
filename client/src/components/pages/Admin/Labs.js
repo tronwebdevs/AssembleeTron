@@ -9,14 +9,21 @@ import {
 	Row,
 	Col,
 	Card,
-	CardBody,
+    CardBody,
     Button,
     Spinner
 } from "reactstrap";
-import { LabsTable, LabModal, PageLoading, AdminAlert } from "../../Admin/";
+import { 
+    LabsTutorial,
+    LabsTable, 
+    LabModal, 
+    LabsCheckModal, 
+    PageLoading, 
+    AdminAlert 
+} from "../../Admin/";
 
 const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
-	const { labs, pendings } = assembly;
+	const { labs, pendings, info } = assembly;
 
 	const [displayMessage, setDisplayMessage] = useState({
 		type: null,
@@ -27,6 +34,7 @@ const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
 		lab: {}
 	});
     const [showModal, setShowModal] = useState(false);
+    const [showCheckModal, setShowCheckModal] = useState(false);
 
 	if (pendings.labs === undefined && assembly.exists === true) {
 		fetchAllLabs();
@@ -74,17 +82,16 @@ const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
                                         Crea
                                     </Button>
                                     <Button
-                                        color="warning"
+                                        color="info"
                                         outline
                                         block
-                                        onClick={() =>
-                                            alert("Funzione in arrivo")
-                                        }
+                                        onClick={() => setShowCheckModal(true)}
                                     >
                                         Controlla
                                     </Button>
                                 </CardBody>
                             </Card>
+                            <LabsTutorial/>
                         </Col>
                     ) : null}
                 </Row>
@@ -98,6 +105,12 @@ const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
                     }
                     setDisplayMessage={setDisplayMessage}
                     setLabDisplay={setLabDisplay}
+                />
+                <LabsCheckModal
+                    showModal={showCheckModal}
+                    handleClose={() => setShowCheckModal(false)}
+                    labs={labs}
+                    sections={info.sections}
                 />
             </Fragment>
         );

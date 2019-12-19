@@ -112,7 +112,7 @@ const Export = ({ admin, assembly, generatePdf }) => {
                                     Backup presenti sul server delle assemblee passate
                                 </p>
                             </CardBody>
-                            <Table className="mb-0">
+                            <Table className="mb-0" responsive={true}>
                                 <thead>
                                     <tr>
                                         <th>ID</th>

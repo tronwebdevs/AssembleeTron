@@ -294,7 +294,13 @@ router.get('/export', (req, res, next) => {
 
                     doc.fontSize(24).text(lab.title + ' - ora ' + i).fontSize(16);
                     subs.filter(
-                        sub => sub.labs['h' + i].equals(lab._id)
+                        sub => {
+                            if (sub.labs['h' + i]) {
+                                return sub.labs['h' + i].equals(lab._id);
+                            } else {
+                                return false;
+                            }
+                        }
                     ).forEach(sub => labStudents.push([sub.name, sub.surname, sub.section]));
 
                     doc.moveDown().table({

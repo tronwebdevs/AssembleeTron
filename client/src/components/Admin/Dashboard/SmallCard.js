@@ -13,7 +13,8 @@ const SmallCard = ({ color, icon, link, title, subtitle }) => (
 				<Link to={link}>
 					{title} <small>{subtitle}</small>
 				</Link>
-			}
+            }
+            className="mb-1 mb-md-5"
 		/>
 	</Col>
 );

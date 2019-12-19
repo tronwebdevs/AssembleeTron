@@ -121,3 +121,24 @@ export const processAssemblyStats = (info, students, labs) => {
         maxActive
     };
 };
+
+export const validateLabs = (labs, sections) => {
+    let result = [];
+    for (let i = 1; i <= 4; i++) {
+        sections.forEach(section => {
+            let canSub = false;
+            labs.forEach(lab => {
+                if (lab.info['h' + i].sections.indexOf(section) !== -1) {
+                    canSub = true;
+                }
+            });
+            if (canSub === false) {
+                if (!result[i - 1]) {
+                    result[i - 1] = [];
+                }
+                result[i - 1].push(section);
+            }
+        });
+    }
+    return result;
+};

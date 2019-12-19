@@ -1,9 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Modal from "react-modal";
+import { Modal } from "reactstrap";
 import LabForm from "../LabForm/";
-
-Modal.setAppElement("#root");
 
 const LabModal = ({
 	showModal,
@@ -14,31 +12,16 @@ const LabModal = ({
 	setLabDisplay,
 	setDisplayMessage
 }) => (
-	<Modal
-		key="modal"
-		isOpen={showModal}
-		contentLabel="Laboratory Modal"
-		style={{
-			overlay: {
-				backgroundColor: "rgba(255, 255, 255, 0.7)"
-			},
-			content: {
-				border: "none",
-				maxWidth: "900px",
-				width: "100%",
-				top: "40px",
-
-				transform: "translateX(-50%)",
-				left: "50%",
-				right: "auto",
-
-				bottom: "40px",
-				background: "transparent",
-				borderRadius: "0",
-				padding: "0"
-			}
-		}}
-	>
+    <Modal
+        isOpen={showModal}
+        toggle={handleClose}
+        style={{
+            maxWidth: 800,
+            width: "100%",
+            margin: "auto",
+            padding: 5
+        }}
+    >
 		<LabForm
 			lab={lab}
 			action={action}
