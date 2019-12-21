@@ -56,42 +56,35 @@ export const processAssemblyStats = (info, students, labs) => {
         return null;
     }
 
-    let subsSections = [];
-    let subsYear = [];
-    subscribeds.forEach(student => {
-        const stdSec = subsSections.find(
-            section => section[0] === student.section
-        );
-        const stdYear = subsYear.find(
-            year => year[0] === student.section[0]
-        );
-        if (stdSec) {
-            stdSec[1]++;
-        } else {
-            subsSections.push([
-                student.section,
-                1
-            ]);
-        }
-        if (stdYear) {
-            stdYear[1]++;
-        } else {
-            subsYear.push([
-                student.section[0],
-                1
-            ]);
-        }
-    });
-    subsSections = subsSections.sort((a, b) => ("" + a[0]).localeCompare(b[0]));
+    // let subsSections = [];
+    // let subsYear = [];
+    // subscribeds.forEach(student => {
+    //     const stdSec = subsSections.find(
+    //         section => section[0] === student.section
+    //     );
+    //     const stdYear = subsYear.find(
+    //         year => year[0] === student.section[0]
+    //     );
+    //     if (stdSec) {
+    //         stdSec[1]++;
+    //     } else {
+    //         subsSections.push([
+    //             student.section,
+    //             1
+    //         ]);
+    //     }
+    //     if (stdYear) {
+    //         stdYear[1]++;
+    //     } else {
+    //         subsYear.push([
+    //             student.section[0],
+    //             1
+    //         ]);
+    //     }
+    // });
+    // subsSections = subsSections.sort((a, b) => ("" + a[0]).localeCompare(b[0]));
 
     let subsPerTime = [["subscriptions"]];
-    let maxActive = { 
-        date: { 
-            start: moment(info.subscription.open), 
-            end: moment(info.subscription.close) 
-        }, 
-        count: 0 
-    };
     let hoursOpen = moment(info.subscription.close).diff(moment(info.subscription.open), 'h');
     let increment = parseInt(hoursOpen / 40, 10);
     let timeCounterStart = moment(info.subscription.open);
@@ -104,21 +97,15 @@ export const processAssemblyStats = (info, students, labs) => {
                 createdAt.diff(timeCounterEnd) <= 0
             );
         }).length;
-        if (studentsLength > maxActive.count) {
-            maxActive.date.start = timeCounterStart;
-            maxActive.date.end = timeCounterEnd;
-            maxActive.count = studentsLength;
-        }
         subsPerTime[0].push(studentsLength);
         timeCounterStart.add(increment, 'h');
         timeCounterEnd.add(increment, 'h');
     }
 
     return {
-        subsSections,
-        subsYear,
-        subsPerTime,
-        maxActive
+        // subsSections,
+        // subsYear,
+        subsPerTime
     };
 };
 

@@ -25,7 +25,7 @@ const InfoForm = ({
     const [schoolSections, setSchoolSections] = useState([]);
 
 	useEffect(() => {
-		async function fetchBackups() {
+		async function fetchSections() {
 			const resp = await axios.get("/api/students/sections", {
 				headers: { Authorization: `Bearer ${authToken}` }
 			});
@@ -40,7 +40,7 @@ const InfoForm = ({
 				setError(errorMessage);
 			}
 		}
-		fetchBackups();
+		fetchSections();
 	}, [setError, setSchoolSections, authToken]);
 
 	return (

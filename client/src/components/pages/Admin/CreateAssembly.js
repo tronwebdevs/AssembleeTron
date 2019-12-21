@@ -11,10 +11,11 @@ import {
 	Card,
 	CardHeader,
 	CardBody,
-	Button
+    Button,
+    Spinner
 } from "reactstrap";
 import { Link, Redirect } from "react-router-dom";
-import { AdminAlert, InfoForm, ImportAssemblyCard } from "../../Admin/";
+import { AdminAlert, InfoForm, BackupsTable } from "../../Admin/";
 import { validateInfoForm } from "../../../utils/";
 import moment from "moment";
 
@@ -133,17 +134,41 @@ const CreateAssembly = ({
 			</Row>
 			<Row>
 				<Col xs="12">
-					<ImportAssemblyCard
-						authToken={authToken}
-						setError={message =>
-							setDisplayMessage({
-								type: "danger",
-								message
-							})
-						}
-						loadAssembly={loadAssembly}
-						isSubmitting={pendings.load === true}
-					/>
+                    <Card>
+                        <CardHeader>
+                            <b>Backup</b>
+                        </CardHeader>
+                        <BackupsTable
+                            authToken={authToken}
+                            setError={message =>
+                                setDisplayMessage({
+                                    type: "danger",
+                                    message
+                                })
+                            }
+                            button={(
+                                <Button
+                                    color="gray"
+                                    onClick={() => {
+                                        loadAssembly(
+                                            info._id
+                                        ).catch(({ message }) =>
+                                            setDisplayMessage({
+                                                type: "danger",
+                                                message
+                                            })
+                                        );
+                                    }}
+                                >
+                                    {pendings.load === true ? (
+                                        <Spinner color="light" size="sm" />
+                                    ) : (
+                                        "Carica"
+                                    )}
+                                </Button>
+                            )}
+                        />
+                    </Card>
 				</Col>
 			</Row>
 		</Fragment>

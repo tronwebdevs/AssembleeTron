@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { generatePdf } from "../../../actions/assemblyActions";
@@ -9,13 +9,11 @@ import {
     CardHeader, 
     CardBody, 
     Button, 
-    Spinner,
-    Table
+    Spinner
 } from "reactstrap";
-import { PageLoading, AdminAlert } from "../../Admin/";
+import { PageLoading, AdminAlert, BackupsTable } from "../../Admin/";
 import { FaTrash } from "react-icons/fa";
 import moment from "moment";
-import axios from "axios";
 
 const Export = ({ admin, assembly, generatePdf }) => {
     const { pendings, info } = assembly;
@@ -24,29 +22,6 @@ const Export = ({ admin, assembly, generatePdf }) => {
 		type: null,
 		message: null
     });
-    const [backups, setBackups] = useState([]);
-    const authToken = admin.token;
-
-	useEffect(() => {
-		async function fetchBackups() {
-			const resp = await axios.get("/api/assembly/backups", {
-				headers: { Authorization: `Bearer ${authToken}` }
-			});
-			const { data, response } = resp;
-			if (data && data.code === 1) {
-				setBackups(data.backups);
-			} else {
-				let errorMessage = "Errore inaspettato";
-				if (response && response.data && response.data.message) {
-					errorMessage = response.data.message;
-				}
-				setDisplayMessage({ type: "danger" , message: errorMessage });
-			}
-        }
-        if (backups.length === 0) {
-            fetchBackups();
-        }
-	}, [setDisplayMessage, authToken, backups]);
     
     const requestPdf = () => pendings.generate_pdf !== true ?
         generatePdf()
@@ -112,32 +87,21 @@ const Export = ({ admin, assembly, generatePdf }) => {
                                     Backup presenti sul server delle assemblee passate
                                 </p>
                             </CardBody>
-                            <Table className="mb-0" responsive={true}>
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nome</th>
-                                        <th>Azioni</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {backups.map((backup, index) => (
-                                        <tr key={index}>
-                                            <td>{backup.info._id}</td>
-                                            <td>{backup.info.title}</td>
-                                            <td>
-                                                <Button 
-                                                    outline 
-                                                    color="danger"
-                                                    onClick={() => alert("Funzione in arrivo")}
-                                                >
-                                                    <FaTrash />
-                                                </Button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
+                            <BackupsTable
+                                setError={message => 
+                                    setDisplayMessage({ type: "danger", message })
+                                }
+                                authToken={admin.token}
+                                button={(
+                                    <Button 
+                                        outline 
+                                        color="danger"
+                                        onClick={() => alert("Funzione in arrivo")}
+                                    >
+                                        <FaTrash />
+                                    </Button>
+                                )}
+                            />
                         </Card>
                     </Col>
                 </Row>

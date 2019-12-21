@@ -8,7 +8,6 @@ import SiteWrapper from "./SiteWrapper/";
 import StudentsTable from "./StudentsTable";
 import DashAssemblyRow from "./DashAssemblyRow";
 import ListCard from "./ListCard";
-import ImportAssemblyCard from "./ImportAssemblyCard";
 import InfoCard from "./InfoCard";
 import InfoForm from "./InfoForm";
 import LabsTable from "./LabsTable";
@@ -17,6 +16,7 @@ import AdminAlert from "./AdminAlert";
 import AssemblyInfo from "./AssemblyInfo";
 import LabsCheckModal from "./LabModal/LabsCheckModal";
 import LabsTutorial from "./LabsTutorial";
+import BackupsTable from "./BackupsTable";
 import StudentsSectionsTable from "./StudentsSectionsTable";
 
 export {
@@ -30,7 +30,6 @@ export {
 	StudentsTable,
 	DashAssemblyRow,
 	ListCard,
-	ImportAssemblyCard,
 	InfoCard,
 	InfoForm,
 	LabsTable,
@@ -39,5 +38,6 @@ export {
     AssemblyInfo,
     LabsCheckModal,
     LabsTutorial,
+    BackupsTable,
     StudentsSectionsTable
 };

@@ -555,4 +555,102 @@ router.get('/students', isAdmin, (req, res, next) => {
     }
 });
 
+/**
+ * Get statistics about subscribers
+ * @method get
+ */
+router.get('/stats', (req, res, next) => {
+    let info;
+    let labs;
+    let students;
+    Assembly.find()
+        .then(results => {
+            info = results[0];
+            return Laboratory.find();
+        })
+        .then(results => {
+            labs = results.map(lab => lab.toObject());
+            return Student.find();
+        })
+        .then(results => {
+            students = results.map(std => std.toObject());
+            return Subscribed.find();
+        })
+        .then(subs => {
+            subs = subs.map(sub => {
+                const std = students.find(({ studentId }) => studentId === sub.studentId);
+                return {
+                    ...std,
+                    ...sub.toObject()
+                };
+            });
+            let sectionCounter = [];
+            let gradeCounter = [];
+            let labsCounter = [];
+            subs.forEach(sub => {
+                const subGrade = gradeCounter.find(el => el.label === +sub.section[0]);
+                const subSec = gradeCounter.find(el => el.label === sub.section);
+                if (subGrade) {
+                    subGrade.count++;
+                } else {
+                    gradeCounter.push({
+                        value: +sub.section[0],
+                        count: 1
+                    });
+                }
+                if (subSec) {
+                    subSec.count++;
+                } else {
+                    sectionCounter.push({
+                        value: sub.section,
+                        count: 1
+                    });
+                }
+                for (let i = 1; i <= 4; i++) {
+                    if (sub['h' + i]) {
+                        const stdLab = labsCounter.find(({ _id }) => _id.equals(sub['h' + i]));
+                        if (stdLab) {
+                            stdLab.subs++;
+                        } else {
+                            const lab = labs.find(({ _id }) => _id.equals(sub['h' + i]));
+                            labsCounter.push({
+                                _id: lab._id,
+                                title: lab.title,
+                                subs: 1
+                            });
+                        }
+                    }
+                }
+            });
+
+            let subsPerTime = [["subscriptions"]];
+            let hoursOpen = moment(info.subscription.close).diff(moment(info.subscription.open), 'h');
+            let increment = parseInt(hoursOpen / 40, 10);
+            let timeCounterStart = moment(info.subscription.open);
+            let timeCounterEnd = moment(info.subscription.open).add(increment, 'h');
+            while (moment(info.subscription.close).diff(timeCounterEnd) >= 0) {
+                let studentsLength = subs.filter(sub => {
+                    let createdAt = moment(sub.createdAt);
+                    return (
+                        createdAt.diff(timeCounterStart) >= 0 && 
+                        createdAt.diff(timeCounterEnd) <= 0
+                    );
+                }).length;
+                subsPerTime[0].push(studentsLength);
+                timeCounterStart.add(increment, 'h');
+                timeCounterEnd.add(increment, 'h');
+            }
+            res.status(200).json({
+                code: 1,
+                stats: {
+                    sections: sectionCounter,
+                    grades: gradeCounter,
+                    labs: labsCounter,
+                    subs: subsPerTime
+                }
+            });
+        })
+        .catch(err => next(err));
+});
+
 module.exports = router;
