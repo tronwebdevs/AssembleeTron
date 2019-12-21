@@ -7,7 +7,7 @@ import { PageLoading, AdminAlert } from "../../Admin/";
 import C3Chart from "react-c3js";
 import axios from "axios";
 
-const Stats = ({ admin, assembly }) => {
+const StatsBroken = ({ admin, assembly }) => {
     const { pendings } = assembly;
 
     const authToken = admin.token;
@@ -161,6 +161,16 @@ const Stats = ({ admin, assembly }) => {
         return <PageLoading />;
     }
 };
+
+const Stats = () => (
+    <Row>
+        <Col xs="12">
+            <Card>
+                <CardBody>Page broken :(</CardBody>
+            </Card>
+        </Col>
+    </Row>
+)
 
 Stats.propTypes = {
     assembly: PropTypes.object.isRequired
