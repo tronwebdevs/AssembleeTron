@@ -11,7 +11,7 @@ const Student = require('../models/Student');
 const Subscribed = require('../models/Subscribed');
 
 const authUser = require('../utils/AuthUser');
-const { isStudent, isAdmin } = require('../utils/CheckUserType');
+const { isStudent, isAdmin, isSudoer } = require('../utils/CheckUserType');
 const { fetchAvabileLabs } = require('../utils/LabsFunctions');
 
 const { privateKey } = require('../config');
@@ -37,7 +37,7 @@ router.get('/labs', authUser, isStudent, (req, res, next) => {
     } else {
         let error = new Error('Parametri non validi');
         error.status = 400;
-        next();
+        next(error);
     }
 });
 
@@ -223,6 +223,34 @@ router.get('/:studentID', (req, res, next) => {
 router.use('*', authUser);
 
 /**
+ * Restricted Area
+ * @method delete
+ * @param {string} studentID
+ */
+router.delete('/:studentID', isSudoer, (req, res, next) => {
+    const studentID = +req.params.studentID || -1;
+
+    if (studentID !== -1) {
+        Subscribed.deleteOne({ studentId: studentID })
+            .then(sub => {
+                if (sub.deletedCount === 0) {
+                    let error = new Error(`Iscritto ${studentID} non trovato`);
+                    error.status = 404;
+                    throw error;
+                }
+                res.status(200).json({
+                    code: 1,
+                    sub
+                });
+            })
+            .catch(err => next(err));
+    } else {
+        next(new Error('Matricola non valida'));
+    }
+});
+
+
+/**
  * Get student's labs
  * @method post
  * @param {string} studentID
@@ -328,6 +356,29 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
             message: 'Laboratori nulli',
             target: 0
         });
+    }
+});
+
+router.post('/:studentID/create', isSudoer, (req, res, next) => {
+    const studentID = +req.params.studentID || -1;
+    const { name, surname, section } = req.body;
+
+    if (studentID !== -1 && typeof name === 'string' && typeof surname === 'string' && typeof section === 'string') {
+        new Student({
+            studentId: studentID,
+            name, surname, section
+        }).save()
+            .then(student => 
+                res.status(200).json({
+                    code: 1,
+                    student
+                })
+            )
+            .catch(err => next(err));
+    } else {
+        let error = new Error('Parametri non validi');
+        error.status = 400;
+        next(error);
     }
 });
 

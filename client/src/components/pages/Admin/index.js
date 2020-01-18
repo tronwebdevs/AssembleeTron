@@ -13,6 +13,7 @@ import Stats from "./Stats";
 import Export from "./Export";
 import DeleteAssembly from "./DeleteAssembly";
 import CreateAssembly from "./CreateAssembly";
+import RestrictedArea from "./RestrictedArea";
 
 const rootPath = "/gestore";
 
@@ -82,6 +83,11 @@ const AdminWrapper = () => (
                             <AuthRequired
                                 path={rootPath + "/crea"}
                                 component={CreateAssembly}
+                                exact
+                            />
+                            <AuthRequired
+                                path={rootPath + "/restricted"}
+                                component={RestrictedArea}
                                 exact
                             />
                             <AuthRequired

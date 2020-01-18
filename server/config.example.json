@@ -1,4 +1,5 @@
 {
     "adminPassword": "admin password",
+    "sudoerPassword": "sudoer password",
     "privateKey": "secret key"
 }

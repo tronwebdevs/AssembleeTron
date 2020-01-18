@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
-const { adminPassword, privateKey } = require('../config');
+const { adminPassword, sudoerPassword, privateKey } = require('../config');
 
 /**
  * @method post
@@ -16,6 +16,37 @@ router.post('/auth', (req, res, next) => {
             jwt.sign({
                 id: null,
                 type: 'admin'
+            }, privateKey, { expiresIn: 60 * 5 }, (err, token) => {
+                if (err) {
+                    next(err);
+                } else {
+                    res.status(200).json({
+                        code: 1,
+                        token
+                    });
+                }
+            });
+        } else {
+            res.status(401).json({
+                code: -1,
+                message: 'Password errata',
+                token: null
+            });
+        }
+    } else {
+        let error = new Error('Parametri non validi');
+        error.status = 410;
+        next(error);
+    }
+});
+
+router.post('/auth_sudoer', (req, res, next) => {
+    const { password } = req.body;
+    if (password) {
+        if (password === sudoerPassword) {
+            jwt.sign({
+                id: null,
+                type: 'sudoer'
             }, privateKey, { expiresIn: 60 * 5 }, (err, token) => {
                 if (err) {
                     next(err);
