@@ -79,7 +79,7 @@ export default function(state = initialState, { payload, type }) {
                 ...state,
                 profile: payload.student,
                 subscribed: false,
-                labs: [ -1, -1, -1, -1 ],
+                labs: [],
                 pendings: {
 					...state.pendings,
                     profile: false

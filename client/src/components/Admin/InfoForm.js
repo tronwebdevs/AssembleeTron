@@ -56,7 +56,8 @@ const InfoForm = ({
 				subCloseTime: moment(info.subscription.close).format("HH:mm"),
 				subCloseDate: moment(info.subscription.close).format(
 					"YYYY-MM-DD"
-				),
+                ),
+                tot_h: info.tot_h || -1,
 				sections: info.sections.sort().map(c => ({ label: c, value: c }))
 			}}
 			onSubmit={onSubmit}
@@ -100,7 +101,7 @@ const InfoForm = ({
 									invalid={errors._id !== undefined}
 									onChange={handleChange}
 									onBlur={handleBlur}
-                                    readOnly={true}
+                                    disabled={true}
 								/>
 								<FormFeedback>{errors._id}</FormFeedback>
 							</FormGroup>
@@ -124,6 +125,23 @@ const InfoForm = ({
                                     disabled={formDisabled}
 								/>
 								<FormFeedback>{errors.date}</FormFeedback>
+							</FormGroup>
+                            <FormGroup>
+								<Label for="tot_h" className="form-label">
+									Numero di fasce
+								</Label>
+								<Input
+									type="number"
+									name="tot_h"
+									id="tot_h"
+									value={+values.tot_h || 0}
+									invalid={errors.tot_h !== undefined}
+									onChange={handleChange}
+									onBlur={handleBlur}
+                                    className="mb-2"
+                                    disabled={formDisabled}
+								/>
+								<FormFeedback>{errors.tot_h}</FormFeedback>
 							</FormGroup>
 						</Col>
 						<Col xs="12" lg="4">

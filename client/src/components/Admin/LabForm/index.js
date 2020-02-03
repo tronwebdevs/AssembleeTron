@@ -46,7 +46,8 @@ const LabForm = ({
 		}
 	};
 
-	const completeSectionsList = assembly.info.sections;
+    const { info, labs } = assembly;
+	const completeSectionsList = info.sections;
 
 	return (
 		<div id="form-card-wrapper" style={{ boxShadow: "0 0 8px #9E9E9E" }}>
@@ -67,47 +68,16 @@ const LabForm = ({
 							_id: lab._id || "",
 							room: lab.room || "",
 							title: lab.title || "",
-							description: lab.description || "",
-							seatsH1: lab.info ? lab.info.h1.seats : 0,
-							classesH1: (lab.info
-								? SectionsList.parse(
-										lab.info.h1.sections,
+                            description: lab.description || "",
+                            seats: lab.info ? lab.info.map(el => el.seats) : 0,
+                            classes: (
+                                lab.info ? 
+                                lab.info.forEach(el =>
+                                    SectionsList.parse(
+										el.sections,
 										completeSectionsList
-								  ).getList()
-								: []
-							).map(cl => ({
-								label: cl,
-								value: cl
-							})),
-							seatsH2: lab.info ? lab.info.h2.seats : 0,
-							classesH2: (lab.info
-								? SectionsList.parse(
-										lab.info.h2.sections,
-										completeSectionsList
-								  ).getList()
-								: []
-							).map(cl => ({
-								label: cl,
-								value: cl
-							})),
-							seatsH3: lab.info ? lab.info.h3.seats : 0,
-							classesH3: (lab.info
-								? SectionsList.parse(
-										lab.info.h3.sections,
-										completeSectionsList
-								  ).getList()
-								: []
-							).map(cl => ({
-								label: cl,
-								value: cl
-							})),
-							seatsH4: lab.info ? lab.info.h4.seats : 0,
-							classesH4: (lab.info
-								? SectionsList.parse(
-										lab.info.h4.sections,
-										completeSectionsList
-								  ).getList()
-								: []
+								    ).getList()
+                                ) : []
 							).map(cl => ({
 								label: cl,
 								value: cl
@@ -117,7 +87,6 @@ const LabForm = ({
 						validate={values => {
 							let errors = {};
 							if (values._id !== lab._id) {
-								const { labs } = assembly;
 								labs.forEach(lab => {
 									if (lab._id === values._id) {
 										errors._id = "ID duplicato";
@@ -150,25 +119,27 @@ const LabForm = ({
                             }
                             
                             if (values.two_h === true) {
-                                for (let i = 1; i <= 4; i++) {
-                                    if (i % 2 !== 0) {
-                                        if (values["seatsH" + i] !== values["seatsH" + (i + 1)]) {
-                                            errors["seatsH" + (i + 1)] = 
+                                for (let i = 0; i < info.tot_h; i++) {
+                                    if (i % 2 === 0) {
+                                        if (values.seats[i] !== values.seats[i + 1]) {
+                                            errors.seats[i + 1] = 
                                                 "Il numero posti di questa ora deve essere " + 
                                                 "uguale a quello dell'ora precedente";
                                         }
                                         if (
-                                            values["classesH" + i].length !== 0 &&
-                                            (values["classesH" + i].length !== values["classesH" + (i + 1)].length ||
-                                            values["classesH" + i]
-                                                .filter(
-                                                    sec => values["classesH" + (i + 1)]
-                                                        .find(
-                                                            ({ value }) => value === sec.value
-                                                        ) !== undefined
-                                                ).length === 0)
+                                            values.classes[i].length !== 0 &&
+                                            (
+                                                values.classes[i].length !== values.classes[i + 1].length ||
+                                                values.classes[i]
+                                                    .filter(
+                                                        sec => values.classes[i + 1]
+                                                            .find(
+                                                                ({ value }) => value === sec.value
+                                                            ) !== undefined
+                                                    ).length === 0
+                                            )
                                         ) {
-                                            errors["classesH" + (i + 1)] = 
+                                            errors.classes[i + 1] = 
                                                 "Le classi partecipati di quest'ora devono essere " + 
                                                 "uguali a quelle dell'ora precedente";
                                         }
@@ -185,19 +156,19 @@ const LabForm = ({
 								room: values.room,
 								title: values.title,
 								description: values.description || "",
-								info: {},
+								info: [],
 								two_h: values.two_h
 							};
 							for (let i = 1; i <= 4; i++) {
-								lab.info["h" + i] = {
-									seats: values["seatsH" + i],
+								lab.info.push({
+									seats: values.seats[i],
 									sections: new SectionsList(
-										(values["classesH" + i] || []).map(
+										(values.classes[i] || []).map(
 											({ label }) => label
 										),
 										completeSectionsList
 									).minify()
-								};
+								});
 							}
 							if (action === "edit") {
 								updateAssemblyLab(lab)
@@ -224,9 +195,7 @@ const LabForm = ({
 						render={({
 							values,
 							errors,
-							touched,
 							handleChange,
-							handleBlur,
 							handleSubmit,
 							handleReset,
 							isSubmitting,
@@ -235,14 +204,13 @@ const LabForm = ({
 							<Form
 								values={values}
 								errors={errors}
-								touched={touched}
 								handleChange={handleChange}
-								handleBlur={handleBlur}
 								handleSubmit={handleSubmit}
 								handleReset={handleReset}
 								isSubmitting={isSubmitting}
 								setFieldValue={setFieldValue}
-								classesLabels={assembly.info.sections}
+                                classesLabels={info.sections}
+                                tot_h={info.tot_h}
 							/>
 						)}
 					/>

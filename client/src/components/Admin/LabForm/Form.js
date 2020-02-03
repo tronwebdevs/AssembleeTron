@@ -16,14 +16,13 @@ import LabHour from "./LabHour/";
 const CustomForm = ({
 	values,
 	errors,
-	touched,
 	handleChange,
-	handleBlur,
 	handleSubmit,
 	handleReset,
 	isSubmitting,
 	setFieldValue,
-	classesLabels
+    classesLabels,
+    tot_h
 }) => (
 	<Form onSubmit={handleSubmit}>
 		<FormGroup>
@@ -82,39 +81,18 @@ const CustomForm = ({
 		</FormGroup>
 		<FormGroup>
 			<Row>
-				{[1, 2].map(h => (
+				{Array(tot_h).keys().map(h => (
 					<LabHour
 						key={h}
 						h={h}
 						classes={classesLabels}
 						values={{
-							seats: values["seatsH" + h],
-							classes: values["classesH" + h]
+							seats: values.seats[h],
+							classes: values.classes[h]
 						}}
 						errors={{
-                            seats: errors["seatsH" + h],
-                            classes: errors["classesH" + h],
-						}}
-						handleChange={handleChange}
-						setFieldValue={setFieldValue}
-					/>
-				))}
-			</Row>
-		</FormGroup>
-		<FormGroup>
-			<Row>
-				{[3, 4].map(h => (
-					<LabHour
-						key={h}
-						h={h}
-						classes={classesLabels}
-						values={{
-							seats: values["seatsH" + h],
-							classes: values["classesH" + h]
-						}}
-						errors={{
-                            seats: errors["seatsH" + h],
-                            classes: errors["classesH" + h],
+                            seats: errors.seats[h],
+                            classes: errors.classes[h],
 						}}
 						handleChange={handleChange}
 						setFieldValue={setFieldValue}
@@ -166,12 +144,11 @@ const CustomForm = ({
 CustomForm.propTypes = {
 	values: PropTypes.object,
 	errors: PropTypes.object,
-	touched: PropTypes.object,
 	handleChange: PropTypes.func.isRequired,
-	handleBlur: PropTypes.func.isRequired,
 	handleSubmit: PropTypes.func.isRequired,
 	isSubmitting: PropTypes.bool,
-	classesLabels: PropTypes.array
+    classesLabels: PropTypes.array,
+    tot_h: PropTypes.number
 };
 
 export default CustomForm;

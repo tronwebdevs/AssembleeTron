@@ -18,14 +18,14 @@ const LabHour = ({
 	setFieldValue
 }) => (
 	<Col xs="12" md="6">
-		<span className="text-muted">Ora {h}</span>
+		<span className="text-muted">Ora {h + 1}</span>
 		<InputGroup className="mb-2">
 			<InputGroupAddon addonType="prepend">
 				<InputGroupText>Posti: </InputGroupText>
 			</InputGroupAddon>
 			<Input
 				type="number"
-				name={"seatsH" + h}
+				name={"seats." + h}
 				value={values.seats}
 				invalid={errors.seats !== undefined}
 				onChange={handleChange}
@@ -33,10 +33,10 @@ const LabHour = ({
             <FormFeedback>{errors.seats}</FormFeedback>
 		</InputGroup>
 		<Selector
-			name={"classesH" + h}
+			name={"classes" + h}
 			value={values.classes}
 			classes={classes}
-            setValue={value => setFieldValue("classesH" + h, value)}
+            setValue={value => setFieldValue("classes." + h, value)}
             error={errors.classes}
 		/>
 	</Col>
