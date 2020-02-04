@@ -63,16 +63,20 @@ router.get('/sections', authUser, isAdmin, (req, res, next) =>
  */
 router.get('/:studentID', (req, res, next) => {
     let fetchStudent;
-    const studentID = +req.params.studentID || -1;
+    const studentId = +req.params.studentID || -1;
     const part = +req.query.part;
 
-    if (studentID && (part === 1 || part === 0)) {
+    // Check if parameters are valid
+    if (studentId !== -1 && (part === 1 || part === 0)) {
         let studentWasSub = false;
 
-        Student.find({ studentId: studentID })
+        // Fetch student in database
+        Student.find({ studentId })
             .then(students => {
+                // Check if student has found
                 if (students.length === 1) {
                     fetchStudent = students[0].toObject();
+                    // Fetch student subscribed
                     return Subscribed.find({ studentId: fetchStudent.studentId });
                 } else {
                     let error = new Error('Studente non trovato');
@@ -81,15 +85,16 @@ router.get('/:studentID', (req, res, next) => {
                 }
             })
             .then(subs => {
+                // Check if student is subscribed
                 if (subs.length === 1) {
                     studentWasSub = true;
                     let subscribed = subs[0];
-                    if (subscribed.h1 !== null && subscribed.h2 !== null && subscribed.h3 !== null && subscribed.h4 !== null && part === 0) {
-                        subscribed.h1 = null;
-                        subscribed.h2 = null;
-                        subscribed.h3 = null;
-                        subscribed.h4 = null;
+                    // Check if the student participate
+                    if (subscribed.labs.length !== 0 && part === 0) {
+                        // Student participate but wants to unsubscribe
+                        subscribed.labs = [];
                         subscribed.updatedAt = moment().toDate();
+                        // Save subscribed
                         return subscribed.save();
                     } else {
                         // let error = new Error('Studente gia\' iscritto');
@@ -100,15 +105,15 @@ router.get('/:studentID', (req, res, next) => {
                         return subscribed;
                     }
                 } else {
+                    // Student is not subscribed, check if participate
                     if (part === 1) {
+                        // Return avabile labs for student
                         return fetchAvabileLabs(fetchStudent.section);
                     } else if (part === 0) {
+                        // Student does not participate
                         return new Subscribed({
                             studentId: fetchStudent.studentId,
-                            h1: null,
-                            h2: null,
-                            h3: null,
-                            h4: null,
+                            labs: [],
                             createdAt: moment().toDate(),
                             updatedAt: moment().toDate()
                         }).save();
@@ -116,12 +121,13 @@ router.get('/:studentID', (req, res, next) => {
                 }
             })
             .then(results => {
+                // Check if student is subscribed
                 if (results instanceof Subscribed) {
-                    // STUDENTE APPENA DISISCRITTO, `result` E' STUDENTE INSRITTO
+                    // Check if student was participating
                     if (studentWasSub === true) {
-                        // LO STUDENTE SI E' DISISCRITTO O E' GIA' ISCRITTO
-                        if (results.h1 === null && results.h2 === null && results.h3 === null && results.h4 === null) {
-                            // STUDENTE SI E' DISISCRITTO (jwt non necessario)
+                        // Student is subscribed
+                        if (results.labs.length === 0) {
+                            // Student unsubscribed (no jwt)
                             res.status(200).json({
                                 code: 3,
                                 student: fetchStudent,
@@ -130,56 +136,38 @@ router.get('/:studentID', (req, res, next) => {
                                 token: null
                             });
                         } else {
-                            // res.status(200).json({
-                            //     code: 4,
-                            //     student,
-                            //     labs: [
-                            //         results.h1,
-                            //         results.h2,
-                            //         results.h3,
-                            //         results.h4,
-                            //     ],
-                            //     wasSubscribed: true
-                            // });
-                            // STUDENTE VUOLE VISUALIZZARE I LABORATORI (jwt non necessario)
-                            Laboratory.find({ 
-                                $or: [
-                                    { _id: ObjectId(results.h1) },
-                                    { _id: ObjectId(results.h2) },
-                                    { _id: ObjectId(results.h3) },
-                                    { _id: ObjectId(results.h4) }
-                                ] 
-                            })
-                                .then(result => {
-                                    if (result.length <= 4 && result.length > 0) {
-                                        let labs = [ results.h1, results.h2, results.h3, results.h4 ];
-                                        labs = labs.map(labID => {
-                                            let fLab;
-                                            for (let lab of result) {
-                                                if (lab._id.equals(labID)) {
-                                                    fLab = lab.toObject();
-                                                    delete fLab.info;
-                                                    return fLab;
-                                                }
+                            // Student wants to get labs list (no jwt)
+                            let fetchLabsQuery = results.labs.map(
+                                labID => ({ _id: ObjectId(labID) })
+                            )
+                            // Fetch labs info for student subscribed labs
+                            Laboratory.find({ $or: fetchLabsQuery })
+                                .then(fetchedLabs => {
+                                    let labs = results.labs;
+                                    labs = labs.map(labID => {
+                                        let fLab;
+                                        for (let lab of fetchedLabs) {
+                                            if (lab._id.equals(labID)) {
+                                                fLab = lab.toObject();
+                                                delete fLab.info;
+                                                return fLab;
                                             }
-                                            return null;
-                                        });
-                                        res.status(200).json({
-                                            code: 4,
-                                            student: fetchStudent,
-                                            labs,
-                                            subscribed: true,
-                                            wasSubscribed: true,
-                                            token: null
-                                        });
-                                    } else {
-                                        next(new Error('Errore inaspettato: numero di laboratori inaspettato (' + result.length + ')'));
-                                    }
+                                        }
+                                        return null;
+                                    });
+                                    res.status(200).json({
+                                        code: 4,
+                                        student: fetchStudent,
+                                        labs,
+                                        subscribed: true,
+                                        wasSubscribed: true,
+                                        token: null
+                                    });
                                 })
                                 .catch(err => next(err));
                         }
                     } else {
-                        // LO STUDENTE NON PARTECIPA ALL'ASSEMBLEA (jwt non necessario)
+                        // Student does not participate (no jwt)
                         res.status(200).json({
                             code: 2,
                             student: fetchStudent,
@@ -189,7 +177,7 @@ router.get('/:studentID', (req, res, next) => {
                         });
                     }
                 } else if (results) {
-                    // STUDENTE DEVE ISCRIVERSI, `results` E' LA LISTA DEI LABORATORI
+                    // Student want to subscribe, `results` is lab list
                     jwt.sign({
                         id: null,
                         type: 'student'
@@ -220,28 +208,33 @@ router.get('/:studentID', (req, res, next) => {
     }
 });
 
+// Next routes require authentication
 router.use('*', authUser);
 
 /**
- * Restricted Area
+ * Delete subscribed (require sudo)
  * @method delete
  * @param {string} studentID
  */
 router.delete('/:studentID', isSudoer, (req, res, next) => {
-    const studentID = +req.params.studentID || -1;
+    const studentId = +req.params.studentID || -1;
 
-    if (studentID !== -1) {
-        Subscribed.deleteOne({ studentId: studentID })
+    // Check if studentId is valid
+    if (studentId !== -1) {
+        // Delete student
+        Subscribed.deleteOne({ studentId })
             .then(sub => {
+                // Check if student has been deleted
                 if (sub.deletedCount === 0) {
-                    let error = new Error(`Iscritto ${studentID} non trovato`);
+                    let error = new Error(`Iscritto ${studentId} non trovato`);
                     error.status = 404;
                     throw error;
+                } else {
+                    res.status(200).json({
+                        code: 1,
+                        sub
+                    });
                 }
-                res.status(200).json({
-                    code: 1,
-                    sub
-                });
             })
             .catch(err => next(err));
     } else {
@@ -257,30 +250,32 @@ router.delete('/:studentID', isSudoer, (req, res, next) => {
  * @param {object} labs
  */
 router.post('/:studentID/labs', isStudent, (req, res, next) => {
-    const studentID = +req.params.studentID || -1;
-    const { h1, h2, h3, h4 } = req.body.labs;
-    let labs = [ h1, h2, h3, h4 ];
+    const studentId = +req.params.studentID || -1;
+    const { labs } = req.body;
 
-    if (h1 && h2 && h3 && h4) {
+    // Check if parameters are valid
+    if (labs.length > 0 && studentId !== -1) {
         let error = new Error();
-        Subscribed.find({ studentId: studentID })
+        // Fetch subscribed
+        Subscribed.find({ studentId })
             .then(subs => {
+                // Check if subscribed has been found
                 if (subs.length > 0) {
                     error.message = 'Sei gia\' iscritto a questa assemblea';
                     error.status = 409;
                     throw error;
                 } else {
+                    let fetchLabsQuery = labs.map(
+                        labID => ({ _id: ObjectId(labID) })
+                    )
+                    // Fetch subscribed labs
                     return Laboratory.find({ 
-                        $or: [
-                            { _id: ObjectId(h1) },
-                            { _id: ObjectId(h2) },
-                            { _id: ObjectId(h3) },
-                            { _id: ObjectId(h4) }
-                        ] 
+                        $or: fetchLabsQuery
                     });
                 }
             })
             .then(fetchedLabs => {
+                // Map input labs with extra info from fetch
                 labs = labs.map(labID => {
                     let fLab;
                     for (let lab of fetchedLabs) {
@@ -291,10 +286,11 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
                     }
                     return null;
                 });
-                // "Per i progetti da 2 ore seleziona la prima e la seconda ora o la terza e la quarta ora"
-                error.message = 'Questo laboratori deve essere uguale a quello dell\'ora ';
+                // Prepare error
+                error.message = 'Questo laboratorio deve essere uguale a quello dell\'ora ';
                 error.status = 400;
 
+                // For each lab check if is valid (two h) and prepare query
                 let promiseArray = [];
                 labs.forEach((lab, index) => {
                     // Check if lasts 2 hours
@@ -314,27 +310,30 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
                         }
                     }
         
-                    // Count subs to lab
+                    // Prepare query to count subs to lab
                     promiseArray.push(
-                        Subscribed.countDocuments({ ['h' + (index + 1)]: lab._id })
+                        Subscribed.countDocuments({ ['labs.' + index]: lab._id })
                     );
                 });
+                // Execute queries to count subs to labs
                 return Promise.all(promiseArray);
             })
-            .then(results => {
+            .then(labsSeats => {
+                // Prepare error
                 error.message = 'Posti esauriti per questo laboratorio';
                 error.status = 410;
         
+                // For each lab check if seats weren't full
                 labs.forEach((lab, index) => {
-                    if ( (lab.info['h' + (index + 1)].seats - results[index] - 1 ) < 0) {
+                    if ( (lab.info[index].seats - labsSeats[index] - 1 ) < 0) {
                         error.target = (index + 1);
                         throw error;
                     }
                 });
         
+                // Insert new subscribed into database
                 return new Subscribed({
-                    studentId: studentID, 
-                    h1, h2, h3, h4,
+                    studentId, labs,
                     createdAt: moment().toDate(),
                     updatedAt: moment().toDate()
                 }).save();
@@ -345,28 +344,40 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
                     labs
                 })
             )
-            .catch(err => res.status(err.status || 500).json({
-                code: -1,
-                message: err.message,
-                target: err.target || 0
-            }));
+            .catch(err => 
+                res.status(err.status || 500).json({
+                    code: -1,
+                    message: err.message,
+                    target: err.target || 0
+                })
+            );
     } else {
-        res.status(400).json({
-            code: -1,
-            message: 'Laboratori nulli',
-            target: 0
-        });
+        let error = new Error('Parametri non validi');
+        error.status = 400;
+        next(error);
     }
 });
 
+/**
+ * Create new student (require sudo)
+ * @method post
+ * @param {string} studentID
+ */
 router.post('/:studentID/create', isSudoer, (req, res, next) => {
-    const studentID = +req.params.studentID || -1;
+    const studentId = +req.params.studentID || -1;
     const { name, surname, section } = req.body;
 
-    if (studentID !== -1 && typeof name === 'string' && typeof surname === 'string' && typeof section === 'string') {
+    // Check if parameters are valid
+    if (
+        studentId !== -1 && 
+        typeof name === 'string' && 
+        typeof surname === 'string' && 
+        typeof section === 'string'
+    ) {
+        // Create new student and inserti into database
         new Student({
-            studentId: studentID,
-            name, surname, section
+            studentId, name, 
+            surname, section
         }).save()
             .then(student => 
                 res.status(200).json({
