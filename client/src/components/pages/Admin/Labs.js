@@ -10,6 +10,7 @@ import {
 	Col,
 	Card,
     CardBody,
+    CardHeader,
     Button,
     Spinner
 } from "reactstrap";
@@ -72,6 +73,9 @@ const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
                     {assembly.exists === true ? (
                         <Col xs="12" xl="3">
                             <Card>
+                                <CardHeader>
+                                    <b>Controlli</b>
+                                </CardHeader>
                                 <CardBody>
                                     <Button
                                         type="button"
@@ -110,7 +114,7 @@ const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
                     showModal={showCheckModal}
                     handleClose={() => setShowCheckModal(false)}
                     labs={labs}
-                    sections={info.sections}
+                    info={info}
                 />
             </Fragment>
         );

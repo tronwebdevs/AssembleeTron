@@ -13,6 +13,7 @@ import {
 } from "reactstrap";
 import { PageLoading, AdminAlert, BackupsTable } from "../../Admin/";
 import { FaTrash } from "react-icons/fa";
+import axios from "axios";
 import moment from "moment";
 
 const Export = ({ admin, assembly, generatePdf }) => {
@@ -96,7 +97,22 @@ const Export = ({ admin, assembly, generatePdf }) => {
                                     <Button 
                                         outline 
                                         color="danger"
-                                        onClick={() => alert("Funzione in arrivo")}
+                                        onClick={() =>
+                                            axios.delete('/api/assembly/backups', {
+                                                data: { _id: info._id },
+                                                headers: { Authorization: `Bearer ${admin.token}` }
+                                            })
+                                                .catch(err => {
+                                                    const { response } = err;
+                                                    if (response && response.data && response.data.message) {
+                                                        err.message = response.data.message;
+                                                    }
+                                                    setDisplayMessage({
+                                                        type: "danger",
+                                                        message: err.message
+                                                    });
+                                                })
+                                        }
                                     >
                                         <FaTrash />
                                     </Button>

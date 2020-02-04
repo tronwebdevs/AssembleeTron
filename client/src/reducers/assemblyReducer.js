@@ -136,7 +136,6 @@ export default function (state = initialState, { payload, type }) {
 				info: {
 					deleted: true
 				},
-				students: state.students,
 				stats: {
 					...initialState.stats,
 					students: state.stats.students

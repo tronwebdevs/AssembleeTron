@@ -15,21 +15,21 @@ const LabsCheckModal = ({
 	showModal,
     handleClose,
     labs,
-    sections
+    info
 }) => {
     let checkResult = null;
     if (showModal === true) {
         labs = labs.map(lab => {
-            for (let i = 1; i <= 4; i++) {
-                lab.info['h' + i].sections = SectionsList.parse(
-                    lab.info['h' + i].sections, sections
+            for (let i = 0; i < info.tot_h; i++) {
+                lab.info[i].sections = SectionsList.parse(
+                    lab.info[i].sections, info.sections
                 ).getList();
             }
             return lab;
         });
         checkResult = validateLabs(
-            labs, 
-            sections
+            labs,
+            info.sections
         );
         console.log(checkResult);
     }
@@ -76,7 +76,7 @@ LabsCheckModal.propTypes = {
 	showModal: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
     labs: PropTypes.array.isRequired,
-    sections: PropTypes.array.isRequired
+    info: PropTypes.object.isRequired
 };
 
 export default LabsCheckModal;

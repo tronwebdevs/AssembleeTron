@@ -26,26 +26,30 @@ const BackupsTable = ({ authToken, setError, button }) => {
         }
     }, [setError, authToken, backups]);
     
-    return (
-        <Table className="mb-0" responsive={true}>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                {backups.map((backup, index) => (
-                    <tr key={index}>
-                        <td>{backup.info._id}</td>
-                        <td>{backup.info.title}</td>
-                        <td>{button}</td>
+    if (backups.length > 0) {
+        return (
+            <Table className="mb-0" responsive={true}>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Azioni</th>
                     </tr>
-                ))}
-            </tbody>
-        </Table>
-    );
+                </thead>
+                <tbody>
+                    {backups.map((backup, index) => (
+                        <tr key={index}>
+                            <td>{backup.info._id}</td>
+                            <td>{backup.info.title}</td>
+                            <td>{button}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+        );
+    } else {
+        return <span></span>;
+    }
 };
 
 BackupsTable.propTypes = {
