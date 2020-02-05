@@ -610,7 +610,7 @@ router.get('/stats', isAdmin, (req, res, next) => {
         })
         .then(subsCount => {
             subscribeds = subsCount;
-            return Subscribed.count({
+            return Subscribed.countDocuments({
                 labs: { $exists: true, $not: { $size: 0} }
             })
         })

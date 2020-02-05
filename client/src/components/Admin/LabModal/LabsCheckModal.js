@@ -9,27 +9,30 @@ import {
     Button 
 } from "reactstrap";
 import { validateLabs } from "../../../utils/";
-import SectionsList from "../../../utils/SectionsList";
+// import SectionsList from "../../../utils/SectionsList";
 
 const LabsCheckModal = ({
 	showModal,
     handleClose,
     labs,
-    sections
+    info
 }) => {
     let checkResult = null;
     if (showModal === true) {
-        labs = labs.map(lab => {
-            for (let i = 1; i <= 4; i++) {
-                lab.info['h' + i].sections = SectionsList.parse(
-                    lab.info['h' + i].sections, sections
-                ).getList();
-            }
-            return lab;
-        });
+        let fLabs = [...labs];
+        // Currently completely fucking broken
+        // fLabs = fLabs.map(lab => {
+        //     for (let i = 0; i < info.tot_h; i++) {
+        //         lab.info[i].sections = SectionsList.parse(
+        //             lab.info[i].sections, info.sections
+        //         ).getList();
+        //     }
+        //     return lab;
+        // });
         checkResult = validateLabs(
-            labs, 
-            sections
+            fLabs, 
+            info.sections,
+            info.tot_h
         );
         console.log(checkResult);
     }
@@ -76,7 +79,7 @@ LabsCheckModal.propTypes = {
 	showModal: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
     labs: PropTypes.array.isRequired,
-    sections: PropTypes.array.isRequired
+    info: PropTypes.object.isRequired
 };
 
 export default LabsCheckModal;

@@ -10,7 +10,6 @@ import {
 	CustomInput,
 	Button
 } from "reactstrap";
-import { Icon } from "tabler-react";
 import LabHour from "./LabHour/";
 
 const CustomForm = ({
@@ -81,18 +80,18 @@ const CustomForm = ({
 		</FormGroup>
 		<FormGroup>
 			<Row>
-				{Array(tot_h).keys().map(h => (
+				{[...Array(tot_h).keys()].map(i => (
 					<LabHour
-						key={h}
-						h={h}
+						key={i}
+						h={i}
 						classes={classesLabels}
 						values={{
-							seats: values.seats[h],
-							classes: values.classes[h]
+							seats: values['seatsH' + i],
+							classes: values['classesH' + i]
 						}}
 						errors={{
-                            seats: errors.seats[h],
-                            classes: errors.classes[h],
+                            seats: errors['seatsH' + i],
+                            classes: errors['classesH' + i],
 						}}
 						handleChange={handleChange}
 						setFieldValue={setFieldValue}
@@ -133,7 +132,7 @@ const CustomForm = ({
 						outline
 						color="danger"
 					>
-						<Icon name="x" />
+						Annulla
 					</Button>
 				</Col>
 			</Row>

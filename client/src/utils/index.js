@@ -8,6 +8,7 @@ export const validateInfoForm = ({
     subCloseDate,
     subCloseTime,
     sections,
+    tot_h,
     assemblyExists
 }, infoSections, labsLength) => {
     let errors = {};
@@ -44,6 +45,10 @@ export const validateInfoForm = ({
             "Non puoi modificare le classi che partecipano all'assemblea " +
             "dato che ci sono gia' dei laboratori associati ad essa. " +
             "Riprova dopo aver eliminato tutti i laboratori.";
+    }
+
+    if (tot_h < 1) {
+        errors.tot_h = "Il numero di ore di durata dell'assemblea non puo' essere minore di 1";
     }
     
     return errors;
@@ -109,13 +114,13 @@ export const processAssemblyStats = (info, students, labs) => {
     };
 };
 
-export const validateLabs = (labs, sections) => {
+export const validateLabs = (labs, sections, tot_h) => {
     let result = [];
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 0; i < tot_h; i++) {
         sections.forEach(section => {
             let canSub = false;
             labs.forEach(lab => {
-                if (lab.info['h' + i].sections.indexOf(section) !== -1) {
+                if (lab.info[i].sections.indexOf(section) !== -1) {
                     canSub = true;
                 }
             });

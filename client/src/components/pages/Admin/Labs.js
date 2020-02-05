@@ -110,7 +110,7 @@ const Labs = ({ assembly, deleteAssemblyLab, fetchAllLabs }) => {
                     showModal={showCheckModal}
                     handleClose={() => setShowCheckModal(false)}
                     labs={labs}
-                    sections={info.sections}
+                    info={info}
                 />
             </Fragment>
         );
