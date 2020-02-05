@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Table } from "reactstrap";
+import { Table, Button } from "reactstrap";
 import axios from "axios";
 
 const BackupsTable = ({ authToken, setError, button }) => {
-    const [backups, setBackups] = useState([]);
+    const [backups, setBackups] = useState(null);
     useEffect(() => {
 		async function fetchBackups() {
 			const resp = await axios.get("/api/assembly/backups", {
@@ -18,40 +18,59 @@ const BackupsTable = ({ authToken, setError, button }) => {
 				if (response && response.data && response.data.message) {
 					errorMessage = response.data.message;
 				}
-				setError(errorMessage);
+                setBackups([]);
+                setError(errorMessage);
 			}
         }
-        if (backups.length === 0) {
+        if (backups === null) {
             fetchBackups();
         }
     }, [setError, authToken, backups]);
     
-    return (
-        <Table className="mb-0" responsive={true}>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                {backups.map((backup, index) => (
-                    <tr key={index}>
-                        <td>{backup.info._id}</td>
-                        <td>{backup.info.title}</td>
-                        <td>{button}</td>
+    if (backups && backups.length > 0) {
+        return (
+            <Table className="mb-0" responsive={true}>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Azioni</th>
                     </tr>
-                ))}
-            </tbody>
-        </Table>
-    );
+                </thead>
+                <tbody>
+                    {backups.map((backup, index) => (
+                        <tr key={index}>
+                            <td>{backup._id}</td>
+                            <td>{backup.title}</td>
+                            <td>
+                                <Button
+                                    color={button.color}
+                                    onClick={
+                                        (e) => button.handleClick(e, backup)
+                                    }
+                                    {...button}
+                                >
+                                    {button.label}
+                                </Button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+        );
+    } else {
+        return (
+            <span className="d-block mb-4 text-muted text-center">
+                Nessun backup trovato
+            </span>
+        );
+    }
 };
 
 BackupsTable.propTypes = {
     setError: PropTypes.func.isRequired,
     authToken: PropTypes.string.isRequired,
-    button: PropTypes.element
+    button: PropTypes.object
 };
 
 export default BackupsTable;

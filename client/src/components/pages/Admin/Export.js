@@ -13,6 +13,7 @@ import {
 } from "reactstrap";
 import { PageLoading, AdminAlert, BackupsTable } from "../../Admin/";
 import { FaTrash } from "react-icons/fa";
+import axios from "axios";
 import moment from "moment";
 
 const Export = ({ admin, assembly, generatePdf }) => {
@@ -92,15 +93,36 @@ const Export = ({ admin, assembly, generatePdf }) => {
                                     setDisplayMessage({ type: "danger", message })
                                 }
                                 authToken={admin.token}
-                                button={(
-                                    <Button 
-                                        outline 
-                                        color="danger"
-                                        onClick={() => alert("Funzione in arrivo")}
-                                    >
-                                        <FaTrash />
-                                    </Button>
-                                )}
+                                button={{
+                                    outline: true,
+                                    color: "danger",
+                                    handleClick: (e, backup) =>
+                                        axios.delete('/api/assembly/backups', {
+                                            data: { fileName: backup.fileName },
+                                            headers: { Authorization: `Bearer ${admin.token}` }
+                                        })
+                                            .then(({ data }) => {
+                                                if (data && data.code === 1) {
+                                                    setDisplayMessage({
+                                                        type: "success",
+                                                        message: "Backup eliminato con successo"
+                                                    });
+                                                } else {
+                                                    throw new Error(data.message || 'Errore sconosciuto');
+                                                }
+                                            })
+                                            .catch(err => {
+                                                const { response } = err;
+                                                if (response && response.data && response.data.message) {
+                                                    err.message = response.data.message;
+                                                }
+                                                setDisplayMessage({
+                                                    type: "danger",
+                                                    message: err.message
+                                                });
+                                            }),
+                                    label: <FaTrash />
+                                }}
                             />
                         </Card>
                     </Col>

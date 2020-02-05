@@ -146,27 +146,21 @@ const CreateAssembly = ({
                                     message
                                 })
                             }
-                            button={(
-                                <Button
-                                    color="gray"
-                                    onClick={() => {
-                                        loadAssembly(
-                                            info._id
-                                        ).catch(({ message }) =>
+                            button={{
+                                color: "gray",
+                                handleClick: (e, backup) => {
+                                    loadAssembly(backup.fileName)
+                                        .catch(({ message }) =>
                                             setDisplayMessage({
                                                 type: "danger",
                                                 message
                                             })
                                         );
-                                    }}
-                                >
-                                    {pendings.load === true ? (
-                                        <Spinner color="light" size="sm" />
-                                    ) : (
-                                        "Carica"
-                                    )}
-                                </Button>
-                            )}
+                                },
+                                label: pendings.load === true ? (
+                                    <Spinner color="light" size="sm" />
+                                ) : "Carica"
+                            }}
                         />
                     </Card>
 				</Col>

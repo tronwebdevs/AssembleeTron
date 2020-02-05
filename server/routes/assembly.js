@@ -158,7 +158,22 @@ router.get('/backups', isAdmin, (req, res, next) => {
                 return Promise.all(promiseArray);
             })
             .then(results => {
-                files = files.map((file, index) => JSON.parse(results[index]));
+                files = files.map((file, index) => {
+                    const { info } = JSON.parse(results[index])
+                    if (info) {
+                        return {
+                            _id: info._id,
+                            title: info.title,
+                            fileName: file    
+                        };
+                    } else {
+                        return {
+                            _id: 'Sconosciuto',
+                            title: 'Sconosciuto',
+                            fileName: file
+                        };
+                    }
+                });
                 res.status(200)
                     .json({
                         code: 1,
@@ -214,13 +229,13 @@ router.post('/backups', isAdmin, (req, res, next) => {
 /**
  * Load assembly from local backup file
  * @method post
- * @param {string} _id
+ * @param {string} fileName
  * @public
  */
 router.post('/backups/load', isAdmin, (req, res, next) => {
-    const { _id } = req.body;
-    if (typeof _id === 'string') {
-        const file = path.join(assembliesBackups, _id + '.json');
+    const { fileName } = req.body;
+    if (typeof fileName === 'string') {
+        const file = path.join(assembliesBackups, fileName);
         let assemblyFile;
         let newAssembly = {};
         fs.readFile(file)
@@ -256,12 +271,12 @@ router.post('/backups/load', isAdmin, (req, res, next) => {
 /**
  * Delete backup file on the server
  * @method delete
- * @param {string} _id
+ * @param {string} fileName
  */
 router.delete('/backups', isAdmin, (req, res, next) => {
-    const { _id } = req.body;
-    if (typeof _id === 'string') {
-        const file = path.join(assembliesBackups, _id + '.json');
+    const { fileName } = req.body;
+    if (typeof fileName === 'string') {
+        const file = path.join(assembliesBackups, fileName);
         fs.unlink(file)
             .then(() => 
                 res.status(200).json({
