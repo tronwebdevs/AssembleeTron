@@ -22,7 +22,7 @@ const initialState = {
         section: null
     },
     subscribed: false,
-    labs: [],
+    labs: null,
     labs_avabile: [],
     pendings: {},
     token: null

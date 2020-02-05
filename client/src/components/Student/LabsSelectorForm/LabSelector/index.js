@@ -16,14 +16,12 @@ const LabSelector = ({ labs, h, onChange, value, error }) => (
 			value={value}
 			invalid={error !== undefined}
 		>
-			<DefaultOption h={h} />
-			{labs.map((lab, index) => {
-				if (lab.info["h" + h].seats > 0) {
-					return <Option key={index} lab={lab} h={h} />;
-				} else {
-					return "";
-				}
-			})}
+			<DefaultOption h={h + 1} />
+			{labs.map((lab, index) =>
+				lab.info[h].seats > 0 ? (
+                    <Option key={index} lab={lab} h={h} />
+				) : ''
+			)}
 		</Input>
 		<FormFeedback>{error}</FormFeedback>
 	</FormGroup>

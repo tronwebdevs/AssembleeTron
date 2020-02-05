@@ -16,7 +16,31 @@ const DefaultOption = ({ h }) => {
 			break;
 		case 4:
 			label = "Quarta Ora";
-			break;
+            break;
+        case 5:
+            label = "Quinta Ora";
+            break;
+        case 6:
+            label = "Sesta Ora";
+            break;
+        case 7:
+			label = "Settima Ora";
+            break;
+        case 8:
+			label = "Ottava Ora";
+            break;
+        case 9:
+			label = "Nona Ora";
+            break;
+        case 10:
+			label = "Decima Ora";
+            break;
+        case 11:
+			label = "Undicesima Ora";
+            break;
+        case 12:
+			label = "Dodicesima Ora";
+            break;
 		default:
 			label = "";
 			break;

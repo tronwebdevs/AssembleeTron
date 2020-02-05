@@ -62,12 +62,12 @@ router.get('/sections', authUser, isAdmin, (req, res, next) =>
  * @param {string} part
  */
 router.get('/:studentID', (req, res, next) => {
-    let fetchStudent;
     const studentId = +req.params.studentID || -1;
     const part = +req.query.part;
-
+    
     // Check if parameters are valid
     if (studentId !== -1 && (part === 1 || part === 0)) {
+        let fetchStudent;
         let studentWasSub = false;
 
         // Fetch student in database
@@ -251,7 +251,7 @@ router.delete('/:studentID', isSudoer, (req, res, next) => {
  */
 router.post('/:studentID/labs', isStudent, (req, res, next) => {
     const studentId = +req.params.studentID || -1;
-    const { labs } = req.body;
+    let { labs } = req.body;
 
     // Check if parameters are valid
     if (labs.length > 0 && studentId !== -1) {
@@ -298,13 +298,13 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
                         if (index % 2 == 0) {
                             if (!lab._id.equals(labs[index + 1]._id)) {
                                 error.message += 'precedente (2H)';
-                                error.target = (index + 2);
+                                error.target = index + 1;
                                 throw error;
                             }
                         } else {
                             if (!lab._id.equals(labs[index - 1]._id)) {
                                 error.message += 'successiva (2H)';
-                                error.target = index;
+                                error.target = index - 1;
                                 throw error
                             }
                         }

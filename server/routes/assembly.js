@@ -315,9 +315,8 @@ router.get('/export', isAdmin, (req, res, next) => {
             });
 
             labs.forEach((lab, index, arr) => {
-                for (let i = 0; i < info.tot_h || 4; i++) {
+                for (let i = 0; i < info.tot_h; i++) {
                     let labStudents = [];
-
                     subs.filter(
                         sub =>  sub.labs[i] ? sub.labs[i].equals(lab._id) : false
                     ).forEach(
@@ -329,13 +328,13 @@ router.get('/export', isAdmin, (req, res, next) => {
                     );
 
                     if (labStudents.length !== 0) {
-                        doc.fontSize(24).text(lab.title + ' - ora ' + i).fontSize(16);
+                        doc.fontSize(24).text(lab.title + ' - ora ' + (i + 1)).fontSize(16);
                         doc.moveDown().table({
                             headers: ['Nome', 'Cognome', 'Classe'],
                             rows: labStudents
                         }).moveDown();
 
-                        if (!(i === 4 && index === (arr.length - 1))) {
+                        if (i !== info.tot_h && index !== (arr.length - 1)) {
                             doc.addPage();
                         }
                     }

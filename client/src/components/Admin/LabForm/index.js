@@ -54,7 +54,7 @@ const LabForm = ({
         description: lab.description || "",
         two_h: lab.two_h || false,
     };
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < info.tot_h; i++) {
         if (lab.info) {
             initialValues['seatsH' + i] = lab.info[i].seats
             initialValues['classesH' + i] = lab.info[i].sections
@@ -63,8 +63,6 @@ const LabForm = ({
             initialValues['classesH' + i] = []
         }
     }
-
-    console.log(initialValues)
 
 	return (
 		<div id="form-card-wrapper" style={{ boxShadow: "0 0 8px #9E9E9E" }}>

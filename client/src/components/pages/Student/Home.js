@@ -7,10 +7,10 @@ import { LoginCard, LoginFormCard } from "../../Student/";
 const Home = ({ student, assembly, errorMessage }) => {
     const { pendings, info } = assembly;
 
-    const redirectAuthedStudent = labsLength => (
+    const redirectAuthedStudent = labs => (
         <Redirect
             to={{
-                pathname: labsLength === 4 ? "/conferma" : "/iscrizione"
+                pathname: labs === null ? "/iscrizione" : "/conferma"
             }}
         />
     );
@@ -30,7 +30,7 @@ const Home = ({ student, assembly, errorMessage }) => {
             return <Fragment></Fragment>;
         }
     } else {
-        return redirectAuthedStudent(student.labs.length);
+        return redirectAuthedStudent(student.labs);
     }
 };
 

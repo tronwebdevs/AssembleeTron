@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 const Option = ({ lab, h }) => (
 	<option value={lab._id} data-twoh={lab.two_h}>
-		{lab.title} - {lab.info["h" + h].seats} posti rimanenti
+		{lab.title} - {lab.info[h].seats} posti rimanenti
 	</option>
 );
 

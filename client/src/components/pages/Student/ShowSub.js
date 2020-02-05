@@ -17,7 +17,7 @@ const ConfirmSub = ({ student, assembly, logout }) => {
 
 	if (profile.studentId === null) {
 		return <Redirect to={{ pathname: "/" }} />;
-	} else if (labs.length === 0) {
+	} else if (labs === null) {
 		return <Redirect to={{ pathname: "/iscrizione" }} />;
 	}
 

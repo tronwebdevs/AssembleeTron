@@ -1,7 +1,7 @@
 import React, { useState, Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { logout, fetchAvabileLabs } from "../../../actions/studentActions";
+import { logout, fetchAvabileLabs, subscribeLabs } from "../../../actions/studentActions";
 import { Redirect } from "react-router-dom";
 import { 
     Row, 
@@ -24,6 +24,7 @@ const LabsSelect = ({
     assembly, 
     student, 
     fetchAvabileLabs, 
+    subscribeLabs,
     logout 
 }) => {        
 	const { profile, labs, labs_avabile, pendings } = student;
@@ -32,7 +33,7 @@ const LabsSelect = ({
 
 	if (profile.studentId === null) {
 		return <Redirect to={{ pathname: "/" }} />;
-	} else if (labs.length > 0) {
+	} else if (labs !== null) {
 		return <Redirect to={{ pathname: "/conferma" }} />;
     }
     
@@ -88,6 +89,10 @@ const LabsSelect = ({
                                             </u>
                                             <LabsSelectorForm
                                                 labs={labs_avabile}
+                                                subscribeLabs={subscribeLabs}
+                                                fetchAvabileLabs={fetchAvabileLabs}
+                                                profile={profile}
+                                                tot_h={assembly.info.tot_h}
                                                 setGlobalError={msg =>
                                                     setGlobalError(msg)
                                                 }
@@ -118,6 +123,7 @@ const LabsSelect = ({
 
 LabsSelect.propTypes = {
     fetchAvabileLabs: PropTypes.func.isRequired,
+    subscribeLabs: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired,
 	student: PropTypes.object.isRequired
 };
@@ -127,4 +133,8 @@ const mapStateToProps = state => ({
     assembly: state.assembly
 });
 
-export default connect(mapStateToProps, { fetchAvabileLabs, logout })(LabsSelect);
+export default connect(mapStateToProps, { 
+    fetchAvabileLabs, 
+    subscribeLabs, 
+    logout 
+})(LabsSelect);
