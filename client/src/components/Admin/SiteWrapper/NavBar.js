@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
 	Container,
 	Collapse,
@@ -9,11 +9,11 @@ import {
 	Nav,
 	NavItem,
 	Button
-} from "reactstrap";
-import { NavLink } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa";
-import NavBarItems from "./NavBarItems";
-import TWIcon from "./tw-icon.png";
+} from 'reactstrap';
+import { NavLink } from 'react-router-dom';
+import { FaSignOutAlt } from 'react-icons/fa';
+import NavBarItems from './NavBarItems';
+import TWIcon from './tw-icon.png';
 
 const NavBar = ({ logout }) => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -27,12 +27,12 @@ const NavBar = ({ logout }) => {
 					<NavbarBrand
 						tag={() => (
 							<NavLink
-								to={{ pathname: "/gestore" }}
+								to={{ pathname: '/gestore' }}
 								exact
 								activeClassName="active"
 							>
 								<img
-									style={{ height: "40px", width: "40px" }}
+									style={{ height: '40px', width: '40px' }}
 									src={TWIcon}
 									alt="TronWeb Logo"
 								/>

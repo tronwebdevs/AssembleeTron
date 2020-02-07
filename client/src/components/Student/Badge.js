@@ -1,6 +1,6 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Col, Card } from "reactstrap";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Col, Card } from 'reactstrap';
 
 const StudentBadge = ({ student, ...rest }) => (
 	<Col xs="12" {...rest}>

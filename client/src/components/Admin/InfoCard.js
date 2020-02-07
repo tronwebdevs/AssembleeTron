@@ -1,8 +1,8 @@
-import React, { Fragment } from "react";
-import PropTypes from "prop-types";
-import { Row, Col, FormGroup, Label, Input, Button } from "reactstrap";
-import moment from "moment";
-import Selector from "../Admin/LabForm/LabHour/Selector";
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { Row, Col, FormGroup, Label, Input, Button } from 'reactstrap';
+import moment from 'moment';
+import Selector from '../Admin/LabForm/LabHour/Selector';
 
 const InfoCard = ({ info, edit }) => (
 	<Fragment>
@@ -27,7 +27,7 @@ const InfoCard = ({ info, edit }) => (
 					<Label className="form-label">Data</Label>
 					<Input
 						type="date"
-						value={moment(info.date).format("YYYY-MM-DD")}
+						value={moment(info.date).format('YYYY-MM-DD')}
 						className="mb-2"
 						disabled
 					/>
@@ -41,7 +41,7 @@ const InfoCard = ({ info, edit }) => (
 							<Input
 								type="date"
 								value={moment(info.subscription.open).format(
-									"YYYY-MM-DD"
+									'YYYY-MM-DD'
 								)}
 								disabled
 							/>
@@ -50,7 +50,7 @@ const InfoCard = ({ info, edit }) => (
 							<Input
 								type="time"
 								value={moment(info.subscription.open).format(
-									"HH:mm"
+									'HH:mm'
 								)}
 								disabled
 							/>
@@ -64,7 +64,7 @@ const InfoCard = ({ info, edit }) => (
 							<Input
 								type="date"
 								value={moment(info.subscription.close).format(
-									"YYYY-MM-DD"
+									'YYYY-MM-DD'
 								)}
 								disabled
 							/>
@@ -73,7 +73,7 @@ const InfoCard = ({ info, edit }) => (
 							<Input
 								type="time"
 								value={moment(info.subscription.close).format(
-									"HH:mm"
+									'HH:mm'
 								)}
 								disabled
 							/>
@@ -87,7 +87,7 @@ const InfoCard = ({ info, edit }) => (
 				<FormGroup>
 					<Label className="form-label">Classi partecipanti</Label>
 					<Selector
-						name={"sections"}
+						name="sections"
 						value={info.sections.map(c => ({ label: c, value: c }))}
 						classes={info.sections}
 						setValue={() => ({})}
@@ -97,7 +97,7 @@ const InfoCard = ({ info, edit }) => (
 			</Col>
 		</Row>
 		<Row className="mt-4">
-			<Col md={{ size: "2", offset: "5" }}>
+			<Col md={{ size: '2', offset: '5' }}>
 				<Button block color="primary" onClick={edit}>
 					Modifica
 				</Button>

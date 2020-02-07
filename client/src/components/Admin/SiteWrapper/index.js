@@ -1,14 +1,14 @@
-import React, { Fragment } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import { logout } from "../../../actions/adminActions";
+import React, { Fragment } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { logout } from '../../../actions/adminActions';
 
-import "tabler-react/dist/Tabler.css";
-import "./c3jscustom.css";
+import 'tabler-react/dist/Tabler.css';
+import './c3jscustom.css';
 
-import NavBar from "./NavBar";
-import PageContent from "./PageContent";
-import Footer from "../../Footer";
+import NavBar from './NavBar';
+import PageContent from './PageContent';
+import Footer from '../../Footer';
 
 const SiteWrapper = ({ logout, title, children }) => (
 	<Fragment>

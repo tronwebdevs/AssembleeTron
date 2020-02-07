@@ -194,7 +194,9 @@ export const subscribeLabs = (studentID, labs) => (dispatch, getState) => {
                 } else {
                     let error;
                     error = new Error(data.message || 'Errore non riconosciuto (student)');
-                    error.target = data.target || null;
+                    if (data.target !== undefined) {
+                        error.target = data.target;
+                    }
                     throw error;
                 }
             })
@@ -204,7 +206,7 @@ export const subscribeLabs = (studentID, labs) => (dispatch, getState) => {
                     if (data.message) {
                         err.message = data.message;
                     }
-                    if (data.target && data.target !== 0) {
+                    if (data.target !== undefined) {
                         err.target = data.target;
                     }
                     err.token = err.response.headers.token

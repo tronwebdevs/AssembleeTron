@@ -1,25 +1,25 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { authStudent } from "../../../actions/studentActions";
-import { Formik } from "formik";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { authStudent } from '../../../actions/studentActions';
+import { Formik } from 'formik';
 
-import LoginForm from "./LoginForm";
+import LoginForm from './LoginForm';
 
 const LoginFormCard = ({ authStudent, info }) => (
 	<Formik
 		initialValues={{
-			studentID: "",
-			part: "1"
+			studentID: '',
+			part: '1'
 		}}
 		validate={values => {
 			let errors = {};
 			if (!values.studentID) {
-				errors.studentID = "Matricola richiesta";
+				errors.studentID = 'Matricola richiesta';
 			} else if (isNaN(values.studentID)) {
 				errors.studentID = "Questa non e' una matricola";
 			} else if (!values.part) {
-				errors.part = "Partecipi?"; // not displayed
+				errors.part = 'Partecipi?'; // not displayed
 			}
 			return errors;
 		}}
@@ -28,7 +28,7 @@ const LoginFormCard = ({ authStudent, info }) => (
 				.then(() => setSubmitting(false))
 				.catch(({ message, target }) => {
 					setSubmitting(false);
-					setErrors({ [target || "studentID"]: message });
+					setErrors({ [target || 'studentID']: message });
 				})
 		}
 		render={({

@@ -1,8 +1,8 @@
-import React from "react";
-import StandaloneFormPage from "../../StandaloneFormPage";
-import { FormGroup, FormFeedback, Input, Button, Spinner } from "reactstrap";
+import React from 'react';
+import StandaloneFormPage from '../../StandaloneFormPage';
+import { FormGroup, FormFeedback, Input, Button, Spinner } from 'reactstrap';
 
-import FormCard from "../../FormCard";
+import FormCard from '../../FormCard';
 
 const LoginForm = ({
 	onSubmit,
@@ -44,7 +44,7 @@ const LoginForm = ({
 					{isSubmitting ? (
 						<Spinner color="light" size="sm" />
 					) : (
-						"Login"
+						'Login'
 					)}
 				</Button>
 			</FormGroup>

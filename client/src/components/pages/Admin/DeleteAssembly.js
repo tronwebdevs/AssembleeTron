@@ -1,11 +1,11 @@
-import React, { useState, Fragment } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import { Redirect, Link } from "react-router-dom";
+import React, { useState, Fragment } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { Redirect, Link } from 'react-router-dom';
 import {
 	deleteAssembly,
 	requestBackup
-} from "../../../actions/assemblyActions";
+} from '../../../actions/assemblyActions';
 import {
 	Row,
 	Col,
@@ -14,8 +14,8 @@ import {
 	CardBody,
 	Button,
 	ButtonGroup
-} from "reactstrap";
-import { AdminAlert } from "../../Admin/";
+} from 'reactstrap';
+import { AdminAlert } from '../../Admin/';
 
 const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 	const [displayMessage, setDisplayMessage] = useState({
@@ -26,78 +26,72 @@ const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 	const { pendings, info } = assembly;
 
 	if (pendings.delete_assembly === false && info.deleted === true) {
-		return <Redirect to={{ pathname: "/gestore/" }} />;
+		return <Redirect to={{ pathname: '/gestore/' }} />;
 	}
 
 	const backupCompleted = (target, message) => {
 		setDisplayMessage({
-			type: "success",
+			type: 'success',
 			message
 		});
-		target.className = "btn btn-success";
-		target.innerText = "Backup completato";
+		target.className = 'btn btn-success';
+		target.innerText = 'Backup completato';
 	};
 	const backupError = (target, message) => {
 		setDisplayMessage({
-			type: "danger",
+			type: 'danger',
 			message
 		});
 		target.disabled = false;
-    };
-    
-    const handleBackup = e => {
-        e.preventDefault();
-        let { target } = e;
-        target.disabled = true;
-        requestBackup()
-            .then(msg =>
-                backupCompleted(target, msg)
-            )
-            .catch(({ message, code }) => {
-                if (code === 2) {
-                    if (window.confirm(message) === true) {
-                        requestBackup(true)
-                            .then(
-                                msg => backupCompleted(target, msg)
-                            )
-                            .catch(
-                                ({ message }) => backupError(target, message)
-                            );
-                    } else {
-                        setDisplayMessage({
-                            type: "success",
-                            message: "Operazione annullata"
-                        });
-                        target.disabled = false;
-                    }
-                } else {
-                    backupError(target, message);
-                }
-            });
-    };
+	};
 
-    const handleDelete = e => {
-        e.preventDefault();
-        let { target } = e;
-        target.disabled = true;
-        deleteAssembly()
-            .catch(({ message }) => {
-                setDisplayMessage({
-                    type: "danger",
-                    message
-                });
-                target.disabled = false;
-            }
-        );
-    };
+	const handleBackup = e => {
+		e.preventDefault();
+		let { target } = e;
+		target.disabled = true;
+		requestBackup()
+			.then(msg => backupCompleted(target, msg))
+			.catch(({ message, code }) => {
+				if (code === 2) {
+					if (window.confirm(message) === true) {
+						requestBackup(true)
+							.then(msg => backupCompleted(target, msg))
+							.catch(({ message }) =>
+								backupError(target, message)
+							);
+					} else {
+						setDisplayMessage({
+							type: 'success',
+							message: 'Operazione annullata'
+						});
+						target.disabled = false;
+					}
+				} else {
+					backupError(target, message);
+				}
+			});
+	};
+
+	const handleDelete = e => {
+		e.preventDefault();
+		let { target } = e;
+		target.disabled = true;
+		deleteAssembly().catch(({ message }) => {
+			setDisplayMessage({
+				type: 'danger',
+				message
+			});
+			target.disabled = false;
+		});
+	};
 
 	return (
 		<Fragment>
-			<AdminAlert 
-                display={displayMessage.message !== null} 
-                message={displayMessage.message} 
-                type={displayMessage.type}
-            />
+			<AdminAlert
+				display={displayMessage.message !== null}
+				message={displayMessage.message}
+				type={displayMessage.type}
+			/>
 			<Row>
 				<Col xs="12" xl="6">
 					<Card>

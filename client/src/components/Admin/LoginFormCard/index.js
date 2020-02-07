@@ -1,24 +1,24 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Formik } from "formik";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Formik } from 'formik';
 
-import LoginForm from "./LoginForm";
+import LoginForm from './LoginForm';
 
-const LoginFormCard = ({ fetchAssembly, authAdmin, errorMessage }) => (
+const LoginFormCard = ({ authAdmin, errorMessage }) => (
 	<Formik
 		initialValues={{
-			password: ""
+			password: ''
 		}}
 		validate={values => {
 			let errors = {};
 			if (!values.password) {
-				errors.password = "Password richiesta";
+				errors.password = 'Password richiesta';
 			}
 			return errors;
 		}}
 		onSubmit={(values, { setSubmitting, setErrors }) =>
 			authAdmin(values.password)
-                .then(() => setSubmitting(false))
+				.then(() => setSubmitting(false))
 				.catch(({ message }) => {
 					setSubmitting(false);
 					setErrors({ password: message });
@@ -48,7 +48,6 @@ const LoginFormCard = ({ fetchAssembly, authAdmin, errorMessage }) => (
 );
 
 LoginFormCard.propTypes = {
-    fetchAssembly: PropTypes.func.isRequired,
 	authAdmin: PropTypes.func.isRequired,
 	errorMessage: PropTypes.string
 };

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-import { Card, CardHeader, CardBody, Button, Collapse } from "reactstrap";
-import { FaChevronUp } from "react-icons/fa";
-import LabShow from "./LabShow";
-import posed from "react-pose";
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { Card, CardHeader, CardBody, Button, Collapse } from 'reactstrap';
+import { FaChevronUp } from 'react-icons/fa';
+import LabShow from './LabShow';
+import posed from 'react-pose';
 
 const Box = posed.div({
 	open: {
@@ -35,11 +35,11 @@ const LabsListCard = ({ labs }) => {
 					color="link"
 					id="labsToggler"
 					style={{
-						position: "absolute",
-						right: "10px"
+						position: 'absolute',
+						right: '10px'
 					}}
 				>
-					<Box pose={labsCollapse ? "open" : "close"}>
+					<Box pose={labsCollapse ? 'open' : 'close'}>
 						<FaChevronUp />
 					</Box>
 				</Button>

@@ -1,28 +1,33 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { CardTitle, CardBody, Alert, Form } from "reactstrap";
-import "./index.css";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { CardTitle, CardBody, Alert, Form } from 'reactstrap';
+import './index.css';
 
 const FormCard = ({
 	children,
 	onSubmit,
 	action,
 	method,
-    title,
-    subtitle,
+	title,
+	subtitle,
 	text,
 	pAlign,
 	errorMessage
 }) => (
-	<Form className="card mb-0" onSubmit={onSubmit} action={action} method={method}>
+	<Form
+		className="card mb-0"
+		onSubmit={onSubmit}
+		action={action}
+		method={method}
+	>
 		{errorMessage ? (
 			<Alert
 				color="danger"
 				className="text-center"
 				fade={false}
 				style={{
-					borderRadius: "3px 3px 0 0 ",
-					margin: "-1px"
+					borderRadius: '3px 3px 0 0 ',
+					margin: '-1px'
 				}}
 			>
 				{errorMessage}
@@ -30,15 +35,17 @@ const FormCard = ({
 		) : null}
 		<CardBody className="p-6">
 			<CardTitle
-				style={{ fontSize: "1.3rem" }}
+				style={{ fontSize: '1.3rem' }}
 				className="text-center mb-1"
 			>
 				<b>{title}</b>
 			</CardTitle>
-            <small className="d-block text-center text-muted mb-3">{subtitle}</small>
+			<small className="d-block text-center text-muted mb-3">
+				{subtitle}
+			</small>
 			<p
 				className="card-text login-subtitle mb-1"
-				style={{ textAlign: pAlign || "left" }}
+				style={{ textAlign: pAlign || 'left' }}
 			>
 				{text}
 			</p>
@@ -52,8 +59,8 @@ FormCard.propTypes = {
 	onSubmit: PropTypes.func,
 	action: PropTypes.string,
 	method: PropTypes.string,
-    title: PropTypes.string.isRequired,
-    subtitle: PropTypes.string,
+	title: PropTypes.string.isRequired,
+	subtitle: PropTypes.string,
 	text: PropTypes.string,
 	pAlign: PropTypes.string,
 	errorMessage: PropTypes.string

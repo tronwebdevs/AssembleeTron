@@ -1,7 +1,7 @@
-import React, { Fragment } from "react";
-import PropTypes from "prop-types";
-import { Row, Col, Card, CardBody } from "reactstrap";
-import InfoBox from "./InfoBox";
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { Row, Col, Card, CardBody } from 'reactstrap';
+import InfoBox from './InfoBox';
 
 const LabsTable = ({ labs, logout }) => (
 	<Fragment>
@@ -13,10 +13,10 @@ const LabsTable = ({ labs, logout }) => (
 							{labs.map((lab, index) => (
 								<div
 									className={
-										"col-12 " +
+										'col-12 ' +
 										(index !== 3
-											? "mb-3 border-bottom"
-											: "")
+											? 'mb-3 border-bottom'
+											: '')
 									}
 									key={index}
 								>
@@ -48,13 +48,13 @@ const LabsTable = ({ labs, logout }) => (
 				</Card>
 			</Col>
 		</Row>
-		<InfoBox logout={logout}/>
+		<InfoBox logout={logout} />
 	</Fragment>
 );
 
 LabsTable.propTypes = {
-    labs: PropTypes.array.isRequired,
-    logout: PropTypes.func.isRequired
+	labs: PropTypes.array.isRequired,
+	logout: PropTypes.func.isRequired
 };
 
 export default LabsTable;

@@ -1,6 +1,6 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Row, Col, Alert } from "reactstrap";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Row, Col, Alert } from 'reactstrap';
 
 const ErrorAlert = ({ message }) => (
 	<Row>

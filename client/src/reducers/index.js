@@ -4,7 +4,7 @@ import assemblyReducer from './assemblyReducer';
 import adminReducer from './adminReducer';
 
 export default combineReducers({
-    student: studentReducer,
-    assembly: assemblyReducer,
-    admin: adminReducer
+	student: studentReducer,
+	assembly: assemblyReducer,
+	admin: adminReducer
 });

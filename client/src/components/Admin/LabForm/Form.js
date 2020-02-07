@@ -1,5 +1,5 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
 	Row,
 	Col,
@@ -9,8 +9,8 @@ import {
 	Input,
 	CustomInput,
 	Button
-} from "reactstrap";
-import LabHour from "./LabHour/";
+} from 'reactstrap';
+import LabHour from './LabHour/';
 
 const CustomForm = ({
 	values,
@@ -20,8 +20,8 @@ const CustomForm = ({
 	handleReset,
 	isSubmitting,
 	setFieldValue,
-    classesLabels,
-    tot_h
+	classesLabels,
+	tot_h
 }) => (
 	<Form onSubmit={handleSubmit}>
 		<FormGroup>
@@ -90,8 +90,8 @@ const CustomForm = ({
 							classes: values['classesH' + i]
 						}}
 						errors={{
-                            seats: errors['seatsH' + i],
-                            classes: errors['classesH' + i],
+							seats: errors['seatsH' + i],
+							classes: errors['classesH' + i]
 						}}
 						handleChange={handleChange}
 						setFieldValue={setFieldValue}
@@ -113,7 +113,7 @@ const CustomForm = ({
 		</FormGroup>
 		<FormGroup>
 			<Row>
-				<Col xs={{ size: "3", offset: "3" }} className="pr-1">
+				<Col xs={{ size: '3', offset: '3' }} className="pr-1">
 					<Button
 						type="submit"
 						block
@@ -146,8 +146,8 @@ CustomForm.propTypes = {
 	handleChange: PropTypes.func.isRequired,
 	handleSubmit: PropTypes.func.isRequired,
 	isSubmitting: PropTypes.bool,
-    classesLabels: PropTypes.array,
-    tot_h: PropTypes.number
+	classesLabels: PropTypes.array,
+	tot_h: PropTypes.number
 };
 
 export default CustomForm;

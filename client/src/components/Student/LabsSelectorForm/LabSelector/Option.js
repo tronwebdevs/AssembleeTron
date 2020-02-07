@@ -1,5 +1,5 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const Option = ({ lab, h }) => (
 	<option value={lab._id} data-twoh={lab.two_h}>

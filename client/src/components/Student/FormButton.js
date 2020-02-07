@@ -1,6 +1,6 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Button, Spinner } from "reactstrap";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Button, Spinner } from 'reactstrap';
 
 const FormButton = ({ text, isSubmitting }) => (
 	<Button type="submit" color="primary" block={true} disabled={isSubmitting}>

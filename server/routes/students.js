@@ -244,7 +244,7 @@ router.delete('/:studentID', isSudoer, (req, res, next) => {
 
 
 /**
- * Get student's labs
+ * Set student's labs
  * @method post
  * @param {string} studentID
  * @param {object} labs
@@ -348,7 +348,7 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
                 res.status(err.status || 500).json({
                     code: -1,
                     message: err.message,
-                    target: err.target || 0
+                    target: err.target >= 0 ? err.target : undefined
                 })
             );
     } else {
