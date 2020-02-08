@@ -1,16 +1,16 @@
-import Badge from "./Badge";
-import ErrorAlert from "./ErrorAlert";
-import InfoBox from "./InfoBox";
-import LabShow from "./LabShow";
-import LabsTable from "./LabsTable";
-import LoginCard from "./LoginCard";
-import NotPartCard from "./NotPartCard";
-import LoginFormCard from "./LoginFormCard/";
-import SiteWrapper from "./SiteWrapper";
-import LabsSelectorForm from "./LabsSelectorForm/";
-import PageTitle from "./PageTitle";
-import LabsListCard from "./LabsListCard";
-import StudentRoute from "./StudentRoute";
+import Badge from './Badge';
+import ErrorAlert from './ErrorAlert';
+import InfoBox from './InfoBox';
+import LabShow from './LabShow';
+import LabsTable from './LabsTable';
+import LoginCard from './LoginCard';
+import NotPartCard from './NotPartCard';
+import LoginFormCard from './LoginFormCard/';
+import SiteWrapper from './SiteWrapper';
+import LabsSelectorForm from './LabsSelectorForm/';
+import PageTitle from './PageTitle';
+import LabsListCard from './LabsListCard';
+import StudentRoute from './StudentRoute';
 
 export {
 	Badge,
@@ -24,6 +24,6 @@ export {
 	SiteWrapper,
 	LabsSelectorForm,
 	PageTitle,
-    LabsListCard,
-    StudentRoute
+	LabsListCard,
+	StudentRoute
 };

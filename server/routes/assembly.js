@@ -158,7 +158,22 @@ router.get('/backups', isAdmin, (req, res, next) => {
                 return Promise.all(promiseArray);
             })
             .then(results => {
-                files = files.map((file, index) => JSON.parse(results[index]));
+                files = files.map((file, index) => {
+                    const { info } = JSON.parse(results[index])
+                    if (info) {
+                        return {
+                            _id: info._id,
+                            title: info.title,
+                            fileName: file    
+                        };
+                    } else {
+                        return {
+                            _id: 'Sconosciuto',
+                            title: 'Sconosciuto',
+                            fileName: file
+                        };
+                    }
+                });
                 res.status(200)
                     .json({
                         code: 1,
@@ -172,6 +187,7 @@ router.get('/backups', isAdmin, (req, res, next) => {
 /**
  * Backup assembly into JSON local file
  * @method post
+ * @param {string} overwrite
  * @public
  */
 router.post('/backups', isAdmin, (req, res, next) => {
@@ -213,12 +229,13 @@ router.post('/backups', isAdmin, (req, res, next) => {
 /**
  * Load assembly from local backup file
  * @method post
+ * @param {string} fileName
  * @public
  */
 router.post('/backups/load', isAdmin, (req, res, next) => {
-    const { _id } = req.body;
-    if (typeof _id === 'string') {
-        const file = path.join(assembliesBackups, _id + '.json');
+    const { fileName } = req.body;
+    if (typeof fileName === 'string') {
+        const file = path.join(assembliesBackups, fileName);
         let assemblyFile;
         let newAssembly = {};
         fs.readFile(file)
@@ -252,22 +269,46 @@ router.post('/backups/load', isAdmin, (req, res, next) => {
 });
 
 /**
+ * Delete backup file on the server
+ * @method delete
+ * @param {string} fileName
+ */
+router.delete('/backups', isAdmin, (req, res, next) => {
+    const { fileName } = req.body;
+    if (typeof fileName === 'string') {
+        const file = path.join(assembliesBackups, fileName);
+        fs.unlink(file)
+            .then(() => 
+                res.status(200).json({
+                    code: 1,
+                    message: 'Backup eliminato con successo'
+                })
+            )
+            .catch(err => next(err))
+    } else {
+        next(new Error('Identificativo non valido'));
+    }
+});
+
+/**
  * Export assembly into PDF file
  * @method get
  * @public
  */
-router.get('/export', (req, res, next) => {
+router.get('/export', isAdmin, (req, res, next) => {
     if (!fs.existsSync(assembliesPdfs)){
         fs.mkdirSync(assembliesPdfs);
     }
     const doc = new PDFDocument;
     let file;
+    let info;
     let labs;
     let students;
     let stream;
     Assembly.find()
         .then(results => {
-            file = path.join(assembliesPdfs, results[0]._id + '.pdf');
+            info = results[0];
+            file = path.join(assembliesPdfs, info._id + '.pdf');
             stream = doc.pipe(fs.createWriteStream(file));
             return Laboratory.find();
         })
@@ -284,32 +325,31 @@ router.get('/export', (req, res, next) => {
                 let std = students.find(s => s.studentId === sub.studentId) || null;
                 return {
                     ...std,
-                    labs: { ...sub.toObject() }
+                    labs: (sub.toObject()).labs
                 };
             });
 
             labs.forEach((lab, index, arr) => {
-                for (let i = 1; i <= 4; i++) {
+                for (let i = 0; i < info.tot_h; i++) {
                     let labStudents = [];
-
                     subs.filter(
-                        sub => {
-                            if (sub.labs['h' + i]) {
-                                return sub.labs['h' + i].equals(lab._id);
-                            } else {
-                                return false;
-                            }
-                        }
-                    ).forEach(sub => labStudents.push([sub.name, sub.surname, sub.section]));
+                        sub =>  sub.labs[i] ? sub.labs[i].equals(lab._id) : false
+                    ).forEach(
+                        sub => labStudents.push([
+                            sub.name, 
+                            sub.surname, 
+                            sub.section
+                        ])
+                    );
 
                     if (labStudents.length !== 0) {
-                        doc.fontSize(24).text(lab.title + ' - ora ' + i).fontSize(16);
+                        doc.fontSize(24).text(lab.title + ' - ora ' + (i + 1)).fontSize(16);
                         doc.moveDown().table({
                             headers: ['Nome', 'Cognome', 'Classe'],
                             rows: labStudents
                         }).moveDown();
 
-                        if (!(i === 4 && index === (arr.length - 1))) {
+                        if (i !== info.tot_h && index !== (arr.length - 1)) {
                             doc.addPage();
                         }
                     }
@@ -334,35 +374,50 @@ router.get('/export', (req, res, next) => {
  * @public
  */
 router.put('/info', isAdmin, (req, res, next) => {
-    const { 
+    let { 
         _id, 
         title, 
         date, 
         subOpen, 
         subClose,
+        tot_h,
         sections 
     } = req.body.info;
+    tot_h = +tot_h || -1;
 
-    Assembly.findByIdAndUpdate(_id, {
-        title, date,
-        subscription: {
-            open: moment(subOpen).toDate(),
-            close: moment(subClose).toDate()
-        },
-        sections
-    }, { new: true })
-        .then(result => {
-            if (result) {
-                res.status(200)
-                    .json({
-                        code: 1,
-                        info: result
-                    });
-            } else {
-                throw new Error('Assemblea non trovata (id: ' + _id + ')');
-            }
-        })
-        .catch(err => next(err));
+    // Check if parameters are valid
+    if (
+        typeof _id === 'string' && _id.trim() !== '' &&
+        typeof title === 'string' && title.trim() !== '' &&
+        typeof date === 'string' && date.trim() !== '' &&
+        typeof subOpen === 'string' && subOpen.trim() !== '' &&
+        typeof subClose === 'string' && subClose.trim() !== '' &&
+        tot_h !== -1 &&
+        sections.length > 0
+    ) {
+        Assembly.findByIdAndUpdate(_id, {
+            title, date,
+            subscription: {
+                open: moment(subOpen).toDate(),
+                close: moment(subClose).toDate()
+            },
+            tot_h, sections
+        }, { new: true })
+            .then(result => {
+                if (result) {
+                    res.status(200)
+                        .json({
+                            code: 1,
+                            info: result
+                        });
+                } else {
+                    throw new Error('Assemblea non trovata (id: ' + _id + ')');
+                }
+            })
+            .catch(err => next(err));
+    } else {
+        next(new Error('Parametri non accettati'));
+    }
 });
 
 /**
@@ -459,7 +514,6 @@ router.put('/labs', isAdmin, (req, res, next) => {
  */
 router.post('/labs', isAdmin, (req, res, next) => {
     const { lab } = req.body;
-    lab._id = new ObjectId();
     if (lab) {
         new Laboratory(lab).save()
             .then(newLab => 
@@ -559,97 +613,31 @@ router.get('/students', isAdmin, (req, res, next) => {
  * Get statistics about subscribers
  * @method get
  */
-router.get('/stats', (req, res, next) => {
-    let info;
-    let labs;
+router.get('/stats', isAdmin, (req, res, next) => {
+    let subscribeds;
     let students;
-    Assembly.find()
-        .then(results => {
-            info = results[0];
-            return Laboratory.find();
-        })
-        .then(results => {
-            labs = results.map(lab => lab.toObject());
-            return Student.find();
-        })
-        .then(results => {
-            students = results.map(std => std.toObject());
-            return Subscribed.find();
-        })
-        .then(subs => {
-            subs = subs.map(sub => {
-                const std = students.find(({ studentId }) => studentId === sub.studentId);
-                return {
-                    ...std,
-                    ...sub.toObject()
-                };
-            });
-            let sectionCounter = [];
-            let gradeCounter = [];
-            let labsCounter = [];
-            subs.forEach(sub => {
-                const subGrade = gradeCounter.find(el => el.label === +sub.section[0]);
-                const subSec = gradeCounter.find(el => el.label === sub.section);
-                if (subGrade) {
-                    subGrade.count++;
-                } else {
-                    gradeCounter.push({
-                        value: +sub.section[0],
-                        count: 1
-                    });
-                }
-                if (subSec) {
-                    subSec.count++;
-                } else {
-                    sectionCounter.push({
-                        value: sub.section,
-                        count: 1
-                    });
-                }
-                for (let i = 1; i <= 4; i++) {
-                    if (sub['h' + i]) {
-                        const stdLab = labsCounter.find(({ _id }) => _id.equals(sub['h' + i]));
-                        if (stdLab) {
-                            stdLab.subs++;
-                        } else {
-                            const lab = labs.find(({ _id }) => _id.equals(sub['h' + i]));
-                            labsCounter.push({
-                                _id: lab._id,
-                                title: lab.title,
-                                subs: 1
-                            });
-                        }
-                    }
-                }
-            });
 
-            let subsPerTime = [["subscriptions"]];
-            let hoursOpen = moment(info.subscription.close).diff(moment(info.subscription.open), 'h');
-            let increment = parseInt(hoursOpen / 40, 10);
-            let timeCounterStart = moment(info.subscription.open);
-            let timeCounterEnd = moment(info.subscription.open).add(increment, 'h');
-            while (moment(info.subscription.close).diff(timeCounterEnd) >= 0) {
-                let studentsLength = subs.filter(sub => {
-                    let createdAt = moment(sub.createdAt);
-                    return (
-                        createdAt.diff(timeCounterStart) >= 0 && 
-                        createdAt.diff(timeCounterEnd) <= 0
-                    );
-                }).length;
-                subsPerTime[0].push(studentsLength);
-                timeCounterStart.add(increment, 'h');
-                timeCounterEnd.add(increment, 'h');
-            }
+    Student.estimatedDocumentCount()
+        .then(studentsCount => {
+            students = studentsCount;
+            return Subscribed.estimatedDocumentCount()
+        })
+        .then(subsCount => {
+            subscribeds = subsCount;
+            return Subscribed.countDocuments({
+                labs: { $exists: true, $not: { $size: 0} }
+            })
+        })
+        .then(subsPartCount => 
             res.status(200).json({
                 code: 1,
-                stats: {
-                    sections: sectionCounter,
-                    grades: gradeCounter,
-                    labs: labsCounter,
-                    subs: subsPerTime
+                students,
+                subscribeds: {
+                    part: subsPartCount,
+                    total: subscribeds
                 }
-            });
-        })
+            })
+        )
         .catch(err => next(err));
 });
 

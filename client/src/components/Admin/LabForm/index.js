@@ -1,14 +1,13 @@
-import React from "react";
-import { connect } from "react-redux";
+import React from 'react';
+import { connect } from 'react-redux';
 import {
 	updateAssemblyLab,
 	createAssemblyLab
-} from "../../../actions/assemblyActions";
-import PropTypes from "prop-types";
-import { Card, CardBody, CardHeader } from "reactstrap";
-import { Formik } from "formik";
-import Form from "./Form";
-import SectionsList from "../../../utils/SectionsList";
+} from '../../../actions/assemblyActions';
+import PropTypes from 'prop-types';
+import { Card, CardBody, CardHeader } from 'reactstrap';
+import { Formik } from 'formik';
+import Form from './Form';
 
 const LabForm = ({
 	lab,
@@ -24,103 +23,69 @@ const LabForm = ({
 	const fetchCallback = (action, lab, err) => {
 		window.scrollTo({
 			top: 0,
-			behavior: "smooth"
+			behavior: 'smooth'
 		});
 		handleCloseModal(false);
 		setLabDisplay({
-			action: "create",
+			action: 'create',
 			lab: {}
 		});
 		if (err) {
 			setDisplayMessage({
-				type: "danger",
+				type: 'danger',
 				message: err.message
 			});
 		} else {
 			setDisplayMessage({
-				type: "success",
+				type: 'success',
 				message: `Laboratorio "${lab.title}" ${
-					action === "edit" ? "modificato" : "creato"
+					action === 'edit' ? 'modificato' : 'creato'
 				} con successo`
 			});
 		}
 	};
 
-	const completeSectionsList = assembly.info.sections;
+	const { info, labs } = assembly;
+
+	let initialValues = {
+		_id: lab._id || '',
+		room: lab.room || '',
+		title: lab.title || '',
+		description: lab.description || '',
+		two_h: lab.two_h || false
+	};
+	for (let i = 0; i < info.tot_h; i++) {
+		if (lab.info) {
+			initialValues['seatsH' + i] = lab.info[i].seats;
+			initialValues['classesH' + i] = lab.info[i].sections;
+		} else {
+			initialValues['seatsH' + i] = 0;
+			initialValues['classesH' + i] = [];
+		}
+	}
 
 	return (
-		<div id="form-card-wrapper" style={{ boxShadow: "0 0 8px #9E9E9E" }}>
-            <Card 
-                className="m-0 p-0"
-                style={{
-                    borderTop: "5px solid",
-                    borderTopColor: action === "edit" ? "#f1c40f" : "#5eba00"
-                }}
-            >
+		<div id="form-card-wrapper" style={{ boxShadow: '0 0 8px #9E9E9E' }}>
+			<Card
+				className="m-0 p-0"
+				style={{
+					borderTop: '5px solid',
+					borderTopColor: action === 'edit' ? '#f1c40f' : '#5eba00'
+				}}
+			>
 				<CardHeader>
-					<b>{action === "edit" ? "Modifica" : "Crea"} laboratorio</b>
+					<b>{action === 'edit' ? 'Modifica' : 'Crea'} laboratorio</b>
 				</CardHeader>
 				<CardBody>
 					<Formik
 						enableReinitialize={true}
-						initialValues={{
-							_id: lab._id || "",
-							room: lab.room || "",
-							title: lab.title || "",
-							description: lab.description || "",
-							seatsH1: lab.info ? lab.info.h1.seats : 0,
-							classesH1: (lab.info
-								? SectionsList.parse(
-										lab.info.h1.sections,
-										completeSectionsList
-								  ).getList()
-								: []
-							).map(cl => ({
-								label: cl,
-								value: cl
-							})),
-							seatsH2: lab.info ? lab.info.h2.seats : 0,
-							classesH2: (lab.info
-								? SectionsList.parse(
-										lab.info.h2.sections,
-										completeSectionsList
-								  ).getList()
-								: []
-							).map(cl => ({
-								label: cl,
-								value: cl
-							})),
-							seatsH3: lab.info ? lab.info.h3.seats : 0,
-							classesH3: (lab.info
-								? SectionsList.parse(
-										lab.info.h3.sections,
-										completeSectionsList
-								  ).getList()
-								: []
-							).map(cl => ({
-								label: cl,
-								value: cl
-							})),
-							seatsH4: lab.info ? lab.info.h4.seats : 0,
-							classesH4: (lab.info
-								? SectionsList.parse(
-										lab.info.h4.sections,
-										completeSectionsList
-								  ).getList()
-								: []
-							).map(cl => ({
-								label: cl,
-								value: cl
-							})),
-							two_h: lab.two_h || false
-						}}
+						initialValues={initialValues}
 						validate={values => {
 							let errors = {};
 							if (values._id !== lab._id) {
-								const { labs } = assembly;
 								labs.forEach(lab => {
 									if (lab._id === values._id) {
-										errors._id = "ID duplicato";
+										errors._id = 'ID duplicato';
 									}
 									if (lab.room === values.room.trim()) {
 										errors.room = `Aula identica al laboratorio "${lab.title}"`;
@@ -131,89 +96,102 @@ const LabForm = ({
 									if (
 										lab.description ===
 											values.description.trim() &&
-										values.description !== "-"
+										values.description !== '-'
 									) {
 										errors.description = `Esiste gia' un laboratorio con questa descrizione ("${lab.title}")`;
 									}
 								});
 							}
-							if (values.title.trim() === "") {
+							if (values.title.trim() === '') {
 								errors.title =
 									"Il titolo non puo' restare vuoto";
 							}
-							if (values.room.trim() === "") {
+							if (values.room.trim() === '') {
 								errors.room = "L'aula non puo' restare vuota";
 							}
-							if (values.description.trim() === "") {
+							if (values.description.trim() === '') {
 								errors.description =
 									"La descrizione non puo' restare vuota";
-                            }
-                            
-                            if (values.two_h === true) {
-                                for (let i = 1; i <= 4; i++) {
-                                    if (i % 2 !== 0) {
-                                        if (values["seatsH" + i] !== values["seatsH" + (i + 1)]) {
-                                            errors["seatsH" + (i + 1)] = 
-                                                "Il numero posti di questa ora deve essere " + 
-                                                "uguale a quello dell'ora precedente";
-                                        }
-                                        if (
-                                            values["classesH" + i].length !== 0 &&
-                                            (values["classesH" + i].length !== values["classesH" + (i + 1)].length ||
-                                            values["classesH" + i]
-                                                .filter(
-                                                    sec => values["classesH" + (i + 1)]
-                                                        .find(
-                                                            ({ value }) => value === sec.value
-                                                        ) !== undefined
-                                                ).length === 0)
-                                        ) {
-                                            errors["classesH" + (i + 1)] = 
-                                                "Le classi partecipati di quest'ora devono essere " + 
-                                                "uguali a quelle dell'ora precedente";
-                                        }
-                                    }
-                                }
-                            }
+							}
+
+							for (let i = 0; i < info.tot_h; i++) {
+								if (
+									values['seatsH' + i] > 0 &&
+									values['classesH' + i].length <= 0
+								) {
+									errors['classesH' + i] =
+										"Devi selezionare almeno una classe partecipante per quest'ora";
+								}
+								if (values.two_h === true) {
+									if (i % 2 === 0) {
+										if (
+											values['seatsH' + i] !==
+											values['seatsH' + (i + 1)]
+										) {
+											errors['seatsH' + (i + 1)] =
+												'Il numero posti di questa ora deve essere ' +
+												"uguale a quello dell'ora precedente";
+										}
+										if (
+											values['classesH' + i].length !==
+												0 &&
+											(values['classesH' + i].length !==
+												values['classesH' + (i + 1)]
+													.length ||
+												values['classesH' + i].filter(
+													sec =>
+														values[
+															'classesH' + (i + 1)
+														].find(
+															({ value }) =>
+																value ===
+																sec.value
+														) !== undefined
+												).length === 0)
+										) {
+											errors['classesH' + (i + 1)] =
+												"Le classi partecipati di quest'ora devono essere " +
+												"uguali a quelle dell'ora precedente";
+										}
+									}
+								}
+							}
 
 							return errors;
 						}}
 						validateOnChange={false}
 						onSubmit={values => {
 							let lab = {
-								_id: values._id,
-								room: values.room,
-								title: values.title,
-								description: values.description || "",
-								info: {},
+								room: (values.room || '').trim(),
+								title: (values.title || '').trim(),
+								description: (values.description || '').trim(),
+								info: [],
 								two_h: values.two_h
 							};
-							for (let i = 1; i <= 4; i++) {
-								lab.info["h" + i] = {
-									seats: values["seatsH" + i],
-									sections: new SectionsList(
-										(values["classesH" + i] || []).map(
-											({ label }) => label
-										),
-										completeSectionsList
-									).minify()
-								};
+							if (values._id !== '') {
+								lab._id = values._id;
 							}
-							if (action === "edit") {
+							for (let i = 0; i < info.tot_h; i++) {
+								lab.info.push({
+									seats: values['seatsH' + i],
+									sections: values['classesH' + i]
+								});
+							}
+							if (action === 'edit') {
 								updateAssemblyLab(lab)
 									.then(newLab =>
-										fetchCallback("edit", newLab, null)
+										fetchCallback('edit', newLab, null)
 									)
 									.catch(err =>
-										fetchCallback("edit", null, err)
+										fetchCallback('edit', null, err)
 									);
-							} else if (action === "create") {
+							} else if (action === 'create') {
 								createAssemblyLab(lab)
 									.then(newLab =>
-										fetchCallback("create", newLab, null)
+										fetchCallback('create', newLab, null)
 									)
 									.catch(err =>
-										fetchCallback("create", null, err)
+										fetchCallback('create', null, err)
 									);
 							}
 						}}
@@ -224,9 +202,7 @@ const LabForm = ({
 						render={({
 							values,
 							errors,
-							touched,
 							handleChange,
-							handleBlur,
 							handleSubmit,
 							handleReset,
 							isSubmitting,
@@ -235,14 +211,13 @@ const LabForm = ({
 							<Form
 								values={values}
 								errors={errors}
-								touched={touched}
 								handleChange={handleChange}
-								handleBlur={handleBlur}
 								handleSubmit={handleSubmit}
 								handleReset={handleReset}
 								isSubmitting={isSubmitting}
 								setFieldValue={setFieldValue}
-								classesLabels={assembly.info.sections}
+								classesLabels={info.sections}
+								tot_h={info.tot_h}
 							/>
 						)}
 					/>

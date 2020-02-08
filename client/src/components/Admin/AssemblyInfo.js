@@ -1,8 +1,8 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { Row, Col, Card, CardHeader, CardBody } from "reactstrap";
-import DashAssemblyRow from "./DashAssemblyRow";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { Row, Col, Card, CardHeader, CardBody } from 'reactstrap';
+import DashAssemblyRow from './DashAssemblyRow';
 
 const AssemblyInfo = ({ exists, info }) =>
 	exists === true ? (
@@ -31,11 +31,11 @@ const AssemblyInfo = ({ exists, info }) =>
 				</Card>
 			</Col>
 		</Row>
-    );
-    
+	);
+
 AssemblyInfo.propTypes = {
-    exists: PropTypes.bool.isRequired,
-    info: PropTypes.object
+	exists: PropTypes.bool.isRequired,
+	info: PropTypes.object
 };
 
 export default AssemblyInfo;

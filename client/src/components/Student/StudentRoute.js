@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { fetchAssemblyInfo } from "../../actions/assemblyActions";
-import { Route } from "react-router-dom";
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { fetchAssemblyInfo } from '../../actions/assemblyActions';
+import { Route } from 'react-router-dom';
 
 const AuthRequired = ({
 	component: Component,

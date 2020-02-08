@@ -1,8 +1,8 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { Col } from "reactstrap";
-import { StampCard } from "tabler-react";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { Col } from 'reactstrap';
+import { StampCard } from 'tabler-react';
 
 const SmallCard = ({ color, icon, link, title, subtitle }) => (
 	<Col xs="12" md="4">
@@ -13,8 +13,8 @@ const SmallCard = ({ color, icon, link, title, subtitle }) => (
 				<Link to={link}>
 					{title} <small>{subtitle}</small>
 				</Link>
-            }
-            className="mb-1 mb-md-5"
+			}
+			className="mb-1 mb-md-5"
 		/>
 	</Col>
 );

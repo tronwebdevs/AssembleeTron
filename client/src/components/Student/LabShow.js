@@ -1,11 +1,11 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Row, Col } from "reactstrap";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Row, Col } from 'reactstrap';
 
 const LabShow = ({ title, description, borderBottom }) => (
 	<div
 		className={
-			"col-12 " + (borderBottom === true ? "mb-3 border-bottom" : "")
+			'col-12 ' + (borderBottom === true ? 'mb-3 border-bottom' : '')
 		}
 	>
 		<Row>

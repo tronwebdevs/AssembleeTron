@@ -1,5 +1,5 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
 	Row,
 	Col,
@@ -9,21 +9,19 @@ import {
 	Input,
 	CustomInput,
 	Button
-} from "reactstrap";
-import { Icon } from "tabler-react";
-import LabHour from "./LabHour/";
+} from 'reactstrap';
+import LabHour from './LabHour/';
 
 const CustomForm = ({
 	values,
 	errors,
-	touched,
 	handleChange,
-	handleBlur,
 	handleSubmit,
 	handleReset,
 	isSubmitting,
 	setFieldValue,
-	classesLabels
+	classesLabels,
+	tot_h
 }) => (
 	<Form onSubmit={handleSubmit}>
 		<FormGroup>
@@ -82,39 +80,18 @@ const CustomForm = ({
 		</FormGroup>
 		<FormGroup>
 			<Row>
-				{[1, 2].map(h => (
+				{[...Array(tot_h).keys()].map(i => (
 					<LabHour
-						key={h}
-						h={h}
+						key={i}
+						h={i}
 						classes={classesLabels}
 						values={{
-							seats: values["seatsH" + h],
-							classes: values["classesH" + h]
+							seats: values['seatsH' + i],
+							classes: values['classesH' + i]
 						}}
 						errors={{
-                            seats: errors["seatsH" + h],
-                            classes: errors["classesH" + h],
-						}}
-						handleChange={handleChange}
-						setFieldValue={setFieldValue}
-					/>
-				))}
-			</Row>
-		</FormGroup>
-		<FormGroup>
-			<Row>
-				{[3, 4].map(h => (
-					<LabHour
-						key={h}
-						h={h}
-						classes={classesLabels}
-						values={{
-							seats: values["seatsH" + h],
-							classes: values["classesH" + h]
-						}}
-						errors={{
-                            seats: errors["seatsH" + h],
-                            classes: errors["classesH" + h],
+							seats: errors['seatsH' + i],
+							classes: errors['classesH' + i]
 						}}
 						handleChange={handleChange}
 						setFieldValue={setFieldValue}
@@ -136,7 +113,7 @@ const CustomForm = ({
 		</FormGroup>
 		<FormGroup>
 			<Row>
-				<Col xs={{ size: "3", offset: "3" }} className="pr-1">
+				<Col xs={{ size: '3', offset: '3' }} className="pr-1">
 					<Button
 						type="submit"
 						block
@@ -155,7 +132,7 @@ const CustomForm = ({
 						outline
 						color="danger"
 					>
-						<Icon name="x" />
+						Annulla
 					</Button>
 				</Col>
 			</Row>
@@ -166,12 +143,11 @@ const CustomForm = ({
 CustomForm.propTypes = {
 	values: PropTypes.object,
 	errors: PropTypes.object,
-	touched: PropTypes.object,
 	handleChange: PropTypes.func.isRequired,
-	handleBlur: PropTypes.func.isRequired,
 	handleSubmit: PropTypes.func.isRequired,
 	isSubmitting: PropTypes.bool,
-	classesLabels: PropTypes.array
+	classesLabels: PropTypes.array,
+	tot_h: PropTypes.number
 };
 
 export default CustomForm;

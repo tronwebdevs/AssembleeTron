@@ -9,6 +9,7 @@ const Assembly = new Schema({
         open: Date,
         close: Date
     },
+    tot_h: Number,
     sections: [String]
 });
 

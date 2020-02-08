@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { fetchAssemblyGeneral } from "../../../actions/assemblyActions";
-import { Route, Redirect } from "react-router-dom";
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { fetchAssemblyGeneral } from '../../../actions/assemblyActions';
+import { Route, Redirect } from 'react-router-dom';
 
 const AuthRequired = ({
 	component: Component,
@@ -11,16 +11,18 @@ const AuthRequired = ({
 	fetchAssemblyGeneral,
 	...rest
 }) => {
-    const [error, setError] = useState(null);
+	const [error, setError] = useState(null);
 
-    const { pendings, authed, token } = admin;
+	const { pendings, authed, token } = admin;
 
 	if (
 		assembly.pendings.assembly === undefined &&
-        pendings.auth === false &&
-        token !== null
+		pendings.auth === false &&
+		token !== null
 	) {
-		fetchAssemblyGeneral().catch(err => err.status !== 401 ? setError(err.message) : null);
+		fetchAssemblyGeneral().catch(err =>
+			err.status !== 401 ? setError(err.message) : null
+		);
 	}
 
 	return (
@@ -32,10 +34,10 @@ const AuthRequired = ({
 				) : (
 					<Redirect
 						to={{
-							pathname: "/gestore/login",
+							pathname: '/gestore/login',
 							state: {
 								from: props.location,
-								message: "Autenticazione richiesta"
+								message: 'Autenticazione richiesta'
 							}
 						}}
 					/>

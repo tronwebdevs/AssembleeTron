@@ -1,118 +1,105 @@
 import {
-    FETCH_ASSEMBLY_PENDING,
+	FETCH_ASSEMBLY_PENDING,
 	ASSEMBLY_FETCHED,
-    ERROR_IN_ASSEMBLY_FETCH,
-    
-    REQUEST_ASSEMBLY_BACKUP,
-    ASSEMBLY_BACKUP_COMPLETED,
-    ERROR_IN_ASSEMBLY_BACKUP,
-
-    REQUEST_ASSEMBLY_LOAD,
-    ASSEMBLY_LOAD_COMPLETED,
-    ERROR_IN_ASSEMBLY_LOAD,
-
+	ERROR_IN_ASSEMBLY_FETCH,
+	REQUEST_ASSEMBLY_BACKUP,
+	ASSEMBLY_BACKUP_COMPLETED,
+	ERROR_IN_ASSEMBLY_BACKUP,
+	REQUEST_ASSEMBLY_LOAD,
+	ASSEMBLY_LOAD_COMPLETED,
+	ERROR_IN_ASSEMBLY_LOAD,
 	DELETE_ASSEMBLY_PENDING,
 	ASSEMBLY_DELETED,
 	ERROR_IN_ASSEMBLY_DELETE,
-
 	FETCH_INFO_PENDING,
 	ASSEMBLY_SUBS_CLOSE,
 	ASSEMBLY_SUBS_OPEN,
 	ASSEMBLY_NOT_AVABILE,
 	ERROR_IN_INFO_FETCH,
-
 	CREATE_INFO_PENDING,
 	INFO_CREATED,
 	ERROR_IN_INFO_CREATE,
-
 	UPDATE_INFO_PENDING,
 	INFO_UPDATED,
 	ERROR_IN_INFO_UPDATE,
-
 	FETCH_LABS_PENDING,
 	LABS_FETCHED,
 	ERROR_IN_LABS_FETCH,
-
 	CREATE_LAB_PENDING,
 	LAB_CREATED,
 	ERROR_IN_LAB_CREATE,
-
 	UPDATE_LAB_PENDING,
 	LAB_UPDATED,
 	ERROR_IN_LAB_UPDATE,
-
 	DELETE_LAB_PENDING,
 	LAB_DELETED,
 	ERROR_IN_LAB_DELETE,
-
 	FETCH_STUDENTS_PENDING,
 	STUDENTS_FETCHED,
-    ERROR_IN_STUDENTS_FETCH,
-    
-    REQUEST_ASSEMBLY_PDF,
-    ASSEMBLY_PDF_COMPLETED,
-    ERROR_IN_ASSEMBLY_PDF,
+	ERROR_IN_STUDENTS_FETCH,
+	REQUEST_ASSEMBLY_PDF,
+	ASSEMBLY_PDF_COMPLETED,
+	ERROR_IN_ASSEMBLY_PDF
 } from '../actions/types.js';
 
-
 const initialState = {
-    exists: false,
-    info: {},
-    labs: [],
-    stats: {
-        labs: 0,
-        students: 0,
-        subs: 0
-    },
+	exists: false,
+	info: {},
+	labs: [],
+	stats: {
+		labs: 0,
+		students: 0,
+		subs: 0
+	},
 	students: [],
-    pendings: {}
+	pendings: {}
 };
 
-export default function (state = initialState, { payload, type }) {
-    switch (type) {
-        case FETCH_ASSEMBLY_PENDING:
-        case DELETE_ASSEMBLY_PENDING:
-        case REQUEST_ASSEMBLY_BACKUP:
-        case REQUEST_ASSEMBLY_LOAD:
-        case FETCH_INFO_PENDING:
-        case CREATE_INFO_PENDING:
-        case UPDATE_INFO_PENDING:
-        case FETCH_LABS_PENDING:
-        case CREATE_LAB_PENDING:
-        case UPDATE_LAB_PENDING:
-        case DELETE_LAB_PENDING:
-        case FETCH_STUDENTS_PENDING:
-        case REQUEST_ASSEMBLY_PDF:
-            return {
-                ...state,
-                pendings: {
-                    ...state.pendings,
-                    [payload]: true
-                }
-            };
-        case ASSEMBLY_BACKUP_COMPLETED:
-            return {
-                ...state,
-                pendings: {
-                    ...state.pendings,
-                    backup: false
-                }
-            };
-        case ASSEMBLY_LOAD_COMPLETED:
-            return {
-                ...state,
-                exists: true,
+export default function(state = initialState, { payload, type }) {
+	switch (type) {
+		case FETCH_ASSEMBLY_PENDING:
+		case DELETE_ASSEMBLY_PENDING:
+		case REQUEST_ASSEMBLY_BACKUP:
+		case REQUEST_ASSEMBLY_LOAD:
+		case FETCH_INFO_PENDING:
+		case CREATE_INFO_PENDING:
+		case UPDATE_INFO_PENDING:
+		case FETCH_LABS_PENDING:
+		case CREATE_LAB_PENDING:
+		case UPDATE_LAB_PENDING:
+		case DELETE_LAB_PENDING:
+		case FETCH_STUDENTS_PENDING:
+		case REQUEST_ASSEMBLY_PDF:
+			return {
+				...state,
+				pendings: {
+					...state.pendings,
+					[payload]: true
+				}
+			};
+		case ASSEMBLY_BACKUP_COMPLETED:
+			return {
+				...state,
+				pendings: {
+					...state.pendings,
+					backup: false
+				}
+			};
+		case ASSEMBLY_LOAD_COMPLETED:
+			return {
+				...state,
+				exists: true,
 				info: payload.info,
 				labs: payload.labs || [],
 				stats: {
-                    ...state.stats,
+					...state.stats,
 					labs: (payload.labs || []).length
 				},
-                pendings: {
-                    ...state.pendings,
-                    load: false
-                }
-            };
+				pendings: {
+					...state.pendings,
+					load: false
+				}
+			};
 		case ASSEMBLY_FETCHED:
 		case ERROR_IN_ASSEMBLY_FETCH:
 			return {
@@ -141,8 +128,8 @@ export default function (state = initialState, { payload, type }) {
 					students: state.stats.students
 				},
 				pendings: {
-                    assembly: false,
-                    labs: false,
+					assembly: false,
+					labs: false,
 					delete_assembly: false
 				}
 			};
@@ -150,21 +137,21 @@ export default function (state = initialState, { payload, type }) {
 		case ASSEMBLY_SUBS_OPEN:
 			return {
 				...state,
-                exists: true,
-                info: payload,
-                pendings: {
-                    ...state.pendings,
-                    info: false
-                }
+				exists: true,
+				info: payload,
+				pendings: {
+					...state.pendings,
+					info: false
+				}
 			};
 		case ASSEMBLY_NOT_AVABILE:
 			return {
 				...state,
 				exists: false,
 				pendings: {
-                    ...state.pendings,
-                    info: false
-                }
+					...state.pendings,
+					info: false
+				}
 			};
 		case INFO_CREATED:
 			return {
@@ -174,7 +161,7 @@ export default function (state = initialState, { payload, type }) {
 				pendings: {
 					...state.pendings,
 					create_info: false
-                }
+				}
 			};
 		case INFO_UPDATED:
 			return {
@@ -206,19 +193,19 @@ export default function (state = initialState, { payload, type }) {
 					...state.stats,
 					labs: payload.length
 				},
-                pendings: {
-                    ...state.pendings,
-                    create_lab: false
-                }
+				pendings: {
+					...state.pendings,
+					create_lab: false
+				}
 			};
 		case LAB_UPDATED:
 			return {
 				...state,
 				labs: payload,
-                pendings: {
-                    ...state.pendings,
-                    update_lab: false
-                }
+				pendings: {
+					...state.pendings,
+					update_lab: false
+				}
 			};
 		case LAB_DELETED:
 			return {
@@ -228,35 +215,35 @@ export default function (state = initialState, { payload, type }) {
 					...state.stats,
 					labs: payload.length
 				},
-                pendings: {
-                    ...state.pendings,
-                    delete_lab: false
-                }
+				pendings: {
+					...state.pendings,
+					delete_lab: false
+				}
 			};
 		case STUDENTS_FETCHED:
 			return {
-                ...state,
+				...state,
 				students: payload,
 				stats: {
 					...state.stats,
 					students: payload.length
 				},
-                pendings: {
-                    ...state.pendings,
-                    students: false
-                }
-            };
-        case ASSEMBLY_PDF_COMPLETED:
-            return {
-                ...state,
-                pendings: {
-                    ...state.pendings,
-                    generate_pdf: false
-                }
-            }
-        case ERROR_IN_ASSEMBLY_DELETE:
-        case ERROR_IN_ASSEMBLY_BACKUP:
-        case ERROR_IN_ASSEMBLY_LOAD:
+				pendings: {
+					...state.pendings,
+					students: false
+				}
+			};
+		case ASSEMBLY_PDF_COMPLETED:
+			return {
+				...state,
+				pendings: {
+					...state.pendings,
+					generate_pdf: false
+				}
+			};
+		case ERROR_IN_ASSEMBLY_DELETE:
+		case ERROR_IN_ASSEMBLY_BACKUP:
+		case ERROR_IN_ASSEMBLY_LOAD:
 		case ERROR_IN_INFO_FETCH:
 		case ERROR_IN_INFO_CREATE:
 		case ERROR_IN_INFO_UPDATE:
@@ -265,15 +252,15 @@ export default function (state = initialState, { payload, type }) {
 		case ERROR_IN_LAB_UPDATE:
 		case ERROR_IN_LAB_DELETE:
 		case ERROR_IN_STUDENTS_FETCH:
-        case ERROR_IN_ASSEMBLY_PDF:
-            return {
-                ...state,
-                pendings: {
-                    ...state.pendings,
-                    [payload.fetch]: false
-                }
+		case ERROR_IN_ASSEMBLY_PDF:
+			return {
+				...state,
+				pendings: {
+					...state.pendings,
+					[payload.fetch]: false
+				}
 			};
-        default:
-            return state;
-    }
-};
+		default:
+			return state;
+	}
+}

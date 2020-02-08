@@ -1,12 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Row, Col, UncontrolledAlert } from "reactstrap";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Row, Col, UncontrolledAlert } from 'reactstrap';
 
 const AdminAlert = ({ display, message, type }) =>
 	display === true ? (
 		<Row>
 			<Col xs="12">
-				<UncontrolledAlert color={type || "danger"}>
+				<UncontrolledAlert color={type || 'danger'}>
 					{message}
 				</UncontrolledAlert>
 			</Col>

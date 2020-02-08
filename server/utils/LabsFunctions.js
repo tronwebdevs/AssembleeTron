@@ -21,17 +21,17 @@ const fetchAvabileLabs = async section => {
 	let promiseArray = [];
 	labs = labs
 		.map(lab => {
-			for (let i = 1; i <= 4; i++) {
-				lab.info["h" + i].sections = SectionsList.parse(
-					lab.info["h" + i].sections,
+			for (let i = 0; i < assembly.tot_h; i++) {
+				lab.info[i].sections = SectionsList.parse(
+					lab.info[i].sections,
 					assembly.sections
 				).getList();
             }
             return lab;
 		})
 		.filter(lab => {
-			for (let i = 1; i <= 4; i++) {
-				if (lab.info["h" + i].sections.includes(section)) {
+			for (let i = 0; i < assembly.tot_h; i++) {
+				if (lab.info[i].sections.includes(section)) {
 					return true;
 				}
             }
@@ -39,9 +39,9 @@ const fetchAvabileLabs = async section => {
         });
         
     labs.forEach(lab => {
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 0; i < assembly.tot_h; i++) {
             promiseArray.push(
-                Subscribed.countDocuments({ ["h" + i]: ObjectId(lab._id) })
+                Subscribed.countDocuments({ ["labs." + i]: ObjectId(lab._id) })
             );
         }
     });
@@ -49,8 +49,8 @@ const fetchAvabileLabs = async section => {
     
 	const countResults = await Promise.all(promiseArray);
 	labs = labs.map((lab, index) => {
-		for (let i = 1; i <= 4; i++) {
-			lab.info["h" + i].seats -= countResults[index * 4 + (i - 1)];
+		for (let i = 0; i < assembly.tot_h; i++) {
+			lab.info[i].seats -= countResults[index * assembly.tot_h + i];
 		}
 		return lab;
     });

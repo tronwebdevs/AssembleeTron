@@ -1,23 +1,23 @@
-import React, { useState, Fragment } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
+import React, { useState, Fragment } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import {
 	createAssemblyInfo,
 	loadAssembly
-} from "../../../actions/assemblyActions";
+} from '../../../actions/assemblyActions';
 import {
 	Row,
 	Col,
 	Card,
 	CardHeader,
 	CardBody,
-    Button,
-    Spinner
-} from "reactstrap";
-import { Link, Redirect } from "react-router-dom";
-import { AdminAlert, InfoForm, BackupsTable } from "../../Admin/";
-import { validateInfoForm } from "../../../utils/";
-import moment from "moment";
+	Button,
+	Spinner
+} from 'reactstrap';
+import { Link, Redirect } from 'react-router-dom';
+import { AdminAlert, InfoForm, BackupsTable } from '../../Admin/';
+import { validateInfoForm } from '../../../utils/';
+import moment from 'moment';
 
 const CreateAssembly = ({
 	admin,
@@ -31,66 +31,60 @@ const CreateAssembly = ({
 	});
 
 	const authToken = admin.token;
-    const { exists, pendings, info, stats } = assembly;
-    
-    const handleSubmit = (values, { setSubmitting, setErrors }) => {
-        if (pendings.create_info === undefined) {
-            const errors = validateInfoForm(
-                values, 
-                info.sections, 
-                stats.labs,
-                false
-            );
+	const { exists, pendings, info, stats } = assembly;
 
-            if (Object.entries(errors).length === 0) {
-                createAssemblyInfo({
-                    ...values,
-                    subOpen: moment(
-                        values.subOpenDate + " " + 
-                        values.subOpenTime
-                    ).format(),
-                    subClose: moment(
-                        values.subCloseDate + " " + 
-                        values.subCloseTime
-                    ).format(),
-                    sections: values.sections.map(
-                        ({ value }) => value
-                    )
-                })
-                    .then(() =>
-                        setSubmitting(false)
-                    )
-                    .catch(({ message }) => {
-                        setSubmitting(false);
-                        setDisplayMessage({
-                            type: "danger",
-                            message
-                        });
-                    });
-            } else {
-                setSubmitting(false);
-                setErrors(errors);
-            }
-        }
-    };
+	const handleSubmit = (values, { setSubmitting, setErrors }) => {
+		if (pendings.create_info === undefined) {
+			const errors = validateInfoForm(
+				values,
+				info.sections,
+				stats.labs,
+				false
+			);
+
+			if (Object.entries(errors).length === 0) {
+				createAssemblyInfo({
+					...values,
+					subOpen: moment(
+						values.subOpenDate + ' ' + values.subOpenTime
+					).format(),
+					subClose: moment(
+						values.subCloseDate + ' ' + values.subCloseTime
+					).format(),
+					sections: values.sections.map(({ value }) => value)
+				})
+					.then(() => setSubmitting(false))
+					.catch(({ message }) => {
+						setSubmitting(false);
+						setDisplayMessage({
+							type: 'danger',
+							message
+						});
+					});
+			} else {
+				setSubmitting(false);
+				setErrors(errors);
+			}
+		}
+	};
 
 	if (
 		pendings.create_info === false &&
 		exists === true &&
 		displayMessage.message === null
 	) {
-		return <Redirect to={{ pathname: "/gestore/laboratori" }} />;
+		return <Redirect to={{ pathname: '/gestore/laboratori' }} />;
 	} else if (exists === true) {
-		return <Redirect to={{ pathname: "/gestore/" }} />;
+		return <Redirect to={{ pathname: '/gestore/' }} />;
 	}
 
 	return (
 		<Fragment>
-            <AdminAlert 
-                display={displayMessage.message !== null} 
-                message={displayMessage.message} 
-                type={displayMessage.type}
-            />
+			<AdminAlert
+				display={displayMessage.message !== null}
+				message={displayMessage.message}
+				type={displayMessage.type}
+			/>
 			<Row>
 				<Col xs="12">
 					<Card>
@@ -100,11 +94,11 @@ const CreateAssembly = ({
 						<CardBody>
 							<InfoForm
 								info={{
-									title: "",
-									date: moment().startOf("year"),
+									title: '',
+									date: moment().startOf('year'),
 									subscription: {
-										open: moment().startOf("year"),
-										close: moment().startOf("year")
+										open: moment().startOf('year'),
+										close: moment().startOf('year')
 									},
 									sections: []
 								}}
@@ -122,7 +116,7 @@ const CreateAssembly = ({
 								]}
 								setError={message =>
 									setDisplayMessage({
-										type: "danger",
+										type: 'danger',
 										message
 									})
 								}
@@ -134,41 +128,38 @@ const CreateAssembly = ({
 			</Row>
 			<Row>
 				<Col xs="12">
-                    <Card>
-                        <CardHeader>
-                            <b>Backup</b>
-                        </CardHeader>
-                        <BackupsTable
-                            authToken={authToken}
-                            setError={message =>
-                                setDisplayMessage({
-                                    type: "danger",
-                                    message
-                                })
-                            }
-                            button={(
-                                <Button
-                                    color="gray"
-                                    onClick={() => {
-                                        loadAssembly(
-                                            info._id
-                                        ).catch(({ message }) =>
-                                            setDisplayMessage({
-                                                type: "danger",
-                                                message
-                                            })
-                                        );
-                                    }}
-                                >
-                                    {pendings.load === true ? (
-                                        <Spinner color="light" size="sm" />
-                                    ) : (
-                                        "Carica"
-                                    )}
-                                </Button>
-                            )}
-                        />
-                    </Card>
+					<Card>
+						<CardHeader>
+							<b>Backup</b>
+						</CardHeader>
+						<BackupsTable
+							authToken={authToken}
+							setError={message =>
+								setDisplayMessage({
+									type: 'danger',
+									message
+								})
+							}
+							button={{
+								color: 'gray',
+								handleClick: (e, backup) => {
+									loadAssembly(backup.fileName).catch(
+										({ message }) =>
+											setDisplayMessage({
+												type: 'danger',
+												message
+											})
+									);
+								},
+								label:
+									pendings.load === true ? (
+										<Spinner color="light" size="sm" />
+									) : (
+										'Carica'
+									)
+							}}
+						/>
+					</Card>
 				</Col>
 			</Row>
 		</Fragment>

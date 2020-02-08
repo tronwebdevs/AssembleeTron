@@ -1,5 +1,5 @@
-import React from "react";
-import StandaloneFormPage from "../../StandaloneFormPage";
+import React from 'react';
+import StandaloneFormPage from '../../StandaloneFormPage';
 import {
 	Spinner,
 	Button,
@@ -7,11 +7,11 @@ import {
 	Input,
 	CustomInput,
 	FormFeedback
-} from "reactstrap";
-import moment from "moment";
+} from 'reactstrap';
+import moment from 'moment';
 
-import FormCard from "../../FormCard";
-import StudentIdHelp from "./StudentIdHelp";
+import FormCard from '../../FormCard';
+import StudentIdHelp from './StudentIdHelp';
 
 const LoginForm = ({
 	onSubmit,
@@ -25,8 +25,8 @@ const LoginForm = ({
 	<StandaloneFormPage>
 		<FormCard
 			title={`Iscrizioni per l'${assemblyInfo.title}`}
-            subtitle={moment(assemblyInfo.date).format("DD/MM/YYYY")}
-			text={true ? "Inserisci la tua matricola per entrare:" : ""}
+			subtitle={moment(assemblyInfo.date).format('DD/MM/YYYY')}
+			text={true ? 'Inserisci la tua matricola per entrare:' : ''}
 			onSubmit={onSubmit}
 		>
 			{/* <Form.Group>
@@ -68,7 +68,7 @@ const LoginForm = ({
 						label="Partecipo"
 						name="part"
 						value="1"
-						checked={values.part === "1"}
+						checked={values.part === '1'}
 						onChange={onChange}
 						onBlur={onBlur}
 						inline
@@ -81,7 +81,7 @@ const LoginForm = ({
 						value="0"
 						onChange={onChange}
 						onBlur={onBlur}
-						checked={values.part === "0"}
+						checked={values.part === '0'}
 						inline
 					/>
 				</FormGroup>
@@ -99,12 +99,12 @@ const LoginForm = ({
 					{isSubmitting ? (
 						<Spinner color="light" size="sm" />
 					) : (
-						"Entra"
+						'Entra'
 					)}
 				</Button>
 			</FormGroup>
 		</FormCard>
-        <StudentIdHelp />
+		<StudentIdHelp />
 	</StandaloneFormPage>
 );
 

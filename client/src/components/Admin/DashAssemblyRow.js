@@ -1,18 +1,18 @@
-import React, { Fragment } from "react";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { Row, Col, Card, CardBody, CardHeader, Badge } from "reactstrap";
-import moment from "moment";
-import ListCard from "./ListCard";
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { Row, Col, Card, CardBody, CardHeader, Badge } from 'reactstrap';
+import moment from 'moment';
+import ListCard from './ListCard';
 
 const DashAssemblyRow = ({ info }) => {
 	const displayDaysLeft = days => {
 		if (days < 0) {
-			return Math.abs(days) + " giorni fa";
+			return Math.abs(days) + ' giorni fa';
 		} else if (days === 0) {
-			return "Oggi";
+			return 'Oggi';
 		} else {
-			return "-" + days + " giorni";
+			return '-' + days + ' giorni';
 		}
 	};
 
@@ -23,29 +23,29 @@ const DashAssemblyRow = ({ info }) => {
 					title="Informazioni"
 					items={[
 						{
-							title: "Nome",
-							text: info.title || "Assemblea Senza Nome"
+							title: 'Nome',
+							text: info.title || 'Assemblea Senza Nome'
 						},
 						{
-							title: "Data",
+							title: 'Data',
 							text: (
 								<Fragment>
-									{moment(info.date).format("DD/MM/YYYY")}
+									{moment(info.date).format('DD/MM/YYYY')}
 									<small className="text-muted">
-										{" "}
+										{' '}
 										(
 										{displayDaysLeft(
 											moment(info.date).diff(
 												moment(),
-												"days"
+												'days'
 											)
 										)}
 										)
 									</small>
 								</Fragment>
 							)
-                        },
-                        { title: "Classi", text: info.sections.length }
+						},
+						{ title: 'Classi', text: info.sections.length }
 					]}
 					buttons={
 						<Link
@@ -60,7 +60,7 @@ const DashAssemblyRow = ({ info }) => {
 					title="Iscrizioni"
 					items={[
 						{
-							title: "Stato",
+							title: 'Stato',
 							text:
 								moment(info.subscription.open).diff(moment()) <
 									0 &&
@@ -72,15 +72,15 @@ const DashAssemblyRow = ({ info }) => {
 								)
 						},
 						{
-							title: "Apertura",
+							title: 'Apertura',
 							text: moment(info.subscription.open).format(
-								"HH:mm DD/MM/YYYY"
+								'HH:mm DD/MM/YYYY'
 							)
 						},
 						{
-							title: "Chiusura",
+							title: 'Chiusura',
 							text: moment(info.subscription.close).format(
-								"HH:mm DD/MM/YYYY"
+								'HH:mm DD/MM/YYYY'
 							)
 						}
 					]}
@@ -100,9 +100,9 @@ const DashAssemblyRow = ({ info }) => {
 						</CardHeader>
 						<CardBody>
 							<p>
-								Rimuovi tutti i laboratori, gli iscritti 
-                                ed elimina l'assemblea (necessario prima
-                                di creare una nuova assemblea)
+								Rimuovi tutti i laboratori, gli iscritti ed
+								elimina l'assemblea (necessario prima di creare
+								una nuova assemblea)
 							</p>
 							<Link
 								to="/gestore/elimina"

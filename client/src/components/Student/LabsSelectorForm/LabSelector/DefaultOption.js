@@ -1,25 +1,52 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const DefaultOption = ({ h }) => {
 	let label;
 
 	switch (h) {
 		case 1:
-			label = "Prima Ora";
+			label = 'Prima';
 			break;
 		case 2:
-			label = "Seconda Ora";
+			label = 'Seconda';
 			break;
 		case 3:
-			label = "Terza Ora";
+			label = 'Terza';
 			break;
 		case 4:
-			label = "Quarta Ora";
+			label = 'Quarta';
+			break;
+		case 5:
+			label = 'Quinta';
+			break;
+		case 6:
+			label = 'Sesta';
+			break;
+		case 7:
+			label = 'Settima';
+			break;
+		case 8:
+			label = 'Ottava';
+			break;
+		case 9:
+			label = 'Nona';
+			break;
+		case 10:
+			label = 'Decima';
+			break;
+		case 11:
+			label = 'Undicesima';
+			break;
+		case 12:
+			label = 'Dodicesima';
 			break;
 		default:
-			label = "";
+			label = '';
 			break;
+	}
+	if (label !== '') {
+		label += ' Ora';
 	}
 
 	return (

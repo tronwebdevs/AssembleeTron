@@ -1,11 +1,20 @@
-import React, { Fragment } from "react";
-import { Row, Col } from "reactstrap";
-import Select from "react-select";
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { Row, Col } from 'reactstrap';
+import Select from 'react-select';
 
-const Selector = ({ name, value, setValue, classes, error, ...rest }) => {
+const Selector = ({
+	name,
+	value,
+	setValue,
+	classes,
+	error,
+	buttons,
+	...rest
+}) => {
 	const options = [
 		{
-			label: "Classi",
+			label: 'Classi',
 			options: classes.map(c => ({ label: c, value: c }))
 		}
 	];
@@ -13,13 +22,13 @@ const Selector = ({ name, value, setValue, classes, error, ...rest }) => {
 	const customStyle = {
 		control: provided => ({
 			...provided,
-			borderColor: "#ced4da",
-			borderRadius: "3px"
+			borderColor: '#ced4da',
+			borderRadius: '3px'
 		}),
 		indicatorSeparator: provided => ({
 			...provided,
-			borderColor: "#ced4da",
-			backgroundColor: "#ced4da"
+			borderColor: '#ced4da',
+			backgroundColor: '#ced4da'
 		})
 	};
 
@@ -29,12 +38,12 @@ const Selector = ({ name, value, setValue, classes, error, ...rest }) => {
 	};
 
 	const buttonStyle = {
-		display: "block",
-		width: "100%",
-		padding: "8px 10px",
-		backgroundColor: "#fbfbfc",
-		border: "none",
-		borderTop: "1px solid #ced4da"
+		display: 'block',
+		width: '100%',
+		padding: '8px 10px',
+		backgroundColor: '#fbfbfc',
+		border: 'none',
+		borderTop: '1px solid #ced4da'
 	};
 
 	const GroupHeading = ({ selectProps }) => (
@@ -45,7 +54,7 @@ const Selector = ({ name, value, setValue, classes, error, ...rest }) => {
 						type="button"
 						style={{
 							...buttonStyle,
-							borderRight: "1px solid #ced4da"
+							borderRight: '1px solid #ced4da'
 						}}
 						onClick={() => setValue(selectProps.options[0].options)}
 					>
@@ -62,38 +71,6 @@ const Selector = ({ name, value, setValue, classes, error, ...rest }) => {
 					</button>
 				</Col>
 			</Row>
-			<Row className="m-0">
-				<Col xs="2" className="p-0">
-					<span
-						style={{
-							...buttonStyle,
-							borderRight: "1px solid #ced4da"
-						}}
-					>
-						Solo
-					</span>
-				</Col>
-				{[1, 2, 3, 4, 5].map(section => (
-					<Col xs="2" className="p-0" key={section}>
-						<button
-							type="button"
-							style={{
-								...buttonStyle,
-								borderRight: "1px solid #ced4da"
-							}}
-							onClick={() =>
-								setValue(
-									selectProps.options[0].options.filter(
-										sec => +sec.value[0] === section
-									)
-								)
-							}
-						>
-							{section}ª
-						</button>
-					</Col>
-				))}
-			</Row>
 		</div>
 	);
 
@@ -102,7 +79,7 @@ const Selector = ({ name, value, setValue, classes, error, ...rest }) => {
 			<Select
 				name={name}
 				value={value}
-				components={{ GroupHeading }}
+				components={buttons === true ? { GroupHeading } : null}
 				options={options}
 				isMulti
 				isSearchable
@@ -113,16 +90,16 @@ const Selector = ({ name, value, setValue, classes, error, ...rest }) => {
 				className="basic-multi-select"
 				closeMenuOnSelect={false}
 				onChange={setValue}
-				noOptionsMessage={() => "Nessun risultato trovato"}
+				noOptionsMessage={() => 'Nessun risultato trovato'}
 				hideSelectedOptions={false}
 				{...rest}
 			/>
 			{error ? (
 				<span
 					style={{
-						color: "#fa4654",
-						fontSize: "14px",
-						marginTop: "0.25rem"
+						color: '#fa4654',
+						fontSize: '14px',
+						marginTop: '0.25rem'
 					}}
 				>
 					{error}
@@ -130,6 +107,15 @@ const Selector = ({ name, value, setValue, classes, error, ...rest }) => {
 			) : null}
 		</Fragment>
 	);
+};
+
+Selector.propTypes = {
+	name: PropTypes.string.isRequired,
+	value: PropTypes.array.isRequired,
+	setValue: PropTypes.func.isRequired,
+	classes: PropTypes.array.isRequired,
+	error: PropTypes.string,
+	buttons: PropTypes.bool
 };
 
 export default Selector;

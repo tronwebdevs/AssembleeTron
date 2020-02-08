@@ -1,31 +1,26 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { authAdmin } from "../../../actions/adminActions";
-import { fetchAssemblyGeneral } from "../../../actions/assemblyActions";
-import { Redirect } from "react-router-dom";
-import { LoginFormCard } from "../../Admin/";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { authAdmin } from '../../../actions/adminActions';
+import { fetchAssemblyGeneral } from '../../../actions/assemblyActions';
+import { Redirect } from 'react-router-dom';
+import { LoginFormCard } from '../../Admin/';
 
-const Login = ({ 
-    fetchAssemblyGeneral,
-    authAdmin, 
-    admin, 
-    location 
-}) =>
+const Login = ({ fetchAssemblyGeneral, authAdmin, admin, location }) =>
 	admin.authed === true && admin.token ? (
 		<Redirect
-			to={{ pathname: location.state.from.pathname || "/gestore/" }}
+			to={{ pathname: location.state.from.pathname || '/gestore/' }}
 		/>
 	) : (
 		<LoginFormCard
-            fetchAssembly={fetchAssemblyGeneral}
+			fetchAssembly={fetchAssemblyGeneral}
 			authAdmin={authAdmin}
 			errorMessage={location.state ? location.state.message : null}
 		/>
 	);
 
 Login.protoTypes = {
-    fetchAssemblyGeneral: PropTypes.func.isRequired,
+	fetchAssemblyGeneral: PropTypes.func.isRequired,
 	authAdmin: PropTypes.func.isRequired,
 	admin: PropTypes.object.isRequired,
 	location: PropTypes.object
@@ -35,4 +30,6 @@ const mapStateToProps = state => ({
 	admin: state.admin
 });
 
-export default connect(mapStateToProps, { fetchAssemblyGeneral, authAdmin })(Login);
+export default connect(mapStateToProps, { fetchAssemblyGeneral, authAdmin })(
+	Login
+);

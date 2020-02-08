@@ -41,7 +41,7 @@ export const authStudent = (studentID, part) => dispatch => {
             throw error;
         }
 
-        axios.get('/api/students/' + studentID, {
+        axios.get(`/api/students/${studentID}`, {
             params: { part }
         })
             .then(({ data }) => {
@@ -178,7 +178,7 @@ export const subscribeLabs = (studentID, labs) => (dispatch, getState) => {
     const authToken = getState().student.token;
 
     return new Promise((resolve, reject) => {
-        axios.post('/api/students/' + studentID + '/labs', { labs }, {
+        axios.post(`/api/students/${studentID}/labs`, { labs }, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data, headers }) => {
@@ -194,7 +194,9 @@ export const subscribeLabs = (studentID, labs) => (dispatch, getState) => {
                 } else {
                     let error;
                     error = new Error(data.message || 'Errore non riconosciuto (student)');
-                    error.target = data.target || null;
+                    if (data.target !== undefined) {
+                        error.target = data.target;
+                    }
                     throw error;
                 }
             })
@@ -204,7 +206,7 @@ export const subscribeLabs = (studentID, labs) => (dispatch, getState) => {
                     if (data.message) {
                         err.message = data.message;
                     }
-                    if (data.target && data.target !== 0) {
+                    if (data.target !== undefined) {
                         err.target = data.target;
                     }
                     err.token = err.response.headers.token

@@ -1,22 +1,22 @@
-import React from "react";
-import { Router, Route, Switch } from "react-router-dom";
-import { createBrowserHistory } from "history";
-import ReactGA from "react-ga";
-import { Provider } from "react-redux";
-import { Error404Page } from "tabler-react";
-import "./index.css";
+import React from 'react';
+import { Router, Route, Switch } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
+import ReactGA from 'react-ga';
+import { Provider } from 'react-redux';
+import { Error404Page } from 'tabler-react';
+import './index.css';
 
-import store from "../../store";
+import store from '../../store';
 
-import Admin from "../pages/Admin/";
-import Student from "../pages/Student/";
+import Admin from '../pages/Admin/';
+import Student from '../pages/Student/';
 
 let history = createBrowserHistory();
 history.listen(location => {
-    ReactGA.set({ page: location.pathname });
-    ReactGA.pageview(location.pathname);
-    window.ga('set', 'page', location.pathname + location.search);
-    window.ga('send', 'pageview');
+	ReactGA.set({ page: location.pathname });
+	ReactGA.pageview(location.pathname);
+	window.ga('set', 'page', location.pathname + location.search);
+	window.ga('send', 'pageview');
 });
 
 const App = () => (
@@ -29,10 +29,10 @@ const App = () => (
 					<Route
 						component={props => (
 							<Error404Page
-								action={"Indietro"}
-								subtitle={"Oof... Pagina non trovata..."}
+								action={'Indietro'}
+								subtitle={'Oof... Pagina non trovata...'}
 								details={
-									"La pagina che stai cercando non è stata trovata"
+									'La pagina che stai cercando non è stata trovata'
 								}
 								{...props}
 							/>

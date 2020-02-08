@@ -1,7 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Row } from "reactstrap";
-import SmallCard from "./SmallCard";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Row } from 'reactstrap';
+import SmallCard from './SmallCard';
 
 const CardsRow = ({ cards }) => (
 	<Row>
@@ -12,7 +12,7 @@ const CardsRow = ({ cards }) => (
 );
 
 CardsRow.propTypes = {
-    cards: PropTypes.array.isRequired
+	cards: PropTypes.array.isRequired
 };
 
 export default CardsRow;

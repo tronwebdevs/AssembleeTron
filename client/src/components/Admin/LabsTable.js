@@ -1,7 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { CardBody } from "reactstrap";
-import { Table, Icon } from "tabler-react";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { CardBody } from 'reactstrap';
+import { Table, Icon } from 'tabler-react';
 
 const LabsTable = ({
 	labs,
@@ -14,13 +14,13 @@ const LabsTable = ({
 		<Table
 			responsive
 			className="card-table table-vcenter text-wrap labs-table"
-			style={{ fontSize: "0.85rem" }}
+			style={{ fontSize: '0.85rem' }}
 			headerItems={[
-				{ content: "#", className: "w-1" },
-				{ content: "Titolo" },
-				{ content: "Aula" },
-				{ content: null, className: "w-2" },
-				{ content: null, className: "w-2" }
+				{ content: '#', className: 'w-1' },
+				{ content: 'Titolo' },
+				{ content: 'Aula' },
+				{ content: null, className: 'w-2' },
+				{ content: null, className: 'w-2' }
 			]}
 			bodyItems={labs.map((lab, index) => ({
 				key: lab._id,
@@ -37,7 +37,7 @@ const LabsTable = ({
 								name="edit"
 								onClick={() => {
 									setLabDisplay({
-										action: "edit",
+										action: 'edit',
 										lab
 									});
 									setShowModal(true);
@@ -57,18 +57,18 @@ const LabsTable = ({
 									if (answer) {
 										window.scrollTo({
 											top: 0,
-											behavior: "smooth"
+											behavior: 'smooth'
 										});
 										deleteAssemblyLab(lab._id)
 											.then(labTitle =>
 												setDisplayMessage({
-													type: "success",
+													type: 'success',
 													message: `Laboratorio "${labTitle}" eliminato con successo`
 												})
 											)
 											.catch(({ message }) =>
 												setDisplayMessage({
-													type: "danger",
+													type: 'danger',
 													message
 												})
 											);

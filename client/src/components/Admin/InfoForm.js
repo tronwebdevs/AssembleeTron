@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { Formik } from "formik";
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { Formik } from 'formik';
 import {
 	Row,
 	Col,
@@ -9,10 +9,10 @@ import {
 	Input,
 	Label,
 	FormFeedback
-} from "reactstrap";
-import moment from "moment";
-import axios from "axios";
-import Selector from "./LabForm/LabHour/Selector";
+} from 'reactstrap';
+import moment from 'moment';
+import axios from 'axios';
+import Selector from './LabForm/LabHour/Selector';
 
 const InfoForm = ({
 	info,
@@ -22,18 +22,18 @@ const InfoForm = ({
 	onSubmit,
 	buttons
 }) => {
-    const [schoolSections, setSchoolSections] = useState([]);
+	const [schoolSections, setSchoolSections] = useState([]);
 
 	useEffect(() => {
 		async function fetchSections() {
-			const resp = await axios.get("/api/students/sections", {
+			const resp = await axios.get('/api/students/sections', {
 				headers: { Authorization: `Bearer ${authToken}` }
 			});
 			const { data, response } = resp;
 			if (data && data.code === 1) {
 				setSchoolSections(data.sections);
 			} else {
-				let errorMessage = "Errore inaspettato";
+				let errorMessage = 'Errore inaspettato';
 				if (response && response.data && response.data.message) {
 					errorMessage = response.data.message;
 				}
@@ -49,15 +49,18 @@ const InfoForm = ({
 				_id: info._id,
 				title: info.title,
 				date: info.date,
-				subOpenTime: moment(info.subscription.open).format("HH:mm"),
+				subOpenTime: moment(info.subscription.open).format('HH:mm'),
 				subOpenDate: moment(info.subscription.open).format(
-					"YYYY-MM-DD"
+					'YYYY-MM-DD'
 				),
-				subCloseTime: moment(info.subscription.close).format("HH:mm"),
+				subCloseTime: moment(info.subscription.close).format('HH:mm'),
 				subCloseDate: moment(info.subscription.close).format(
-					"YYYY-MM-DD"
+					'YYYY-MM-DD'
 				),
-				sections: info.sections.sort().map(c => ({ label: c, value: c }))
+				tot_h: info.tot_h || 4,
+				sections: info.sections
+					.sort()
+					.map(c => ({ label: c, value: c }))
 			}}
 			onSubmit={onSubmit}
 			render={({
@@ -83,8 +86,8 @@ const InfoForm = ({
 									invalid={errors.title !== undefined}
 									onChange={handleChange}
 									onBlur={handleBlur}
-                                    placeholder="Nome assemblea"
-                                    disabled={formDisabled}
+									placeholder="Nome assemblea"
+									disabled={formDisabled}
 								/>
 								<FormFeedback>{errors.title}</FormFeedback>
 							</FormGroup>
@@ -100,7 +103,7 @@ const InfoForm = ({
 									invalid={errors._id !== undefined}
 									onChange={handleChange}
 									onBlur={handleBlur}
-                                    readOnly={true}
+									disabled={true}
 								/>
 								<FormFeedback>{errors._id}</FormFeedback>
 							</FormGroup>
@@ -115,15 +118,32 @@ const InfoForm = ({
 									name="date"
 									id="date"
 									value={moment(values.date).format(
-										"YYYY-MM-DD"
+										'YYYY-MM-DD'
 									)}
 									invalid={errors.date !== undefined}
 									onChange={handleChange}
 									onBlur={handleBlur}
-                                    className="mb-2"
-                                    disabled={formDisabled}
+									className="mb-2"
+									disabled={formDisabled}
 								/>
 								<FormFeedback>{errors.date}</FormFeedback>
+							</FormGroup>
+							<FormGroup>
+								<Label for="tot_h" className="form-label">
+									Numero di fasce
+								</Label>
+								<Input
+									type="number"
+									name="tot_h"
+									id="tot_h"
+									value={+values.tot_h || 0}
+									invalid={errors.tot_h !== undefined}
+									onChange={handleChange}
+									onBlur={handleBlur}
+									className="mb-2"
+									disabled={formDisabled}
+								/>
+								<FormFeedback>{errors.tot_h}</FormFeedback>
 							</FormGroup>
 						</Col>
 						<Col xs="12" lg="4">
@@ -132,7 +152,11 @@ const InfoForm = ({
 									Apertura iscrizioni
 								</Label>
 								<Row className="mb-2">
-									<Col xs="12" lg="7" className="mb-2 mb-md-0">
+									<Col
+										xs="12"
+										lg="7"
+										className="mb-2 mb-md-0"
+									>
 										<Input
 											type="date"
 											name="subOpenDate"
@@ -142,8 +166,8 @@ const InfoForm = ({
 												errors.subOpenDate !== undefined
 											}
 											onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            disabled={formDisabled}
+											onBlur={handleBlur}
+											disabled={formDisabled}
 										/>
 										<FormFeedback>
 											{errors.subOpenDate}
@@ -159,8 +183,8 @@ const InfoForm = ({
 												errors.subOpenTime !== undefined
 											}
 											onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            disabled={formDisabled}
+											onBlur={handleBlur}
+											disabled={formDisabled}
 										/>
 										<FormFeedback>
 											{errors.subOpenTime}
@@ -173,7 +197,11 @@ const InfoForm = ({
 									Chiusura iscrizioni
 								</Label>
 								<Row className="mb-2">
-									<Col xs="12" lg="7" className="mb-2 mb-md-0">
+									<Col
+										xs="12"
+										lg="7"
+										className="mb-2 mb-md-0"
+									>
 										<Input
 											type="date"
 											name="subCloseDate"
@@ -184,8 +212,8 @@ const InfoForm = ({
 												undefined
 											}
 											onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            disabled={formDisabled}
+											onBlur={handleBlur}
+											disabled={formDisabled}
 										/>
 										<FormFeedback>
 											{errors.subCloseDate}
@@ -201,8 +229,8 @@ const InfoForm = ({
 												undefined
 											}
 											onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            disabled={formDisabled}
+											onBlur={handleBlur}
+											disabled={formDisabled}
 										/>
 									</Col>
 								</Row>
@@ -216,14 +244,15 @@ const InfoForm = ({
 									Classi partecipanti
 								</Label>
 								<Selector
-									name={"sections"}
+									name="sections"
 									value={values.sections}
 									classes={schoolSections}
 									setValue={value =>
-										setFieldValue("sections", value)
+										setFieldValue('sections', value)
 									}
-                                    error={errors.sections}
-                                    isDisabled={formDisabled}
+									error={errors.sections}
+									buttons={true}
+									isDisabled={formDisabled}
 								/>
 							</FormGroup>
 						</Col>
@@ -232,8 +261,8 @@ const InfoForm = ({
 						{buttons.map((button, index) => (
 							<Col
 								md={{
-									size: "2",
-									offset: index === 0 ? "4" : null
+									size: '2',
+									offset: index === 0 ? '4' : null
 								}}
 								key={index}
 							>
@@ -249,8 +278,8 @@ const InfoForm = ({
 
 InfoForm.propTypes = {
 	info: PropTypes.object.isRequired,
-    authToken: PropTypes.string.isRequired,
-    formDisabled: PropTypes.bool,
+	authToken: PropTypes.string.isRequired,
+	formDisabled: PropTypes.bool,
 	setError: PropTypes.func.isRequired,
 	onSubmit: PropTypes.func.isRequired,
 	buttons: PropTypes.array.isRequired
