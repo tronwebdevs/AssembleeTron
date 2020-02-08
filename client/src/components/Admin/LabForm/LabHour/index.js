@@ -20,19 +20,19 @@ const secList = [
 		value: '@1'
 	},
 	{
-		label: 'seconde',
+		label: 'Classi seconde',
 		value: '@2'
 	},
 	{
-		label: 'terze',
+		label: 'Classi terze',
 		value: '@3'
 	},
 	{
-		label: 'quarte',
+		label: 'Classi quarte',
 		value: '@4'
 	},
 	{
-		label: 'quinte',
+		label: 'Classi quinte',
 		value: '@5'
 	}
 ];
@@ -70,7 +70,7 @@ const LabHour = ({
 				className="mb-2"
 				checked={
 					(values.classes || []).includes(el.value) ||
-					(values.classes || []).includes('@a')
+                    (values.classes || []).includes('@a')
 				}
 				disabled={values.seats <= 0}
 				onChange={({ currentTarget }) => {
@@ -115,14 +115,21 @@ const LabHour = ({
 		<Selector
 			name={`classesH_${h}_esc`}
 			id={`classesH_${h}_esc`}
-			value={values.classes.filter(
-				c => secList.find(s => s.value === c) === undefined
-			)}
+			value={values.classes
+				.filter(c => c[0] !== '@' && c[0] !== '-')
+				.map(cl => ({ label: cl, value: cl }))}
 			classes={classes}
-			setValue={value => setFieldValue('classesH' + h, value)}
+			setValue={value => setFieldValue('classesH' + h, value.map(el => el.value))}
 			error={errors.classes}
 			isDisabled={values.seats <= 0}
 		/>
+		<span>
+			Classi escluse:{' '}
+			{values.classes
+				.filter(c => c[0] === '-')
+				.map(c => c.substring(1))
+				.join(', ')}
+		</span>
 	</Col>
 );
 

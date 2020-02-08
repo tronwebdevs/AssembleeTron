@@ -62,7 +62,7 @@ const LabForm = ({
 			initialValues['seatsH' + i] = 0;
 			initialValues['classesH' + i] = [];
 		}
-	}
+    }
 
 	return (
 		<div id="form-card-wrapper" style={{ boxShadow: '0 0 8px #9E9E9E' }}>

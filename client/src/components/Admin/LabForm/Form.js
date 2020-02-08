@@ -111,7 +111,7 @@ const CustomForm = ({
 			/>
 			<FormFeedback>{errors.two_h}</FormFeedback>
 		</FormGroup>
-		<FormGroup>
+		<FormGroup className="mb-0">
 			<Row>
 				<Col xs={{ size: '3', offset: '3' }} className="pr-1">
 					<Button

@@ -41,17 +41,7 @@ const Stats = ({ admin, assembly }) => {
 			<Fragment>
 				<AdminAlert display={error !== null} message={error} />
 				<Row>
-					{stats === null ? (
-						<Col xs="12">
-							<Card>
-								<CardBody>
-									<p>
-										Nessuno studente iscritto all'assemblea
-									</p>
-								</CardBody>
-							</Card>
-						</Col>
-					) : (
+					{stats && stats.subscribeds.total > 0 ? (
 						<Fragment>
 							{/* <Col xs="12" md="6">
                                 <Card>
@@ -154,6 +144,16 @@ const Stats = ({ admin, assembly }) => {
 								</Card>
 							</Col>
 						</Fragment>
+					) : (
+						<Col xs="12">
+							<Card>
+								<CardBody>
+									<p>
+										Nessuno studente iscritto all'assemblea
+									</p>
+								</CardBody>
+							</Card>
+						</Col>
 					)}
 				</Row>
 			</Fragment>

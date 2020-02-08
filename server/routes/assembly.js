@@ -6,7 +6,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const PDFDocument = require('../utils/PDFDocumentsWithTable');
 const mongoose = require('mongoose');
-const { ObjectId } = mongoose.Types;
 
 const Assembly = require('../models/Assembly');
 const Laboratory = require('../models/Laboratory');
@@ -187,11 +186,9 @@ router.get('/backups', isAdmin, (req, res, next) => {
 /**
  * Backup assembly into JSON local file
  * @method post
- * @param {string} overwrite
  * @public
  */
 router.post('/backups', isAdmin, (req, res, next) => {
-    const { overwrite } = req.body;
     let info;
     Assembly.find()
         .then(results => {
@@ -203,11 +200,6 @@ router.post('/backups', isAdmin, (req, res, next) => {
                 fs.mkdirSync(assembliesBackups);
             }
             const file = path.join(assembliesBackups, info._id + '.json');
-            if (fs.existsSync(file) && overwrite !== true) {
-                let error = new Error('Il backup di questa assemblea esiste gia\', sovrascriverlo?');
-                error.code = 2;
-                throw error;
-            }
 
             const assembly = {
                 info,
@@ -241,7 +233,8 @@ router.post('/backups/load', isAdmin, (req, res, next) => {
         fs.readFile(file)
             .then(data => {
                 assemblyFile = JSON.parse(data);
-                const { info } = assemblyFile;
+                let { info } = assemblyFile;
+                delete info._id;
                 return new Assembly(info).save();
             })
             .then(info => {
@@ -554,7 +547,60 @@ router.delete('/labs', isAdmin, (req, res, next) => {
     } else {
         next(new Error('Parametri non accettati'));
     }
-})
+});
+
+/**
+ * Remove class from all labs
+ * @method post
+ * @param {int} h
+ * @param {array} sections
+ */
+router.post('/labs/exclude', (req, res, next) => {
+    const h = +req.body.h;
+    const { sections } = req.body;
+
+    if (h >= 0 && sections && sections.length > 0) {
+        let info;
+        Assembly.find()
+            .then(result => {
+                info = result[0];
+                if (h >= info.tot_h) {
+                    throw new Error('Parametro h non accettato');
+                }
+                return Laboratory.find();
+            })
+            .then(labs => {
+                let promiseArray = [];
+                labs.forEach(lab => {
+                    let labSections = lab.info[h].sections;
+                    sections.forEach(section => {
+                        // Check if selected section is included in lab sections
+                        if (labSections.includes(section)) {
+                            lab.info[h].sections = labSections.filter(
+                                sec => sec !== section
+                            );
+                        } else if (!labSections.includes('-' + section)) {
+                            // Check if lab sections includes all sections or sections of input sections
+                            if (labSections.includes('@a') || labSections.includes('@' + section[0])) {
+                                lab.info[h].sections.push('-' + section);
+                            }
+                        }
+                    });
+                    promiseArray.push(lab.save());
+                });
+                return Promise.all(promiseArray);
+            })
+            .then(updatedLabs => 
+                res.status(200).json({
+                    code: 1,
+                    labs: updatedLabs
+                })
+            )
+            .catch(err => next(err));
+    } else {
+        next(new Error('Parametri non accettati'));
+    }
+});
 
 /**
  * Get assembly students

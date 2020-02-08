@@ -40,7 +40,7 @@ class SectionsList {
 	 */
 	static parse(list, completeList) {
 		// Create new array variable to prevent from changing original array
-		let wList = [...list];
+		let wList = JSON.parse(JSON.stringify(list));
 		let parsedList = [];
 		// Check if arrays are identical
 		if (wList === completeList) {

@@ -471,6 +471,51 @@ export const deleteAssemblyLab = labID => dispatch => {
 };
 
 /**
+ * Exclude classes from all labs
+ * @public
+ * @param {int} h 
+ * @param {array} sections 
+ */
+export const excludeClassesFromLabs = (h, sections) => dispatch => {
+    dispatch({
+        type: FETCH_LABS_PENDING,
+        payload: 'labs'
+    });
+
+    const authToken = store.getState().admin.token;
+
+    return new Promise((resolve, reject) => 
+        axios.post('/api/assembly/labs/exclude', {
+            h, sections
+        },{
+            headers: { Authorization: `Bearer ${authToken}`}
+        })
+            .then(({ data, headers }) => {
+                if (data.code === 1) {
+                    dispatch({
+                        type: LABS_FETCHED,
+                        payload: data.labs
+                    });
+                    dispatch({
+                        type: UPDATE_ADMIN_TOKEN,
+                        payload: headers.token
+                    });
+                    resolve();
+                } else {
+                    throw new Error(data.message || 'Errore inaspettato');
+                }
+            })
+            .catch(err => {
+                handleError(err, dispatch, {
+                    type: ERROR_IN_LABS_FETCH,
+                    fetch: 'labs'
+                });
+                reject(err);
+            })
+    );
+};
+
+/**
  * Fetch assembly general info (info, number of students/subsciber/laboratories)
  * @public
  */

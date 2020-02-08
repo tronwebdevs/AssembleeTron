@@ -18,6 +18,7 @@ import LabsCheckModal from './LabModal/LabsCheckModal';
 import LabsTutorial from './LabsTutorial';
 import BackupsTable from './BackupsTable';
 import StudentsSectionsTable from './StudentsSectionsTable';
+import ExcClassModal from './ExcClassModal/';
 
 export {
 	AuthRequired,
@@ -39,5 +40,6 @@ export {
 	LabsCheckModal,
 	LabsTutorial,
 	BackupsTable,
-	StudentsSectionsTable
+    StudentsSectionsTable,
+    ExcClassModal
 };
