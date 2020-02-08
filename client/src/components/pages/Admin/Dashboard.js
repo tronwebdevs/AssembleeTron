@@ -3,28 +3,23 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Row, Col, Card, CardHeader, CardBody } from 'reactstrap';
-import { AssemblyInfo, CardsRow, PageLoading, AdminAlert } from '../../Admin/';
+import { AssemblyInfo, CardsRow, PageLoading } from '../../Admin/';
+import cogoToast from 'cogo-toast';
 
-const Dashboard = ({ assembly, errorMessage }) => {
-	const { stats, info, pendings } = assembly;
-
-	const assemblyLogAlert = pendings => {
-		let text = null;
-		if (pendings.load === false) {
-			text = 'caricata';
-		} else if (pendings.create_info === false) {
-			text = 'creata';
-		} else if (pendings.delete_assembly === false) {
-			text = 'eliminata';
-		}
-		return text ? (
-			<AdminAlert
-				type="success"
-				display={true}
-				message={`Assemblea ${text} con successo`}
-			/>
-		) : null;
-	};
+const Dashboard = ({ assembly }) => {
+    const { stats, info, pendings } = assembly;
+    
+    let text = null;
+    if (pendings.load === false) {
+        text = 'caricata';
+    } else if (pendings.create_info === false) {
+        text = 'creata';
+    } else if (pendings.delete_assembly === false) {
+        text = 'eliminata';
+    }
+    if (text !== null) {
+        cogoToast.success(`Assemblea ${text} con successo`)
+    }
 	let cards = [];
 
 	if (pendings.assembly === false) {
@@ -53,11 +48,6 @@ const Dashboard = ({ assembly, errorMessage }) => {
 		];
 		return (
 			<Fragment>
-				<AdminAlert
-					display={errorMessage !== null}
-					message={errorMessage}
-				/>
-				{assemblyLogAlert(pendings)}
 				<CardsRow cards={cards} />
 				<AssemblyInfo exists={assembly.exists} info={info} />
 				<Row>

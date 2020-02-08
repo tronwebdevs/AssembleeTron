@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Redirect, Link } from 'react-router-dom';
@@ -15,14 +15,9 @@ import {
 	Button,
 	ButtonGroup
 } from 'reactstrap';
-import { AdminAlert } from '../../Admin/';
+import cogoToast from 'cogo-toast';
 
 const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
-	const [displayMessage, setDisplayMessage] = useState({
-		type: null,
-		message: null
-	});
-
 	const { pendings, info } = assembly;
 
 	if (pendings.delete_assembly === false && info.deleted === true) {
@@ -30,18 +25,12 @@ const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 	}
 
 	const backupCompleted = (target, message) => {
-		setDisplayMessage({
-			type: 'success',
-			message
-		});
+		cogoToast.success(message);
 		target.className = 'btn btn-success';
 		target.innerText = 'Backup completato';
 	};
 	const backupError = (target, message) => {
-		setDisplayMessage({
-			type: 'danger',
-			message
-		});
+		cogoToast.error(message);
 		target.disabled = false;
 	};
 
@@ -51,25 +40,7 @@ const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 		target.disabled = true;
 		requestBackup()
 			.then(msg => backupCompleted(target, msg))
-			.catch(({ message, code }) => {
-				if (code === 2) {
-					if (window.confirm(message) === true) {
-						requestBackup(true)
-							.then(msg => backupCompleted(target, msg))
-							.catch(({ message }) =>
-								backupError(target, message)
-							);
-					} else {
-						setDisplayMessage({
-							type: 'success',
-							message: 'Operazione annullata'
-						});
-						target.disabled = false;
-					}
-				} else {
-					backupError(target, message);
-				}
-			});
+			.catch(({ message }) => backupError(target, message));
 	};
 
 	const handleDelete = e => {
@@ -77,21 +48,13 @@ const DeleteAssembly = ({ assembly, requestBackup, deleteAssembly }) => {
 		let { target } = e;
 		target.disabled = true;
 		deleteAssembly().catch(({ message }) => {
-			setDisplayMessage({
-				type: 'danger',
-				message
-			});
+			cogoToast.error(message);
 			target.disabled = false;
 		});
 	};
 
 	return (
 		<Fragment>
-			<AdminAlert
-				display={displayMessage.message !== null}
-				message={displayMessage.message}
-				type={displayMessage.type}
-			/>
 			<Row>
 				<Col xs="12" xl="6">
 					<Card>

@@ -20,14 +20,11 @@ import {
     Label
 } from 'reactstrap';
 import { Formik } from 'formik';
-import { PageLoading, AdminAlert } from '../../Admin';
+import { PageLoading } from '../../Admin';
+import cogoToast from 'cogo-toast';
 import axios from 'axios';
 
 const RestrictedArea = ({ fetchAllLabs, authSudoer, assembly, admin }) => {
-	const [displayMessage, setDisplayMessage] = useState({
-		message: null,
-		type: null
-    });
     const [editSub, setEditSub] = useState({ id: null });
 
 	const { labs, pendings } = assembly;
@@ -40,11 +37,6 @@ const RestrictedArea = ({ fetchAllLabs, authSudoer, assembly, admin }) => {
         if (admin.isSudo === true) {
             return (
                 <Fragment>
-                    <AdminAlert
-                        display={displayMessage.message !== null}
-                        message={displayMessage.message}
-                        type={displayMessage.type}
-                    />
                     <Row>
                         <Col xs="12" lg="4">
                             <Row>
@@ -68,10 +60,7 @@ const RestrictedArea = ({ fetchAllLabs, authSudoer, assembly, admin }) => {
                                                         .then(() => {
                                                             setSubmitting(false);
                                                             resetForm();
-                                                            setDisplayMessage({
-                                                                type: 'success',
-                                                                message: 'Iscritto eliminato con successo'
-                                                            });
+                                                            cogoToast.success('Iscritto eliminato con successo');
                                                         })
                                                         .catch(err => {
                                                             const { response } = err;
@@ -155,20 +144,14 @@ const RestrictedArea = ({ fetchAllLabs, authSudoer, assembly, admin }) => {
                                                         .then(() => {
                                                             setSubmitting(false);
                                                             resetForm();
-                                                            setDisplayMessage({
-                                                                type: 'success',
-                                                                message: 'Studente creato con successo'
-                                                            });
+                                                            cogoToast.success('Studente creato con successo');
                                                         })
                                                         .catch(err => {
                                                             const { response } = err;
                                                             if (response && response.data && response.data.message) {
                                                                 err.message = response.data.message;
                                                             }
-                                                            setDisplayMessage({
-                                                                type: 'danger',
-                                                                message: err.message
-                                                            });
+                                                            cogoToast.error(err.message);
                                                             setSubmitting(false);
                                                         });
                                                 }}

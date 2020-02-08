@@ -9,8 +9,7 @@ const LabModal = ({
 	lab,
 	action,
 	handleReset,
-	setLabDisplay,
-	setDisplayMessage
+	setLabDisplay
 }) => (
 	<Modal
 		isOpen={showModal}
@@ -27,7 +26,6 @@ const LabModal = ({
 			action={action}
 			handleReset={handleReset}
 			handleCloseModal={handleClose}
-			setDisplayMessage={setDisplayMessage}
 			setLabDisplay={setLabDisplay}
 		/>
 	</Modal>
@@ -38,8 +36,7 @@ LabModal.propTypes = {
 	handleClose: PropTypes.func.isRequired,
 	lab: PropTypes.object.isRequired,
 	action: PropTypes.string.isRequired,
-	handleReset: PropTypes.func.isRequired,
-	setDisplayMessage: PropTypes.func.isRequired
+	handleReset: PropTypes.func.isRequired
 };
 
 export default LabModal;

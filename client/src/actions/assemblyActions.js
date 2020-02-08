@@ -245,7 +245,7 @@ export const updateAssemblyInfo = info => dispatch => {
  * Request a backup of the assembly
  * @public
  */
-export const requestBackup = (overwrite = false) => dispatch => {
+export const requestBackup = () => dispatch => {
 
     dispatch({
         type: REQUEST_ASSEMBLY_BACKUP,
@@ -255,7 +255,7 @@ export const requestBackup = (overwrite = false) => dispatch => {
     const authToken = store.getState().admin.token;
 
     return new Promise((resolve, reject) => {
-        axios.post('/api/assembly/backups', { overwrite }, {
+        axios.post('/api/assembly/backups', {}, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data, headers }) => {

@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^0.19.0",
     "bootstrap": "^4.3.1",
+    "cogo-toast": "^4.2.1",
     "file-saver": "^2.0.2",
     "formik": "^1.5.8",
     "moment": "^2.24.0",

@@ -15,8 +15,7 @@ import {
 	LabModal,
 	LabsCheckModal,
 	ExcClassModal,
-	PageLoading,
-	AdminAlert
+	PageLoading
 } from '../../Admin/';
 
 const Labs = ({
@@ -30,10 +29,6 @@ const Labs = ({
 }) => {
 	const { labs, pendings, info } = assembly;
 
-	const [displayMessage, setDisplayMessage] = useState({
-		type: null,
-		message: null
-	});
 	const [labDisplay, setLabDisplay] = useState({
 		action: 'create',
 		lab: {}
@@ -49,11 +44,6 @@ const Labs = ({
 	if (pendings.assembly === false) {
 		return (
 			<Fragment>
-				<AdminAlert
-					display={displayMessage.message !== null}
-					message={displayMessage.message}
-					type={displayMessage.type}
-				/>
 				<Row>
 					<Col xs="12" xl={assembly.exists ? '9' : '12'}>
 						<Card>
@@ -63,7 +53,6 @@ const Labs = ({
 									labs={labs}
 									setLabDisplay={setLabDisplay}
 									deleteAssemblyLab={deleteAssemblyLab}
-									setDisplayMessage={setDisplayMessage}
 									setShowModal={setShowModal}
 								/>
 							) : (
@@ -123,7 +112,6 @@ const Labs = ({
 					handleReset={() =>
 						setLabDisplay({ action: 'create', lab: {} })
 					}
-					setDisplayMessage={setDisplayMessage}
 					setLabDisplay={setLabDisplay}
 				/>
 				<LabsCheckModal

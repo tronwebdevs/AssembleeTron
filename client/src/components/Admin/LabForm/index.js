@@ -7,6 +7,7 @@ import {
 import PropTypes from 'prop-types';
 import { Card, CardBody, CardHeader } from 'reactstrap';
 import { Formik } from 'formik';
+import cogoToast from 'cogo-toast';
 import Form from './Form';
 
 const LabForm = ({
@@ -14,7 +15,6 @@ const LabForm = ({
 	action,
 	handleReset,
 	handleCloseModal,
-	setDisplayMessage,
 	setLabDisplay,
 	updateAssemblyLab,
 	createAssemblyLab,
@@ -31,17 +31,13 @@ const LabForm = ({
 			lab: {}
 		});
 		if (err) {
-			setDisplayMessage({
-				type: 'danger',
-				message: err.message
-			});
+			cogoToast.error(err.message);
 		} else {
-			setDisplayMessage({
-				type: 'success',
-				message: `Laboratorio "${lab.title}" ${
+			cogoToast.success(
+				`Laboratorio "${lab.title}" ${
 					action === 'edit' ? 'modificato' : 'creato'
 				} con successo`
-			});
+			);
 		}
 	};
 
@@ -62,7 +58,7 @@ const LabForm = ({
 			initialValues['seatsH' + i] = 0;
 			initialValues['classesH' + i] = [];
 		}
-    }
+	}
 
 	return (
 		<div id="form-card-wrapper" style={{ boxShadow: '0 0 8px #9E9E9E' }}>
@@ -232,7 +228,6 @@ LabForm.propTypes = {
 	action: PropTypes.string.isRequired,
 	handleReset: PropTypes.func.isRequired,
 	handleCloseModal: PropTypes.func.isRequired,
-	setDisplayMessage: PropTypes.func.isRequired,
 	setLabDisplay: PropTypes.func.isRequired,
 	updateAssemblyLab: PropTypes.func.isRequired,
 	createAssemblyLab: PropTypes.func.isRequired,

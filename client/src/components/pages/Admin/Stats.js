@@ -2,15 +2,15 @@ import React, { Fragment, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Row, Col, Card, CardBody, CardHeader } from 'reactstrap';
-import { PageLoading, AdminAlert } from '../../Admin/';
+import { PageLoading } from '../../Admin/';
 import C3Chart from 'react-c3js';
+import cogoToast from 'cogo-toast';
 import axios from 'axios';
 
 const Stats = ({ admin, assembly }) => {
 	const { pendings } = assembly;
-
-	const authToken = admin.token;
-	const [error, setError] = useState(null);
+    const authToken = admin.token;
+    
 	const [stats, setStats] = useState(null);
 	useEffect(() => {
 		async function fetchStats() {
@@ -28,18 +28,17 @@ const Stats = ({ admin, assembly }) => {
 				if (response && response.data && response.data.message) {
 					errorMessage = response.data.message;
 				}
-				setError(errorMessage);
+				cogoToast.error(errorMessage);
 			}
 		}
 		if (stats === null) {
 			fetchStats();
 		}
-	}, [setError, setStats, stats, authToken]);
+	}, [setStats, stats, authToken]);
 
 	if (pendings.assembly === false) {
 		return (
 			<Fragment>
-				<AdminAlert display={error !== null} message={error} />
 				<Row>
 					{stats && stats.subscribeds.total > 0 ? (
 						<Fragment>

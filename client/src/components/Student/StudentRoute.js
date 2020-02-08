@@ -6,7 +6,7 @@ import { logout } from '../../actions/studentActions';
 import { Route } from 'react-router-dom';
 import moment from 'moment';
 
-const AuthRequired = ({
+const StudentRoute = ({
 	component: Component,
     assembly,
     student,
@@ -36,7 +36,7 @@ const AuthRequired = ({
 	);
 };
 
-AuthRequired.protoTypes = {
+StudentRoute.protoTypes = {
     assembly: PropTypes.object.isRequired,
     student: PropTypes.object.isRequired,
     fetchAssemblyInfo: PropTypes.func.isRequired,
@@ -48,4 +48,4 @@ const mapStateToProps = state => ({
     student: state.student,
 });
 
-export default connect(mapStateToProps, { fetchAssemblyInfo, logout })(AuthRequired);
+export default connect(mapStateToProps, { fetchAssemblyInfo, logout })(StudentRoute);

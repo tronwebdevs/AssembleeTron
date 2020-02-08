@@ -19,7 +19,7 @@ const processRequest = (req, res, next) => {
                         jwt.sign({
                             id: decoded.id,
                             type: decoded.type
-                        }, privateKey, { expiresIn: 60 * 5 }, (err, token) => {
+                        }, privateKey, { expiresIn: 60 * 60 }, (err, token) => {
                             if (err) {
                                 next(err);
                             } else {

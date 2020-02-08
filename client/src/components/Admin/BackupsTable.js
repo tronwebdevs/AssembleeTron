@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Table, Button } from 'reactstrap';
 import axios from 'axios';
+import cogoToast from 'cogo-toast';
 
-const BackupsTable = ({ authToken, setError, button }) => {
+const BackupsTable = ({ authToken, button }) => {
 	const [backups, setBackups] = useState(null);
 	useEffect(() => {
 		async function fetchBackups() {
@@ -19,13 +20,13 @@ const BackupsTable = ({ authToken, setError, button }) => {
 					errorMessage = response.data.message;
 				}
 				setBackups([]);
-				setError(errorMessage);
+				cogoToast.error(errorMessage);
 			}
 		}
 		if (backups === null) {
 			fetchBackups();
 		}
-	}, [setError, authToken, backups]);
+	}, [authToken, backups]);
 	const { label, color, handleClick, ...rest } = button;
 
 	if (backups && backups.length > 0) {
@@ -67,7 +68,6 @@ const BackupsTable = ({ authToken, setError, button }) => {
 };
 
 BackupsTable.propTypes = {
-	setError: PropTypes.func.isRequired,
 	authToken: PropTypes.string.isRequired,
 	button: PropTypes.object
 };

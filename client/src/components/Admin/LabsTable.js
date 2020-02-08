@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CardBody } from 'reactstrap';
 import { Table, Icon } from 'tabler-react';
+import cogoToast from 'cogo-toast';
 
 const LabsTable = ({
 	labs,
 	setLabDisplay,
 	deleteAssemblyLab,
-	setDisplayMessage,
 	setShowModal
 }) =>
 	labs.length > 0 ? (
@@ -60,17 +60,11 @@ const LabsTable = ({
 											behavior: 'smooth'
 										});
 										deleteAssemblyLab(lab._id)
-											.then(labTitle =>
-												setDisplayMessage({
-													type: 'success',
-													message: `Laboratorio "${labTitle}" eliminato con successo`
-												})
+											.then(labTitle => 
+												cogoToast.success(`Laboratorio "${labTitle}" eliminato con successo`)
 											)
 											.catch(({ message }) =>
-												setDisplayMessage({
-													type: 'danger',
-													message
-												})
+												cogoToast.error(message)
 											);
 									}
 								}}
@@ -90,7 +84,6 @@ LabsTable.propTypes = {
 	labs: PropTypes.array.isRequired,
 	setLabDisplay: PropTypes.func.isRequired,
 	deleteAssemblyLab: PropTypes.func.isRequired,
-	setDisplayMessage: PropTypes.func.isRequired,
 	setShowModal: PropTypes.func.isRequired
 };
 

@@ -19,9 +19,7 @@ const LabsCheckModal = ({ showModal, handleClose, labs, info }) => {
 			}
 			return lab;
 		});
-		console.log(fLabs);
 		checkResult = validateLabs(fLabs, info.sections, info.tot_h);
-		console.log(checkResult);
 	}
 
 	return (
@@ -66,7 +64,7 @@ const LabsCheckModal = ({ showModal, handleClose, labs, info }) => {
 											text = 'Nessuna classe esclusa';
 										}
 										return (
-											<li className="mb-2">
+											<li className="mb-2" key={h}>
 												<b>Ora {h + 1}:</b> {text}
 											</li>
 										);

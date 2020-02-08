@@ -12,13 +12,13 @@ import {
 } from 'reactstrap';
 import moment from 'moment';
 import axios from 'axios';
+import cogoToast from 'cogo-toast';
 import Selector from './LabForm/LabHour/Selector';
 
 const InfoForm = ({
 	info,
 	authToken,
 	formDisabled = false,
-	setError,
 	onSubmit,
 	buttons
 }) => {
@@ -37,11 +37,11 @@ const InfoForm = ({
 				if (response && response.data && response.data.message) {
 					errorMessage = response.data.message;
 				}
-				setError(errorMessage);
+				cogoToast.error(errorMessage);
 			}
 		}
 		fetchSections();
-	}, [setError, setSchoolSections, authToken]);
+	}, [setSchoolSections, authToken]);
 
 	return (
 		<Formik
@@ -69,9 +69,10 @@ const InfoForm = ({
 				handleChange,
 				handleBlur,
 				handleSubmit,
+				handleReset,
 				setFieldValue
 			}) => (
-				<Form onSubmit={handleSubmit}>
+				<Form onSubmit={handleSubmit} onReset={handleReset}>
 					<Row>
 						<Col xs="12" lg="4">
 							<FormGroup>
@@ -280,7 +281,6 @@ InfoForm.propTypes = {
 	info: PropTypes.object.isRequired,
 	authToken: PropTypes.string.isRequired,
 	formDisabled: PropTypes.bool,
-	setError: PropTypes.func.isRequired,
 	onSubmit: PropTypes.func.isRequired,
 	buttons: PropTypes.array.isRequired
 };

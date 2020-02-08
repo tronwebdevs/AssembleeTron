@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -15,9 +15,10 @@ import {
 	Spinner
 } from 'reactstrap';
 import { Link, Redirect } from 'react-router-dom';
-import { AdminAlert, InfoForm, BackupsTable } from '../../Admin/';
+import { InfoForm, BackupsTable } from '../../Admin/';
 import { validateInfoForm } from '../../../utils/';
 import moment from 'moment';
+import cogoToast from 'cogo-toast';
 
 const CreateAssembly = ({
 	admin,
@@ -25,11 +26,6 @@ const CreateAssembly = ({
 	createAssemblyInfo,
 	loadAssembly
 }) => {
-	const [displayMessage, setDisplayMessage] = useState({
-		type: null,
-		message: null
-	});
-
 	const authToken = admin.token;
 	const { exists, pendings, info, stats } = assembly;
 
@@ -52,15 +48,10 @@ const CreateAssembly = ({
 						values.subCloseDate + ' ' + values.subCloseTime
 					).format(),
 					sections: values.sections.map(({ value }) => value)
-				})
-					.then(() => setSubmitting(false))
-					.catch(({ message }) => {
-						setSubmitting(false);
-						setDisplayMessage({
-							type: 'danger',
-							message
-						});
-					});
+				}).catch(({ message }) => {
+					setSubmitting(false);
+					cogoToast.error(message);
+				});
 			} else {
 				setSubmitting(false);
 				setErrors(errors);
@@ -70,8 +61,7 @@ const CreateAssembly = ({
 
 	if (
 		pendings.create_info === false &&
-		exists === true &&
-		displayMessage.message === null
+		exists === true
 	) {
 		return <Redirect to={{ pathname: '/gestore/laboratori' }} />;
 	} else if (exists === true) {
@@ -80,11 +70,6 @@ const CreateAssembly = ({
 
 	return (
 		<Fragment>
-			<AdminAlert
-				display={displayMessage.message !== null}
-				message={displayMessage.message}
-				type={displayMessage.type}
-			/>
 			<Row>
 				<Col xs="12">
 					<Card>
@@ -114,12 +99,6 @@ const CreateAssembly = ({
 										Continua
 									</Button>
 								]}
-								setError={message =>
-									setDisplayMessage({
-										type: 'danger',
-										message
-									})
-								}
 								authToken={authToken}
 							/>
 						</CardBody>
@@ -134,21 +113,13 @@ const CreateAssembly = ({
 						</CardHeader>
 						<BackupsTable
 							authToken={authToken}
-							setError={message =>
-								setDisplayMessage({
-									type: 'danger',
-									message
-								})
-							}
 							button={{
 								color: 'gray',
 								handleClick: (e, backup) => {
-									loadAssembly(backup.fileName).catch(
-										({ message }) =>
-											setDisplayMessage({
-												type: 'danger',
-												message
-											})
+									loadAssembly(
+										backup.fileName
+									).catch(({ message }) =>
+										cogoToast.error(message)
 									);
 								},
 								label:

@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { generatePdf } from '../../../actions/assemblyActions';
@@ -11,34 +11,20 @@ import {
 	Button,
 	Spinner
 } from 'reactstrap';
-import { PageLoading, AdminAlert, BackupsTable } from '../../Admin/';
+import { PageLoading, BackupsTable } from '../../Admin/';
 import { FaTrash } from 'react-icons/fa';
+import cogoToast from 'cogo-toast';
 import axios from 'axios';
 import moment from 'moment';
 
 const Export = ({ admin, assembly, generatePdf }) => {
 	const { pendings, info } = assembly;
 
-	const [displayMessage, setDisplayMessage] = useState({
-		type: null,
-		message: null
-	});
-
 	const requestPdf = () =>
 		pendings.generate_pdf !== true
 			? generatePdf()
-					.then(message =>
-						setDisplayMessage({
-							type: 'success',
-							message
-						})
-					)
-					.catch(err =>
-						setDisplayMessage({
-							type: 'danger',
-							message: err.message
-						})
-					)
+					.then(message => cogoToast.success(message))
+					.catch(err => cogoToast.error(err.message))
 			: null;
 
 	if (pendings.assembly === false) {
@@ -48,11 +34,6 @@ const Export = ({ admin, assembly, generatePdf }) => {
 		}
 		return (
 			<Fragment>
-				<AdminAlert
-					display={displayMessage.message !== null}
-					message={displayMessage.message}
-					type={displayMessage.type}
-				/>
 				<Row>
 					<Col xs="12" md="6">
 						<Card>
@@ -94,12 +75,6 @@ const Export = ({ admin, assembly, generatePdf }) => {
 								</p>
 							</CardBody>
 							<BackupsTable
-								setError={message =>
-									setDisplayMessage({
-										type: 'danger',
-										message
-									})
-								}
 								authToken={admin.token}
 								button={{
 									outline: true,
@@ -116,16 +91,9 @@ const Export = ({ admin, assembly, generatePdf }) => {
 											})
 											.then(({ data }) => {
 												if (data && data.code === 1) {
-													setDisplayMessage({
-														type: 'success',
-														message:
-															'Backup eliminato con successo'
-													});
+													cogoToast.success('Backup eliminato con successo');
 												} else {
-													throw new Error(
-														data.message ||
-															'Errore sconosciuto'
-													);
+													throw new Error(data.message || 'Errore sconosciuto');
 												}
 											})
 											.catch(err => {
@@ -138,10 +106,7 @@ const Export = ({ admin, assembly, generatePdf }) => {
 													err.message =
 														response.data.message;
 												}
-												setDisplayMessage({
-													type: 'danger',
-													message: err.message
-												});
+												cogoToast.error(err.message);
 											}),
 									label: <FaTrash />
 								}}

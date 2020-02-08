@@ -2,20 +2,20 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'reactstrap';
 import ExcClassForm from './ExcClassForm';
+import cogoToast from 'cogo-toast';
 import axios from 'axios';
 
 const ExcClassModal = ({
 	showModal,
 	handleClose,
 	authToken,
-    excludeClassesFromLabs,
-    createLab,
-    updateLab,
-    labs,
+	excludeClassesFromLabs,
+	createLab,
+	updateLab,
+	labs,
 	tot_h
 }) => {
 	const [sections, setSections] = useState(null);
-	const [error, setError] = useState(null);
 
 	useEffect(() => {
 		async function fetchSections() {
@@ -30,13 +30,13 @@ const ExcClassModal = ({
 				if (response && response.data && response.data.message) {
 					errorMessage = response.data.message;
 				}
-				setError(errorMessage);
+				cogoToast.error(errorMessage);
 			}
 		}
 		if (sections === null) {
 			fetchSections();
 		}
-	}, [setError, setSections, sections, authToken]);
+	}, [setSections, sections, authToken]);
 
 	return (
 		<Modal
@@ -54,63 +54,65 @@ const ExcClassModal = ({
 				sections={sections || []}
 				handleReset={() => handleClose(false)}
 				handleSubmit={(values, { setErrors, setSubmitting }) => {
-                    let sections = values.sections.map(s => s.value);
-                    const h = +values.h;
-                    excludeClassesFromLabs(h, sections)
-                        .then(() => {
-                            // TODO: check if laboratorio libero already exists 
-                            if (values.autoGenLab === true) {
-                                let labIndex = labs.findIndex(lab => 
-                                    lab.title === 'Laboratorio libero' &&
-                                    lab.room === '-' &&
-                                    lab.description === '-'
-                                )
-                                let lab;
-                                if (labIndex === -1) {
-                                    lab = {
-                                        room: '-',
-                                        title: 'Laboratorio libero',
-                                        description: '-',
-                                        two_h: false,
-                                        info: []
-                                    };
-                                } else {
-                                    lab = labs[labIndex];
-                                }
-                                for (let i = 0; i < tot_h; i++) {
-                                    if (lab.info[i] === undefined) {
-                                        let infoH = {
-                                            seats: 0,
-                                            sections: []
-                                        };
-                                        if (i === h) {
-                                            infoH.sections = sections;
-                                            infoH.seats = sections.length * 40;
-                                        }
-                                        lab.info.push(infoH);
-                                    } else {
-                                        if (i === h) {
-                                            lab.info[i].sections.push(...sections);
-                                            lab.info[i].seats += sections.length * 40;
-                                        }
-                                    }
-                                }
-                                if (labIndex === -1) {
-                                    return createLab(lab);
-                                } else {
-                                    return updateLab(lab);
-                                }
-                            }
-                            return;
-                        })
-                        .then(() => handleClose(false))
-                        .catch(err => {
-                            setSubmitting(false);
-                            console.log(err);
-                        })
-                }}
-				// handleCloseModal={handleClose}
-				// setDisplayMessage={setDisplayMessage}
+					let sections = values.sections.map(s => s.value);
+					const h = +values.h;
+					excludeClassesFromLabs(h, sections)
+						.then(() => {
+							if (values.autoGenLab === true) {
+								let labIndex = labs.findIndex(
+									lab =>
+										lab.title === 'Laboratorio libero' &&
+										lab.room === '-' &&
+										lab.description === '-'
+								);
+								let lab;
+								if (labIndex === -1) {
+									lab = {
+										room: '-',
+										title: 'Laboratorio libero',
+										description: '-',
+										two_h: false,
+										info: []
+									};
+								} else {
+									lab = labs[labIndex];
+								}
+								for (let i = 0; i < tot_h; i++) {
+									if (lab.info[i] === undefined) {
+										let infoH = {
+											seats: 0,
+											sections: []
+										};
+										if (i === h) {
+											infoH.sections = sections;
+											infoH.seats = sections.length * 40;
+										}
+										lab.info.push(infoH);
+									} else {
+										if (i === h) {
+                                            for (let sect of sections) {
+                                                if (!lab.info[i].sections.includes(sect)) {
+                                                    lab.info[i].sections.push(sect);
+                                                    lab.info[i].seats += 40;
+                                                }
+                                            }
+										}
+									}
+								}
+								if (labIndex === -1) {
+									return createLab(lab);
+								} else {
+									return updateLab(lab);
+								}
+							}
+							return;
+						})
+						.then(() => handleClose(false))
+						.catch(err => {
+							setSubmitting(false);
+							console.log(err);
+						});
+				}}
 			/>
 		</Modal>
 	);
@@ -118,12 +120,13 @@ const ExcClassModal = ({
 
 ExcClassModal.propTypes = {
 	showModal: PropTypes.bool.isRequired,
-	authToken: PropTypes.string.isRequired,
 	handleClose: PropTypes.func.isRequired,
-    createLab: PropTypes.func.isRequired,
-    updateLab: PropTypes.func.isRequired,
-    tot_h: PropTypes.number.isRequired,
-    labs: PropTypes.array.isRequired
+	authToken: PropTypes.string.isRequired,
+	excludeClassesFromLabs: PropTypes.func.isRequired,
+	createLab: PropTypes.func.isRequired,
+	updateLab: PropTypes.func.isRequired,
+	labs: PropTypes.array.isRequired,
+	tot_h: PropTypes.number.isRequired
 };
 
 export default ExcClassModal;

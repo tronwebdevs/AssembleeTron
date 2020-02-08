@@ -3,18 +3,15 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Row, Col, Card, CardBody, Button } from 'reactstrap';
 import { updateAssemblyInfo } from '../../../actions/assemblyActions';
-import { InfoForm, PageLoading, AdminAlert } from '../../Admin/';
+import { InfoForm, PageLoading } from '../../Admin/';
 import moment from 'moment';
 import { validateInfoForm } from '../../../utils/';
+import cogoToast from 'cogo-toast';
 
 const Info = ({ assembly, admin, updateAssemblyInfo }) => {
 	const { pendings, info, stats } = assembly;
 
 	const [edit, setEdit] = useState(false);
-	const [displayMessage, setDisplayMessage] = useState({
-		type: null,
-		message: null
-	});
 
 	const handleSubmit = (values, { setSubmitting, setErrors }) => {
 		if (pendings.update_info !== true) {
@@ -35,21 +32,15 @@ const Info = ({ assembly, admin, updateAssemblyInfo }) => {
 					).format(),
 					sections: values.sections.map(({ value }) => value)
 				})
-					.then(message =>
-						setDisplayMessage({
-							type: 'success',
-							message
-						})
-					)
-					.catch(({ message }) =>
-						setDisplayMessage({
-							type: 'danger',
-							message
-						})
-					)
-					.finally(() => {
+					.then(message => {
 						setEdit(false);
 						setSubmitting(false);
+						cogoToast.success(message);
+					})
+					.catch(({ message }) => {
+						setEdit(false);
+						setSubmitting(false);
+						cogoToast.error(message);
 					});
 			} else {
 				setSubmitting(false);
@@ -61,11 +52,6 @@ const Info = ({ assembly, admin, updateAssemblyInfo }) => {
 	if (pendings.assembly === false || pendings.info === false) {
 		return (
 			<Fragment>
-				<AdminAlert
-					display={displayMessage.message !== null}
-					message={displayMessage.message}
-					type={displayMessage.type}
-				/>
 				<Row>
 					<Col xs="12">
 						<Card>
@@ -78,7 +64,7 @@ const Info = ({ assembly, admin, updateAssemblyInfo }) => {
 											edit === true
 												? [
 														<Button
-															type="button"
+															type="reset"
 															block
 															onClick={() => {
 																setEdit(false);
@@ -113,10 +99,7 @@ const Info = ({ assembly, admin, updateAssemblyInfo }) => {
 												  ]
 										}
 										setError={message =>
-											setDisplayMessage({
-												type: 'danger',
-												message
-											})
+											cogoToast.error(message)
 										}
 										authToken={admin.token}
 										formDisabled={!edit}
