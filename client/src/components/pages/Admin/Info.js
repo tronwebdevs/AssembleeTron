@@ -98,9 +98,7 @@ const Info = ({ assembly, admin, updateAssemblyInfo }) => {
 														</Button>
 												  ]
 										}
-										setError={message =>
-											cogoToast.error(message)
-										}
+                                        labsLength={stats.labs}
 										authToken={admin.token}
 										formDisabled={!edit}
 									/>

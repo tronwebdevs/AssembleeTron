@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -9,17 +9,19 @@ import cogoToast from 'cogo-toast';
 const Dashboard = ({ assembly }) => {
     const { stats, info, pendings } = assembly;
     
-    let text = null;
-    if (pendings.load === false) {
-        text = 'caricata';
-    } else if (pendings.create_info === false) {
-        text = 'creata';
-    } else if (pendings.delete_assembly === false) {
-        text = 'eliminata';
-    }
-    if (text !== null) {
-        cogoToast.success(`Assemblea ${text} con successo`)
-    }
+    useEffect(() => {
+        let text = null;
+        if (pendings.load === false) {
+            text = 'caricata';
+        } else if (pendings.create_info === false) {
+            text = 'creata';
+        } else if (pendings.delete_assembly === false) {
+            text = 'eliminata';
+        }
+        if (text !== null) {
+            cogoToast.success(`Assemblea ${text} con successo`);
+        }
+    });
 	let cards = [];
 
 	if (pendings.assembly === false) {

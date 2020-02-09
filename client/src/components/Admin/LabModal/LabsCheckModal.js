@@ -29,7 +29,6 @@ const LabsCheckModal = ({ showModal, handleClose, labs, info }) => {
 			style={{
 				maxWidth: 800,
 				width: '100%',
-				margin: 'auto',
 				padding: 5
 			}}
 		>

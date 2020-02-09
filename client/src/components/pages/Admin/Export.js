@@ -11,14 +11,14 @@ import {
 	Button,
 	Spinner
 } from 'reactstrap';
-import { PageLoading, BackupsTable } from '../../Admin/';
+import { PageLoading, BackupsTable, deleteModal } from '../../Admin/';
 import { FaTrash } from 'react-icons/fa';
 import cogoToast from 'cogo-toast';
 import axios from 'axios';
 import moment from 'moment';
 
 const Export = ({ admin, assembly, generatePdf }) => {
-	const { pendings, info } = assembly;
+    const { pendings, info } = assembly;
 
 	const requestPdf = () =>
 		pendings.generate_pdf !== true
@@ -70,8 +70,7 @@ const Export = ({ admin, assembly, generatePdf }) => {
 							</CardHeader>
 							<CardBody>
 								<p>
-									Backup presenti sul server delle assemblee
-									passate
+									Backup presenti sul server delle assemblee passate
 								</p>
 							</CardBody>
 							<BackupsTable
@@ -79,37 +78,41 @@ const Export = ({ admin, assembly, generatePdf }) => {
 								button={{
 									outline: true,
 									color: 'danger',
-									handleClick: (e, backup) =>
-										axios
-											.delete('/api/assembly/backups', {
-												data: {
-													fileName: backup.fileName
-												},
-												headers: {
-													Authorization: `Bearer ${admin.token}`
-												}
-											})
-											.then(({ data }) => {
-												if (data && data.code === 1) {
-													cogoToast.success('Backup eliminato con successo');
-												} else {
-													throw new Error(data.message || 'Errore sconosciuto');
-												}
-											})
-											.catch(err => {
-												const { response } = err;
-												if (
-													response &&
-													response.data &&
-													response.data.message
-												) {
-													err.message =
-														response.data.message;
-												}
-												cogoToast.error(err.message);
-											}),
+                                    handleClick: (e, backup, setBackups) =>
+                                        deleteModal(
+                                            `Vuoi davvero eliminare il backup di "${backup.title}"?`,
+                                            () =>
+                                                axios
+                                                    .delete('/api/assembly/backups', {
+                                                        data: {
+                                                            fileName: backup.fileName
+                                                        },
+                                                        headers: {
+                                                            Authorization: `Bearer ${admin.token}`
+                                                        }
+                                                    })
+                                                    .then(({ data }) => {
+                                                        if (data && data.code === 1) {
+                                                            setBackups(null);
+                                                            cogoToast.success('Backup eliminato con successo');
+                                                        } else {
+                                                            throw new Error(data.message || 'Errore sconosciuto');
+                                                        }
+                                                    })
+                                                    .catch(err => {
+                                                        const { response } = err;
+                                                        if (
+                                                            response &&
+                                                            response.data &&
+                                                            response.data.message
+                                                        ) {
+                                                            err.message = response.data.message;
+                                                        }
+                                                        cogoToast.error(err.message);
+                                                    })
+                                        ),
 									label: <FaTrash />
-								}}
+                                }}
 							/>
 						</Card>
 					</Col>

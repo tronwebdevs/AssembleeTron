@@ -77,8 +77,21 @@ const LabHour = ({
 					const temp = currentTarget.name.split('_');
 					let h = temp[1];
 					let value = temp[2];
-					if (currentTarget.checked === false) {
-						// Checking
+					if (currentTarget.checked === true) {
+                        // Checking
+						if (value !== '@a') {
+                            let newClasses = values.classes.filter(
+								c => c[0] !== value[1]
+							);
+							setFieldValue('classesH' + h, [
+								...newClasses,
+								value
+							]);
+						} else {
+							setFieldValue('classesH' + h, [value]);
+						}
+                    } else {
+                        // Unchecking
 						if (values.classes.includes('@a') && value !== '@a') {
 							let newClasses = values.classes.filter(
 								c => c !== '@a'
@@ -98,28 +111,20 @@ const LabHour = ({
 								values.classes.filter(c => c !== value)
 							);
 						}
-					} else {
-						// Unchecking
-						if (value !== '@a') {
-							setFieldValue('classesH' + h, [
-								...values.classes,
-								value
-							]);
-						} else {
-							setFieldValue('classesH' + h, [value]);
-						}
 					}
 				}}
 			/>
 		))}
 		<Selector
-			name={`classesH_${h}_esc`}
-			id={`classesH_${h}_esc`}
+			name={`classesH_${h}_c`}
+			id={`classesH_${h}_c`}
 			value={values.classes
 				.filter(c => c[0] !== '@' && c[0] !== '-')
 				.map(cl => ({ label: cl, value: cl }))}
 			classes={classes}
-			setValue={value => setFieldValue('classesH' + h, value.map(el => el.value))}
+            setValue={value => 
+                setFieldValue('classesH' + h, value.map(el => el.value))
+            }
 			error={errors.classes}
 			isDisabled={values.seats <= 0}
 		/>

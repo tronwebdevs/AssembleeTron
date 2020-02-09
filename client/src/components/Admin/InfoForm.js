@@ -16,7 +16,8 @@ import cogoToast from 'cogo-toast';
 import Selector from './LabForm/LabHour/Selector';
 
 const InfoForm = ({
-	info,
+    info,
+    labsLength,
 	authToken,
 	formDisabled = false,
 	onSubmit,
@@ -142,7 +143,7 @@ const InfoForm = ({
 									onChange={handleChange}
 									onBlur={handleBlur}
 									className="mb-2"
-									disabled={formDisabled}
+									disabled={formDisabled || labsLength > 0}
 								/>
 								<FormFeedback>{errors.tot_h}</FormFeedback>
 							</FormGroup>
@@ -278,7 +279,8 @@ const InfoForm = ({
 };
 
 InfoForm.propTypes = {
-	info: PropTypes.object.isRequired,
+    info: PropTypes.object.isRequired,
+    labsLength: PropTypes.number.isRequired,
 	authToken: PropTypes.string.isRequired,
 	formDisabled: PropTypes.bool,
 	onSubmit: PropTypes.func.isRequired,

@@ -2,14 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CardBody } from 'reactstrap';
 import { Table, Icon } from 'tabler-react';
+import { deleteModal } from '../Admin/';
 import cogoToast from 'cogo-toast';
 
-const LabsTable = ({
-	labs,
-	setLabDisplay,
-	deleteAssemblyLab,
-	setShowModal
-}) =>
+const LabsTable = ({ labs, setLabDisplay, deleteAssemblyLab, setShowModal }) =>
 	labs.length > 0 ? (
 		<Table
 			responsive
@@ -50,24 +46,26 @@ const LabsTable = ({
 							<Icon
 								link
 								name="trash-2"
-								onClick={() => {
-									let answer = window.confirm(
-										`Sicuro di voler eliminare il laboratorio "${lab.title}"?`
-									);
-									if (answer) {
-										window.scrollTo({
-											top: 0,
-											behavior: 'smooth'
-										});
-										deleteAssemblyLab(lab._id)
-											.then(labTitle => 
-												cogoToast.success(`Laboratorio "${labTitle}" eliminato con successo`)
-											)
-											.catch(({ message }) =>
-												cogoToast.error(message)
-											);
-									}
-								}}
+								onClick={() =>
+									deleteModal(
+										`Vuoi davvero eliminare "${lab.title}"?`,
+										() => {
+											window.scrollTo({
+												top: 0,
+												behavior: 'smooth'
+											});
+											deleteAssemblyLab(lab._id)
+												.then(labTitle =>
+													cogoToast.success(
+														`Laboratorio "${labTitle}" eliminato con successo`
+													)
+												)
+												.catch(({ message }) =>
+													cogoToast.error(message)
+												);
+										}
+									)
+								}
 							/>
 						)
 					}

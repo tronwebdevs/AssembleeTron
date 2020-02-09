@@ -98,7 +98,8 @@ const CreateAssembly = ({
 									<Button type="submit" block color="primary">
 										Continua
 									</Button>
-								]}
+                                ]}
+                                labsLength={stats.labs}
 								authToken={authToken}
 							/>
 						</CardBody>

@@ -170,7 +170,11 @@ const LabForm = ({
 							for (let i = 0; i < info.tot_h; i++) {
 								lab.info.push({
 									seats: values['seatsH' + i],
-									sections: values['classesH' + i]
+									sections: (
+                                        values['seatsH' + i] > 0 ? 
+                                        values['classesH' + i] :
+                                        []
+                                    )
 								});
 							}
 							if (action === 'edit') {

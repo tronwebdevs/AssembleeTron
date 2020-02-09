@@ -26,7 +26,7 @@ const BackupsTable = ({ authToken, button }) => {
 		if (backups === null) {
 			fetchBackups();
 		}
-	}, [authToken, backups]);
+    }, [authToken, backups]);
 	const { label, color, handleClick, ...rest } = button;
 
 	if (backups && backups.length > 0) {
@@ -47,7 +47,7 @@ const BackupsTable = ({ authToken, button }) => {
 							<td>
 								<Button
 									color={color}
-									onClick={e => handleClick(e, backup)}
+									onClick={e => handleClick(e, backup, setBackups)}
 									{...rest}
 								>
 									{label}
