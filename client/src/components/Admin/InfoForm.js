@@ -157,7 +157,7 @@ const InfoForm = ({
 									<Col
 										xs="12"
 										lg="7"
-										className="mb-2 mb-md-0"
+										className="mb-2 mb-lg-0"
 									>
 										<Input
 											type="date"
@@ -202,7 +202,7 @@ const InfoForm = ({
 									<Col
 										xs="12"
 										lg="7"
-										className="mb-2 mb-md-0"
+										className="mb-2 mb-lg-0"
 									>
 										<Input
 											type="date"

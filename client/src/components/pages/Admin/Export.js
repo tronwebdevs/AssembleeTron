@@ -35,7 +35,7 @@ const Export = ({ admin, assembly, generatePdf }) => {
 		return (
 			<Fragment>
 				<Row>
-					<Col xs="12" md="6">
+					<Col xs="12" lg="6">
 						<Card>
 							<CardHeader>
 								<b>PDF</b>
@@ -63,7 +63,7 @@ const Export = ({ admin, assembly, generatePdf }) => {
 							</CardBody>
 						</Card>
 					</Col>
-					<Col xs="12" md="6">
+					<Col xs="12" lg="6">
 						<Card>
 							<CardHeader>
 								<b>JSON</b>

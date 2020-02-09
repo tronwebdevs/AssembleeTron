@@ -59,7 +59,7 @@ const NavBar = ({ logout }) => {
 									</NavLink>
 								</NavItem>
 							))}
-							<NavItem className="ml-lg-3">
+							<NavItem className="ml-md-3 pt-2 pt-md-0">
 								<Button color="danger" outline onClick={logout}>
 									Logout
 									<FaSignOutAlt className="ml-2" />

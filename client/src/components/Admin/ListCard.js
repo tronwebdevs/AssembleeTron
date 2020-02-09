@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Row, Col, Card, CardBody, CardHeader } from 'reactstrap';
 
 const ListCard = ({ title, items, buttons }) => (
-	<Col xs="12" md="4">
+	<Col xs="12" lg="4">
 		<Card>
 			<CardHeader>
 				<b>{title}</b>

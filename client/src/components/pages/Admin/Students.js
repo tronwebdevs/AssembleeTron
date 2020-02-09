@@ -23,7 +23,7 @@ const Students = ({ assembly }) => {
 						]}
 						buttons={
 							<Row>
-								<Col xs="12" md="6">
+								<Col xs="12" md="6" className="mb-2 mb-md-0">
 									<Button
 										block
 										outline

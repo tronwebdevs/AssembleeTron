@@ -34,11 +34,10 @@
     flex: 1 100%;
 }
 
-@media screen and (max-width: 576px) {
+@media screen and (max-width: 767px) {
     .navbar-nav {
         flex-direction: column !important;
     }
-
     .navbar .nav-item {
         display: block;
         padding-left: 2rem;

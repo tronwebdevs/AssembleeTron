@@ -113,7 +113,7 @@ const CustomForm = ({
 		</FormGroup>
 		<FormGroup className="mb-0">
 			<Row>
-				<Col xs={{ size: '3', offset: '3' }} className="pr-1">
+				<Col xs="6" md={{ size: '3', offset: '3' }} className="pr-1">
 					<Button
 						type="submit"
 						block
@@ -123,7 +123,7 @@ const CustomForm = ({
 						Salva
 					</Button>
 				</Col>
-				<Col xs="3" className="pl-1">
+				<Col xs="6" md="3" className="pl-1">
 					<Button
 						type="button"
 						onClick={handleReset}

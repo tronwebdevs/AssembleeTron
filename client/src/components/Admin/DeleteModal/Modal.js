@@ -34,8 +34,8 @@ const DelModal = ({ visible, showModal, text, deleteFunc }) => (
 					</Row>
 					<Row>
 						<Col
-							xs="12"
-							lg={{ size: 4, offset: 2 }}
+							xs="6"
+							md={{ size: 4, offset: 2 }}
 							className="px-1"
 						>
                             <Button
@@ -49,7 +49,7 @@ const DelModal = ({ visible, showModal, text, deleteFunc }) => (
 								Elimina
 							</Button>
 						</Col>
-						<Col xs="12" lg="4" className="px-1">
+						<Col xs="6" md="4" className="px-1">
 							<Button
 								onClick={() => showModal(false)}
 								color="primary"

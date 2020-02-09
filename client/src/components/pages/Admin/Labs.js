@@ -2,9 +2,9 @@ import React, { useState, Fragment } from 'react';
 import { connect } from 'react-redux';
 import {
 	deleteAssemblyLab,
-    fetchAllLabs,
-    createAssemblyLab,
-    updateAssemblyLab,
+	fetchAllLabs,
+	createAssemblyLab,
+	updateAssemblyLab,
 	excludeClassesFromLabs
 } from '../../../actions/assemblyActions';
 import PropTypes from 'prop-types';
@@ -22,9 +22,9 @@ const Labs = ({
 	assembly,
 	admin,
 	deleteAssemblyLab,
-    fetchAllLabs,
-    createAssemblyLab,
-    updateAssemblyLab,
+	fetchAllLabs,
+	createAssemblyLab,
+	updateAssemblyLab,
 	excludeClassesFromLabs
 }) => {
 	const { labs, pendings, info } = assembly;
@@ -45,7 +45,7 @@ const Labs = ({
 		return (
 			<Fragment>
 				<Row>
-					<Col xs="12" xl={assembly.exists ? '9' : '12'}>
+					<Col xs="12" lg={assembly.exists ? '9' : '12'}>
 						<Card>
 							{pendings.labs === false ||
 							assembly.exists === false ? (
@@ -69,38 +69,48 @@ const Labs = ({
 						</Card>
 					</Col>
 					{assembly.exists === true ? (
-						<Col xs="12" xl="3">
-							<Card>
-								<CardBody>
-									<Button
-										type="button"
-										color="success"
-										block
-										onClick={() => setShowModal(true)}
-									>
-										Crea
-									</Button>
-									<Button
-										color="primary"
-										outline
-										block
-										onClick={() =>
-											setShowEscClassModal(true)
-										}
-									>
-										Escludi classi
-									</Button>
-									<Button
-										color="info"
-										outline
-										block
-										onClick={() => setShowCheckModal(true)}
-									>
-										Controlla
-									</Button>
-								</CardBody>
-							</Card>
-							<LabsTutorial />
+						<Col xs="12" lg="3">
+							<Row>
+								<Col xs="12" md="6" lg="12">
+									<Card>
+										<CardBody>
+											<Button
+												type="button"
+												color="success"
+												block
+												onClick={() =>
+													setShowModal(true)
+												}
+											>
+												Crea
+											</Button>
+											<Button
+												color="primary"
+												outline
+												block
+												onClick={() =>
+													setShowEscClassModal(true)
+												}
+											>
+												Escludi classi
+											</Button>
+											<Button
+												color="info"
+												outline
+												block
+												onClick={() =>
+													setShowCheckModal(true)
+												}
+											>
+												Controlla
+											</Button>
+										</CardBody>
+									</Card>
+								</Col>
+								<Col xs="12" md="6" lg="12">
+									<LabsTutorial />
+								</Col>
+							</Row>
 						</Col>
 					) : null}
 				</Row>
@@ -124,10 +134,10 @@ const Labs = ({
 					tot_h={info.tot_h}
 					showModal={showEscClassModal}
 					authToken={admin.token}
-                    excludeClassesFromLabs={excludeClassesFromLabs}
-                    createLab={createAssemblyLab}
-                    updateLab={updateAssemblyLab}
-                    labs={labs}
+					excludeClassesFromLabs={excludeClassesFromLabs}
+					createLab={createAssemblyLab}
+					updateLab={updateAssemblyLab}
+					labs={labs}
 					handleClose={() => setShowEscClassModal(false)}
 				/>
 			</Fragment>
@@ -141,9 +151,9 @@ Labs.propTypes = {
 	assembly: PropTypes.object.isRequired,
 	admin: PropTypes.object.isRequired,
 	deleteAssemblyLab: PropTypes.func.isRequired,
-    fetchAllLabs: PropTypes.func.isRequired,
-    createAssemblyLab: PropTypes.func.isRequired,
-    updateAssemblyLab: PropTypes.func.isRequired,
+	fetchAllLabs: PropTypes.func.isRequired,
+	createAssemblyLab: PropTypes.func.isRequired,
+	updateAssemblyLab: PropTypes.func.isRequired,
 	excludeClassesFromLabs: PropTypes.func.isRequired
 };
 
@@ -154,8 +164,8 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
 	deleteAssemblyLab,
-    fetchAllLabs,
-    createAssemblyLab,
-    updateAssemblyLab,
+	fetchAllLabs,
+	createAssemblyLab,
+	updateAssemblyLab,
 	excludeClassesFromLabs
 })(Labs);

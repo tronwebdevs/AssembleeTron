@@ -93,7 +93,7 @@ const DashAssemblyRow = ({ info }) => {
 						</Link>
 					}
 				/>
-				<Col xs="12" md="4">
+				<Col xs="12" lg="4">
 					<Card>
 						<CardHeader>
 							<b>Elimina assemblea</b>
