@@ -4,7 +4,6 @@
 
 # Dissembly
 Dissembly is a website build with the last technologies available for web development (React, Redux, ExpressJS, MongoDB) and it is meant to be a simple and flexible solution to the problem of subscription to the school assemblies.
-At the current state it can handle only school assemblies with 4 laboratories per day, but in future this limit could be raised up.
 
 ### Installation
 ```
