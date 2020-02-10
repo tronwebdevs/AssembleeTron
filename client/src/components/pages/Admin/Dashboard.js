@@ -21,7 +21,7 @@ const Dashboard = ({ assembly }) => {
         if (text !== null) {
             cogoToast.success(`Assemblea ${text} con successo`);
         }
-    });
+    }, [pendings.load, pendings.create_info, pendings.delete_assembly]);
 	let cards = [];
 
 	if (pendings.assembly === false) {
