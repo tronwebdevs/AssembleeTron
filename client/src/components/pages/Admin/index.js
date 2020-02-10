@@ -8,7 +8,6 @@ import Login from './Login';
 import Dashboard from './Dashboard';
 import Info from './Info';
 import Labs from './Labs';
-import Students from './Students';
 import Stats from './Stats';
 import Export from './Export';
 import DeleteAssembly from './DeleteAssembly';
@@ -58,11 +57,6 @@ const AdminWrapper = () => (
 							<AuthRequired
 								path={rootPath + '/laboratori'}
 								component={Labs}
-								exact
-							/>
-							<AuthRequired
-								path={rootPath + '/studenti'}
-								component={Students}
 								exact
 							/>
 							<AuthRequired

@@ -17,11 +17,6 @@ const NavBarItems = [
 		icon: 'list'
 	},
 	{
-		value: 'Studenti',
-		to: rootPath + '/studenti',
-		icon: 'users'
-	},
-	{
 		value: 'Statistiche',
 		to: rootPath + '/statistiche',
 		icon: 'bar-chart-2'
