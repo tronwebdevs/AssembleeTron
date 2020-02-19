@@ -5,7 +5,7 @@ import { FormGroup, Input, FormFeedback } from 'reactstrap';
 import DefaultOption from './DefaultOption';
 import Option from './Option';
 
-const LabSelector = ({ labs, h, onChange, value, error }) => (
+const LabSelector = ({ labs, h, studentSection, onChange, value, error }) => (
 	<FormGroup className="mb-3">
 		<Input
 			type="select"
@@ -18,7 +18,7 @@ const LabSelector = ({ labs, h, onChange, value, error }) => (
 		>
 			<DefaultOption h={h + 1} />
 			{labs.map((lab, index) =>
-				lab.info[h].seats > 0 ? (
+				(lab.info[h].seats > 0 && lab.info[h].sections.includes(studentSection)) ? (
 					<Option key={index} lab={lab} h={h} />
 				) : ''
 			)}
@@ -29,7 +29,8 @@ const LabSelector = ({ labs, h, onChange, value, error }) => (
 
 LabSelector.propTypes = {
 	labs: PropTypes.array.isRequired,
-	h: PropTypes.number.isRequired,
+    h: PropTypes.number.isRequired,
+    studentSection: PropTypes.string.isRequired,
 	onChange: PropTypes.func.isRequired,
 	value: PropTypes.string.isRequired,
 	error: PropTypes.string

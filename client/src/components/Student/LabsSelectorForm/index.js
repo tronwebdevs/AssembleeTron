@@ -74,7 +74,8 @@ const LabsSelectorForm = ({
 						<LabSelector
 							key={i}
 							labs={labs}
-							h={i}
+                            h={i}
+                            studentSection={profile.section}
 							onChange={handleChange}
 							error={errors['h' + i]}
 							value={values['h' + i]}

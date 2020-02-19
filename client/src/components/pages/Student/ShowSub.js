@@ -11,6 +11,7 @@ import {
 	PageTitle,
 	SiteWrapper
 } from '../../Student/';
+import moment from 'moment';
 
 const ConfirmSub = ({ student, assembly, logout }) => {
 	const { profile, labs } = student;
@@ -21,10 +22,15 @@ const ConfirmSub = ({ student, assembly, logout }) => {
 		return <Redirect to={{ pathname: '/iscrizione' }} />;
 	}
 
-	const { title } = assembly.info;
-	const notSub = labs.every(labID => labID === -1);
+	const { title, date } = assembly.info;
+    const notSub = labs.every(labID => labID === -1);
 
 	if (assembly.pendings.info === false) {
+        // Check if assembly has been deleted or is finished
+        if (!date || moment(date).diff(moment()) < 0) {
+            logout();
+        }
+
 		return (
 			<SiteWrapper>
 				<Row>
