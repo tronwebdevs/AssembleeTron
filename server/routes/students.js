@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 const { ObjectId } = mongoose.Types;
 
+const Assembly = require('../models/Assembly');
 const Laboratory = require('../models/Laboratory');
 const Student = require('../models/Student');
 const Subscribed = require('../models/Subscribed');
@@ -256,8 +257,23 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
     // Check if parameters are valid
     if (labs.length > 0 && studentId !== -1) {
         let error = new Error();
-        // Fetch subscribed
-        Subscribed.find({ studentId })
+        // Check malicious users
+        Assembly.find()
+            .then(results => {
+                let info = results[0];
+                if (!info) {
+                    let err = new Error('Nessuna assemblea trovata!');
+                    err.status = 400;
+                    throw err;
+                }
+                if (moment(info.subscription.open).diff(moment()) >= 0) {
+                    let err = new Error('Le iscrizioni non sono ancora state aperte!');
+                    err.status = 401;
+                    throw err;
+                }
+                // Fetch subscribed
+                return Subscribed.find({ studentId });
+            })
             .then(subs => {
                 // Check if subscribed has been found
                 if (subs.length > 0) {
