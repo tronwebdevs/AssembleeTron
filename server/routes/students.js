@@ -261,9 +261,10 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
         Assembly.find()
             .then(results => {
                 let info = results[0];
-                if (!info) {
+                // Security checks
+                if (!info || !info.subscription) {
                     let err = new Error('Nessuna assemblea trovata!');
-                    err.status = 400;
+                    err.status = 404;
                     throw err;
                 }
                 if (moment(info.subscription.open).diff(moment()) >= 0) {
@@ -271,6 +272,27 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
                     err.status = 401;
                     throw err;
                 }
+                if (moment(info.subscription.close).diff(moment()) <= 0) {
+                    let err = new Error('Le iscrizioni sono gia\' state chiuse!');
+                    err.status = 401;
+                    throw err;
+                }
+
+                if (labs.length !== info.tot_h) {
+                    let err = new Error('Numero di laboratori forniti non valido');
+                    err.status = 400;
+                    throw err;
+                }
+
+                labs.forEach((lab, index) => {
+                    if (typeof lab !== 'string') {
+                        let err = new Error('Laboratorio non valido');
+                        err.status = 400;
+                        err.target = index;
+                        throw err;
+                    }
+                });
+
                 // Fetch subscribed
                 return Subscribed.find({ studentId });
             })
@@ -310,7 +332,7 @@ router.post('/:studentID/labs', isStudent, (req, res, next) => {
                 let promiseArray = [];
                 labs.forEach((lab, index) => {
                     // Check if lasts 2 hours
-                    if (lab.two_h === true) {
+                    if (lab.two_h === true && labs[index + 1]) {
                         if (index % 2 == 0) {
                             if (!lab._id.equals(labs[index + 1]._id)) {
                                 error.message += 'precedente (2H)';

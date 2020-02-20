@@ -11,10 +11,10 @@ import {
 	PageTitle,
 	SiteWrapper
 } from '../../Student/';
-import moment from 'moment';
 
 const ConfirmSub = ({ student, assembly, logout }) => {
-	const { profile, labs } = student;
+    const { pendings, profile, labs } = student;
+    const { info } = assembly;
 
 	if (profile.studentId === null) {
 		return <Redirect to={{ pathname: '/' }} />;
@@ -22,12 +22,11 @@ const ConfirmSub = ({ student, assembly, logout }) => {
 		return <Redirect to={{ pathname: '/iscrizione' }} />;
 	}
 
-	const { title, date } = assembly.info;
+	const { title } = info;
     const notSub = labs.every(labID => labID === -1);
 
 	if (assembly.pendings.info === false) {
-        // Check if assembly has been deleted or is finished
-        if (!date || moment(date).diff(moment()) < 0) {
+        if (pendings.profile === undefined && pendings.labs_avabile === undefined) {
             logout();
         }
 

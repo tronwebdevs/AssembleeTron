@@ -9,6 +9,7 @@ import { Card, CardBody, CardHeader } from 'reactstrap';
 import { Formik } from 'formik';
 import cogoToast from 'cogo-toast';
 import Form from './Form';
+import { validateLabForm } from '../../../utils/';
 
 const LabForm = ({
 	lab,
@@ -76,85 +77,7 @@ const LabForm = ({
 					<Formik
 						enableReinitialize={true}
 						initialValues={initialValues}
-						validate={values => {
-							let errors = {};
-							if (values._id !== lab._id) {
-								labs.forEach(lab => {
-									if (lab._id === values._id) {
-										errors._id = 'ID duplicato';
-									}
-									if (lab.room === values.room.trim()) {
-										errors.room = `Aula identica al laboratorio "${lab.title}"`;
-									}
-									if (lab.title === values.title.trim()) {
-										errors.title = `Esiste gia' un laboratorio con questo titolo ("${lab.title}")`;
-									}
-									if (
-										lab.description ===
-											values.description.trim() &&
-										values.description !== '-'
-									) {
-										errors.description = `Esiste gia' un laboratorio con questa descrizione ("${lab.title}")`;
-									}
-								});
-							}
-							if (values.title.trim() === '') {
-								errors.title =
-									"Il titolo non puo' restare vuoto";
-							}
-							if (values.room.trim() === '') {
-								errors.room = "L'aula non puo' restare vuota";
-							}
-							if (values.description.trim() === '') {
-								errors.description =
-									"La descrizione non puo' restare vuota";
-							}
-
-							for (let i = 0; i < info.tot_h; i++) {
-								if (
-									values['seatsH' + i] > 0 &&
-									values['classesH' + i].length <= 0
-								) {
-									errors['classesH' + i] =
-										"Devi selezionare almeno una classe partecipante per quest'ora";
-								}
-								if (values.two_h === true) {
-									if (i % 2 === 0) {
-										if (
-											values['seatsH' + i] !==
-											values['seatsH' + (i + 1)]
-										) {
-											errors['seatsH' + (i + 1)] =
-												'Il numero posti di questa ora deve essere ' +
-												"uguale a quello dell'ora precedente";
-										}
-										if (
-											values['classesH' + i].length !==
-												0 &&
-											(values['classesH' + i].length !==
-												values['classesH' + (i + 1)]
-													.length ||
-												values['classesH' + i].filter(
-													sec =>
-														values[
-															'classesH' + (i + 1)
-														].find(
-															({ value }) =>
-																value ===
-																sec.value
-														) !== undefined
-												).length === 0)
-										) {
-											errors['classesH' + (i + 1)] =
-												"Le classi partecipati di quest'ora devono essere " +
-												"uguali a quelle dell'ora precedente";
-										}
-									}
-								}
-							}
-
-							return errors;
-						}}
+						validate={values => validateLabForm(values, lab, labs, info)}
 						validateOnChange={false}
 						onSubmit={values => {
 							let lab = {

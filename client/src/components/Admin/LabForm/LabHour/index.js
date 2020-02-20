@@ -54,7 +54,8 @@ const LabHour = ({
 			<Input
 				type="number"
 				name={'seatsH' + h}
-				value={values.seats}
+                value={values.seats}
+                min={0}
 				invalid={errors.seats !== undefined}
 				onChange={handleChange}
 			/>

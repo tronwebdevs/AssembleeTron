@@ -23,6 +23,7 @@ import {
 	SiteWrapper,
 	LabsListCard
 } from '../../Student/';
+import moment from 'moment';
 
 const LabsSelect = ({
 	assembly,
@@ -31,7 +32,8 @@ const LabsSelect = ({
 	subscribeLabs,
 	logout
 }) => {
-	const { profile, labs, labs_avabile, pendings } = student;
+    const { profile, labs, labs_avabile, pendings } = student;
+    const { info } = assembly;
 
 	const [globalError, setGlobalError] = useState(null);
 
@@ -46,6 +48,15 @@ const LabsSelect = ({
 	}
 
 	if (assembly.pendings.info === false) {
+        if (!info.subscription ||
+            !info.subscription.open ||
+            !info.subscription.close ||
+            moment(info.subscription.open).diff(moment()) > 0 ||
+            moment(info.subscription.close).diff(moment()) < 0
+        ) {
+            logout();
+        }
+
 		return (
 			<SiteWrapper>
 				<Row>
@@ -97,7 +108,7 @@ const LabsSelect = ({
 													fetchAvabileLabs
 												}
 												profile={profile}
-												tot_h={assembly.info.tot_h}
+												tot_h={info.tot_h}
 												setGlobalError={msg =>
 													setGlobalError(msg)
 												}
@@ -127,10 +138,11 @@ const LabsSelect = ({
 };
 
 LabsSelect.propTypes = {
+	student: PropTypes.object.isRequired,
+    assembly: PropTypes.object.isRequired,
 	fetchAvabileLabs: PropTypes.func.isRequired,
 	subscribeLabs: PropTypes.func.isRequired,
 	logout: PropTypes.func.isRequired,
-	student: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
