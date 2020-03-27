@@ -34,6 +34,33 @@
     flex: 1 100%;
 }
 
+footer {
+    height: 60px;
+    line-height: 60px;
+    background-color: #f5f5f5;
+}
+
+footer div {
+    height: 60px !important;
+}
+
+span.footer-span {
+    color: #888e9a;
+}
+
+span.footer-span a {
+    color: #697282
+}
+
+div.tw-modal {
+    box-shadow: 0 0 8px #9E9E9E;
+}
+
+button.selector-btn {
+    background-color: #fbfbfc;
+    border-color: #ced4da;
+}
+
 @media screen and (max-width: 767px) {
     .navbar-nav {
         flex-direction: column !important;

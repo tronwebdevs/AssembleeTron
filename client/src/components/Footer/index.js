@@ -3,15 +3,9 @@ import { Container } from 'reactstrap';
 import moment from 'moment';
 
 const Footer = () => (
-	<footer
-		style={{
-			height: '60px',
-			lineHeight: '60px',
-			backgroundColor: '#f5f5f5'
-		}}
-	>
+	<footer>
 		<Container className="text-center">
-			<span className="text-muted footer-span">
+			<span className="footer-span">
 				Copyright © {moment().format('YYYY')}{' '}
 				<a href="https://www.tronweb.it"> TronWeb</a> | Made by Davide
 				Testolin

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Row, Col, Card, CardBody } from 'reactstrap';
 import InfoBox from './InfoBox';
 
-const LabsTable = ({ labs, logout }) => (
+const LabsTable = ({ labs, tot_h, logout }) => (
 	<Fragment>
 		<Row>
 			<Col>
@@ -14,7 +14,7 @@ const LabsTable = ({ labs, logout }) => (
 								<div
 									className={
 										'col-12 ' +
-										(index !== 3
+										(index !== (tot_h - 1)
 											? 'mb-3 border-bottom'
 											: '')
 									}
@@ -54,7 +54,8 @@ const LabsTable = ({ labs, logout }) => (
 
 LabsTable.propTypes = {
 	labs: PropTypes.array.isRequired,
-	logout: PropTypes.func.isRequired
+    logout: PropTypes.func.isRequired,
+    tot_h: PropTypes.number.isRequired
 };
 
 export default LabsTable;

@@ -36,7 +36,8 @@ const LabsCheckModal = ({ showModal, handleClose, labs, info }) => {
 				style={{
 					borderTop: '5px solid',
 					borderTopColor: '#17a2b8'
-				}}
+                }}
+                class="tw-modal"
 			>
 				<CardHeader>
 					<b>Controllo laboratori</b>

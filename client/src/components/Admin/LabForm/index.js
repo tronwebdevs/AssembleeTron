@@ -62,7 +62,7 @@ const LabForm = ({
 	}
 
 	return (
-		<div id="form-card-wrapper" style={{ boxShadow: '0 0 8px #9E9E9E' }}>
+		<div id="form-card-wrapper" class="tw-modal">
 			<Card
 				className="m-0 p-0"
 				style={{

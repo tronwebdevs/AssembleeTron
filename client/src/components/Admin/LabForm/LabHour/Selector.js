@@ -41,9 +41,8 @@ const Selector = ({
 		display: 'block',
 		width: '100%',
 		padding: '8px 10px',
-		backgroundColor: '#fbfbfc',
 		border: 'none',
-		borderTop: '1px solid #ced4da'
+		borderTop: '1px solid'
 	};
 
 	const GroupHeading = ({ selectProps }) => (
@@ -54,8 +53,9 @@ const Selector = ({
 						type="button"
 						style={{
 							...buttonStyle,
-							borderRight: '1px solid #ced4da'
-						}}
+							borderRight: '1px solid'
+                        }}
+                        className="selector-btn"
 						onClick={() => setValue(selectProps.options[0].options)}
 					>
 						Seleziona tutte
@@ -64,7 +64,8 @@ const Selector = ({
 				<Col xs="6" className="p-0">
 					<button
 						type="button"
-						style={buttonStyle}
+                        style={buttonStyle}
+                        className="selector-btn"
 						onClick={() => setValue([])}
 					>
 						Deseleziona tutte

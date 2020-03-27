@@ -6,7 +6,7 @@ const InfoBox = ({ logout }) => (
 	<Row>
 		<Col>
 			<Card>
-				<CardBody className="text-center p-3">
+				<CardBody className="text-center p-3 info-sub-card">
 					<small>
 						<p className="font-weight-bold mb-1">
 							Conserva questa tabella! Ti consigliamo di salvare

@@ -21,7 +21,7 @@ const ExcClassForm = ({
 	handleReset,
 	handleSubmit
 }) => (
-	<div id="form-card-wrapper" style={{ boxShadow: '0 0 8px #9E9E9E' }}>
+	<div class="tw-modal" id="form-card-wrapper">
 		<Card
 			className="m-0 p-0"
 			style={{

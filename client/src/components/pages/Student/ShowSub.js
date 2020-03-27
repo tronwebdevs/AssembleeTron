@@ -22,7 +22,7 @@ const ConfirmSub = ({ student, assembly, logout }) => {
 		return <Redirect to={{ pathname: '/iscrizione' }} />;
 	}
 
-	const { title } = info;
+	const { title, tot_h } = info;
     const notSub = labs.every(labID => labID === -1);
 
 	if (assembly.pendings.info === false) {
@@ -41,7 +41,7 @@ const ConfirmSub = ({ student, assembly, logout }) => {
 				{notSub ? (
 					<NotPartCard />
 				) : (
-					<LabsTable labs={labs} logout={logout} />
+					<LabsTable labs={labs} tot_h={tot_h} logout={logout} />
 				)}
 				{notSub ? (
 					<Row>

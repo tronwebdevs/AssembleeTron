@@ -12,10 +12,7 @@ import {
 
 const DelModal = ({ visible, showModal, text, deleteFunc }) => (
 	<Modal isOpen={visible} toggle={() => showModal(false)}>
-		<div
-			id="delete-lab-card-wrapper"
-			style={{ boxShadow: '0 0 8px #9E9E9E' }}
-		>
+		<div id="delete-lab-card-wrapper" class="tw-modal" >
 			<Card
 				className="m-0 p-0"
 				style={{

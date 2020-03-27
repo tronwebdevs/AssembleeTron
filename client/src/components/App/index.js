@@ -5,6 +5,7 @@ import ReactGA from 'react-ga';
 import { Provider } from 'react-redux';
 import { Error404Page } from 'tabler-react';
 import './index.css';
+import './dark-theme.css';
 
 import store from '../../store';
 

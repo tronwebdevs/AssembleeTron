@@ -91,17 +91,17 @@ const Dashboard = ({ assembly }) => {
 					<Col xs="12" md="4">
 						<Card>
 							<CardHeader>
-								<b>Inserire nuovi studenti</b>
+								<b>Esporta l'assemblea</b>
 							</CardHeader>
 							<CardBody>
 								<span className="d-block mb-1">
-									Per inserire nuovi studenti è sufficiente
-									andare nella
-									<Link to="/gestore/studenti">
+									Al termine delle iscrizioni potrai scaricare il
+                                    pdf per la security dalla sezione
+									<Link to="/gestore/esporta">
 										{' '}
-										sezione studenti{' '}
+										Esporta{' '}
 									</Link>
-									e utilizzare l'apposito bottone
+									, utilizzando l'apposito bottone
 								</span>
 							</CardBody>
 						</Card>
