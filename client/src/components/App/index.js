@@ -4,8 +4,8 @@ import { createBrowserHistory } from 'history';
 import ReactGA from 'react-ga';
 import { Provider } from 'react-redux';
 import { Error404Page } from 'tabler-react';
+import ThemeProvider from '../ThemeProvider/';
 import './index.css';
-import './dark-theme.css';
 
 import store from '../../store';
 
@@ -23,7 +23,7 @@ history.listen(location => {
 const App = () => (
 	<Provider store={store}>
 		<Router history={history}>
-			<React.Fragment>
+			<ThemeProvider>
 				<Switch>
 					<Route path="/gestore" component={Admin} />
 					<Route path="/" component={Student} />
@@ -40,7 +40,7 @@ const App = () => (
 						)}
 					/>
 				</Switch>
-			</React.Fragment>
+			</ThemeProvider>
 		</Router>
 	</Provider>
 );

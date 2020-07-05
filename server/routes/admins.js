@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
+const Log = require('../models/Log');
+
 const { adminPassword, sudoerPassword, privateKey } = require('../config');
 
 /**
@@ -20,10 +22,17 @@ router.post('/auth', (req, res, next) => {
                 if (err) {
                     next(err);
                 } else {
-                    res.status(200).json({
-                        code: 1,
-                        token
-                    });
+                    new Log({
+                        user: 'Rappresentanti',
+                        message: 'Logged in',
+                        type: 'INFO'
+                    }).save()
+                    .finally(() =>
+                        res.status(200).json({
+                            code: 1,
+                            token
+                        })
+                    );
                 }
             });
         } else {
@@ -51,10 +60,17 @@ router.post('/auth_sudoer', (req, res, next) => {
                 if (err) {
                     next(err);
                 } else {
-                    res.status(200).json({
-                        code: 1,
-                        token
-                    });
+                    new Log({
+                        user: 'Rappresentanti',
+                        message: 'Sudo authed',
+                        type: 'INFO'
+                    }).save()
+                    .finally(() =>
+                        res.status(200).json({
+                            code: 1,
+                            token
+                        })
+                    );
                 }
             });
         } else {

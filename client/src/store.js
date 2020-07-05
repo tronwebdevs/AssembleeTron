@@ -18,9 +18,10 @@ const store = createStore(
 );
 
 store.subscribe(() => {
-	const { admin, student } = store.getState();
+	const { admin, student, preferences } = store.getState();
 	saveState({
-		admin,
+        admin,
+        preferences,
 		student: {
 			...student,
 			pendings: {},
@@ -37,7 +38,7 @@ store.subscribe(() => {
 			},
 			students: [],
 			pendings: {}
-		}
+        }
 	});
 });
 

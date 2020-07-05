@@ -4,6 +4,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+const Log = require('./models/Log');
+
 mongoose.connect('mongodb://localhost/dissembly', {
     useNewUrlParser: true,
     useFindAndModify: false,
@@ -11,7 +13,10 @@ mongoose.connect('mongodb://localhost/dissembly', {
     useUnifiedTopology: true
 })
 .then(() => console.log('Connected successfully to the database'))
-.catch(err => console.error('Connection error: ', err));
+.catch(err => {
+    console.error('Connection error: ', err)
+    process.exit(500);
+});
 
 app.set('port', process.argv[2] || 5001);
 app.disable('x-powered-by');
@@ -30,13 +35,20 @@ app.use((req, res, next) =>
         token: req.jwtNewToken
     })
 );
-app.use((err, req, res, next) => 
-    res.status(err.status || 500).json({
-        code: err.code || -1,
+app.use((err, req, res, next) => {
+    new Log({
+        user: req.userID || 'Unknown',
         message: err.message,
-        token: req.jwtNewToken
-    })
-);
+        type: 'ERROR'
+    }).save()
+    .finally(() =>
+        res.status(err.status || 500).json({
+            code: err.code || -1,
+            message: err.message,
+            token: req.jwtNewToken
+        })
+    );
+});
 
 app.listen(app.get('port'), () => {
    console.log(`SERVER STARTED ON PORT ${app.get('port')}`);

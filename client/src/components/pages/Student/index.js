@@ -9,7 +9,7 @@ import ShowSub from './ShowSub';
 
 const Student = () => (
 	<BrowserRouter>
-		<React.Fragment>
+        <React.Fragment>
 			<Switch>
 				<StudentRoute path="/" component={Home} exact />
 				<StudentRoute path="/iscrizione" component={LabsSelect} exact />
@@ -27,7 +27,7 @@ const Student = () => (
 					)}
 				/>
 			</Switch>
-		</React.Fragment>
+        </React.Fragment>
 	</BrowserRouter>
 );
 

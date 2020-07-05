@@ -1,9 +1,10 @@
+import { createGlobalStyle } from 'styled-components';
 
-@media (prefers-color-scheme: dark) {
+export default createGlobalStyle`
     body {
         background-color: #303030 !important;
     }
-    
+
     span, h1, h2, h3, h4, h5, h6, b, p {
         color: #FFFFFF !important;
     }
@@ -11,15 +12,15 @@
     .card {
         background-color: #424242 !important;
     }
-    
+
     footer {
         background-color: #212121;
     }
-    
+
     footer span {
         color: rgba(255, 255, 255, .3) !important;
     }
-    
+
     span.footer-span a {
         color: rgba(255, 255, 255, .2) !important;
     }
@@ -27,7 +28,11 @@
     .card .card-body span a {
         color: rgba(255, 255, 255, .4) !important;
     }
-    
+
+    .text-muted {
+        color: rgba(255, 255, 255, .4) !important;
+    }
+
     .input-group input, .input-group input:focus, .input-group input:disabled,
     .form-group input,  .form-group input:focus, .form-group input:disabled, 
     select, select:disabled, 
@@ -36,23 +41,27 @@
     .css-26l3qy-menu {
         background-color: #303030 !important;
     }
-    
+
     .input-group input, .input-group input:focus,
     .form-group input,  .form-group input:focus,
     .form-group textarea, .form-group textarea:focus
     select, select:disabled {
         color: rgba(255, 255, 255, .6) !important;
     }
-    
+
     .input-group input:disabled,
     .form-group input:disabled {
         color: #888e9a !important;
     }
 
+    select.form-control {
+        color: rgba(255, 255, 255, .4) !important;
+    }
+
     .form-group ::placeholder, .input-group ::placeholder {
         color: rgba(255, 255, 255, .2) !important;
     }
-    
+
     .css-1cpj9tp-control {
         border-color: #212121 !important;
         background-color: rgba(48, 48, 48, .5) !important;
@@ -61,7 +70,7 @@
         border-color: #212121 !important;
         background-color: #303030 !important;
     }
-    
+
     .css-1rhbuit-multiValue {
         background-color: rgba(255, 255, 255, .2) !important;
     }
@@ -79,17 +88,17 @@
     .custom-control-label {
         color: #FFFFFF;
     }
-    
+
     .alert-danger {
         color: #fedadd !important;
         background-color: rgba(130, 36, 44, .5) !important;
         border-color: rgba(130, 36, 44, .2) !important;
     }
-    
+
     nav.bg-white {
         background-color: #212121 !important;
     }
-    
+
     nav.navbar-light .navbar-nav .nav-link {
         color: rgba(255, 255, 255, .6) !important;
     }
@@ -139,4 +148,4 @@
     div.ct-toast div.ct-text {
         color: #FFFFFF;
     }
-}
+`;

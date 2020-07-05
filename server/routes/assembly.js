@@ -11,6 +11,7 @@ const Assembly = require('../models/Assembly');
 const Laboratory = require('../models/Laboratory');
 const Student = require('../models/Student');
 const Subscribed = require('../models/Subscribed');
+const Log = require('../models/Log');
 
 const authUser = require('../utils/AuthUser');
 const { isAdmin, isStudent } = require('../utils/CheckUserType');
@@ -120,6 +121,11 @@ router.delete('/', isAdmin, (req, res, next) => {
         .deleteMany({})
         .then(() => Laboratory.deleteMany({}))
         .then(() => Subscribed.deleteMany({}))
+        .then(() => new Log({
+            user: 'Rappresentanti',
+            message: 'Assembly deleted',
+            type: 'INFO'
+        }).save())
         .then(() => 
             res
                 .status(200)
@@ -208,6 +214,11 @@ router.post('/backups', isAdmin, (req, res, next) => {
             
             return fs.writeFile(file, JSON.stringify(assembly, null, 4), 'utf8');
         })
+        .then(() => new Log({
+            user: 'Rappresentanti',
+            message: 'Assembly backup created',
+            type: 'INFO'
+        }).save())
         .then(() => 
             res.status(200)
                 .json({
@@ -249,12 +260,19 @@ router.post('/backups/load', isAdmin, (req, res, next) => {
             })
             .then(results => {
                 newAssembly.labs = results;
+                return new Log({
+                    user: 'Rappresentanti',
+                    message: `Assembly loaded from file (${fileName})`,
+                    type: 'INFO'
+                }).save();
+            })
+            .then(() => 
                 res.status(200)
                     .json({
                         code: 1,
                         assembly: newAssembly
-                    });
-            })
+                    })
+            )
             .catch(err => next(err));
     } else {
         next(new Error('Identificativo non valido'));
@@ -271,6 +289,11 @@ router.delete('/backups', isAdmin, (req, res, next) => {
     if (typeof fileName === 'string') {
         const file = path.join(assembliesBackups, fileName);
         fs.unlink(file)
+            .then(() => new Log({
+                user: 'Rappresentanti',
+                message: 'Assembly backup deleted',
+                type: 'INFO'
+            }).save())
             .then(() => 
                 res.status(200).json({
                     code: 1,
@@ -352,9 +375,16 @@ router.get('/export', isAdmin, (req, res, next) => {
             doc.end();
             stream.on('finish', () => {
                 const data = fs.readFileSync(file);
-                res.status(200)
-                    .contentType('application/pdf')
-                    .end(data);
+                new Log({
+                    user: 'Rappresentanti',
+                    message: 'Assembly exported to PDF',
+                    type: 'INFO'
+                }).save()
+                .finally(() => 
+                    res.status(200)
+                        .contentType('application/pdf')
+                        .end(data)
+                );
             });
         })
         .catch(err => next(err));
@@ -388,6 +418,7 @@ router.put('/info', isAdmin, (req, res, next) => {
         tot_h !== -1 &&
         sections.length > 0
     ) {
+        let info;
         Assembly.findByIdAndUpdate(_id, {
             title, date,
             subscription: {
@@ -398,15 +429,23 @@ router.put('/info', isAdmin, (req, res, next) => {
         }, { new: true })
             .then(result => {
                 if (result) {
-                    res.status(200)
-                        .json({
-                            code: 1,
-                            info: result
-                        });
+                    info = result;
+                    return new Log({
+                        user: 'Rappresentanti',
+                        message: 'Assembly info updated',
+                        type: 'INFO'
+                    }).save();
                 } else {
                     throw new Error('Assemblea non trovata (id: ' + _id + ')');
                 }
             })
+            .then(() => 
+            res.status(200)
+                .json({
+                    code: 1,
+                    info
+                })
+            )
             .catch(err => next(err));
     } else {
         next(new Error('Parametri non accettati'));
@@ -425,15 +464,24 @@ router.post('/info', isAdmin, (req, res, next) => {
         open: info.subOpen,
         close: info.subClose,
     };
+    let assembly;
 
     new Assembly(info).save()
-        .then(assembly => 
+        .then(result => {
+            assembly = result;
+            return new Log({
+                user: 'Rappresentanti',
+                message: 'Assembly info created',
+                type: 'INFO'
+            }).save();
+        })
+        .then(() => {
             res.status(200)
                 .json({
                     code: 1,
                     info: assembly
                 })
-        )
+        })
         .catch(err => next(err));
 });
 
@@ -481,18 +529,27 @@ router.get('/labs', isStudent, (req, res, next) => {
 router.put('/labs', isAdmin, (req, res, next) => {
     const { lab } = req.body;
     if (lab) {
+        let updatedLab;
         Laboratory.findByIdAndUpdate(lab._id, lab, { new: true })
             .then(result => {
                 if (result) {
-                    res.status(200)
-                        .json({
-                            code: 1,
-                            lab: result
-                        });
+                    updatedLab = result;
+                    return new Log({
+                        user: 'Rappresentanti',
+                        message: `Laboratory ${lab._id} updated`,
+                        type: 'INFO'
+                    }).save();
                 } else {
                     throw new Error('Laboratorio non trovato (' + lab._id + ')');
                 }
             })
+            .then(() =>
+                res.status(200)
+                    .json({
+                        code: 1,
+                        lab: updatedLab
+                    })
+            )
             .catch(err => next(err));
     } else {
         next(new Error('Parametri non accettati'));
@@ -508,12 +565,21 @@ router.put('/labs', isAdmin, (req, res, next) => {
 router.post('/labs', isAdmin, (req, res, next) => {
     const { lab } = req.body;
     if (lab) {
+        let createdLab;
         new Laboratory(lab).save()
-            .then(newLab => 
+            .then(result => {
+                createdLab = result;
+                return new Log({
+                    user: 'Rappresentanti',
+                    message: `Laboratory ${lab._id} created`,
+                    type: 'INFO'
+                }).save();
+            })
+            .then(() => 
                 res.status(200)
                     .json({
                         code: 1,
-                        lab: newLab
+                        lab: createdLab
                     })
             )
             .catch(err => next(err));
@@ -531,18 +597,27 @@ router.post('/labs', isAdmin, (req, res, next) => {
 router.delete('/labs', isAdmin, (req, res, next) => {
     const { _id } = req.body;
     if (typeof _id === 'string') {
+        let deletedLab;
         Laboratory.findByIdAndDelete(_id)
             .then(lab => {
                 if (lab) {
-                    res.status(200)
-                        .json({
-                            code: 1,
-                            lab
-                        });
+                    deletedLab = lab;
+                    return new Log({
+                        user: 'Rappresentanti',
+                        message: `Laboratory ${lab._id} deleted`,
+                        type: 'INFO'
+                    }).save();
                 } else {
                     throw new Error('Laboratorio non trovato (' + _id + ')');
                 }
             })
+            .then(() => 
+                res.status(200)
+                    .json({
+                        code: 1,
+                        lab: deletedLab
+                    })
+            )
             .catch(err => next(err));
     } else {
         next(new Error('Parametri non accettati'));
@@ -561,6 +636,8 @@ router.post('/labs/exclude', (req, res, next) => {
 
     if (h >= 0 && sections && sections.length > 0) {
         let info;
+        let labsIds;
+        let updatedLabs;
         Assembly.find()
             .then(result => {
                 info = result[0];
@@ -573,6 +650,7 @@ router.post('/labs/exclude', (req, res, next) => {
                 let promiseArray = [];
                 labs.forEach(lab => {
                     let labSections = lab.info[h].sections;
+                    labsIds.push(lab._id);
                     sections.forEach(section => {
                         // Check if selected section is included in lab sections
                         if (labSections.includes(section)) {
@@ -590,7 +668,15 @@ router.post('/labs/exclude', (req, res, next) => {
                 });
                 return Promise.all(promiseArray);
             })
-            .then(updatedLabs => 
+            .then(result => {
+                updatedLabs = result;
+                return new Log({
+                    user: 'Rappresentanti',
+                    message: `Laboratories ${labsIds.join(', ')} updated (excluded sections)`,
+                    type: 'INFO'
+                }).save();
+            })
+            .then(() => 
                 res.status(200).json({
                     code: 1,
                     labs: updatedLabs

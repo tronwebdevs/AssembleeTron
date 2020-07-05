@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Card, CardHeader, CardBody, Button, Collapse } from 'reactstrap';
+import { Card, CardHeader, CardBody, Button, Collapse, Spinner } from 'reactstrap';
 import { FaChevronUp } from 'react-icons/fa';
 import LabShow from './LabShow';
 import posed from 'react-pose';
@@ -46,14 +46,22 @@ const LabsListCard = ({ labs }) => {
 			</CardHeader>
 			<Collapse isOpen={labsCollapse}>
 				<CardBody>
-					{labs.map((lab, index, labs) => (
-						<LabShow
-							key={index}
-							title={lab.title}
-							description={lab.description}
-							borderBottom={index < labs.length - 1}
-						/>
-					))}
+                    {labs.length > 0 ? (
+                        <React.Fragment>
+                            {labs.map((lab, index, labs) => (
+                                <LabShow
+                                    key={index}
+                                    title={lab.title}
+                                    description={lab.description}
+                                    borderBottom={index < labs.length - 1}
+                                />
+                            ))}
+                        </React.Fragment>
+                    ) : (
+                        <div className="text-center py-4">
+                            <Spinner style={{ width: '4rem', height: '4rem' }} />
+                        </div>
+                    )}
 				</CardBody>
 			</Collapse>
 		</Card>

@@ -206,6 +206,10 @@ router.get('/:studentID', (req, res, next) => {
                     token: null
                 });
             });
+    } else {
+        let error = new Error('Dati di accesso non validi');
+        error.status = 400;
+        next(error);
     }
 });
 
