@@ -4,7 +4,7 @@ import {
 	Spinner,
 	Button,
 	FormGroup,
-	Input,
+    Input,
 	CustomInput,
 	FormFeedback
 } from 'reactstrap';
@@ -12,54 +12,61 @@ import moment from 'moment';
 
 import FormCard from '../../FormCard';
 import StudentIdHelp from './StudentIdHelp';
+import AlreadyLoggedBox from './AlreadyLoggedBox';
 
 const LoginForm = ({
-	onSubmit,
+    onSubmit,
 	onChange,
 	onBlur,
 	values,
 	errors,
 	isSubmitting,
+    userInfo,
 	assemblyInfo
 }) => (
 	<StandaloneFormPage>
 		<FormCard
 			title={`Iscrizioni per l'${assemblyInfo.title}`}
 			subtitle={moment(assemblyInfo.date).format('DD/MM/YYYY')}
-			text={true ? 'Inserisci la tua matricola per entrare:' : ''}
+			text={userInfo ? 'Sei già loggato come:' : 'Inserisci la tua matricola per entrare:'}
 			onSubmit={onSubmit}
 		>
-			{/* <Form.Group>
-                <Card.Alert color="primary">
-                    <Grid.Row>
-                        <Grid.Col width={8}>
-                            Sei gia' loggato come:
-                            <br />
-                            <b>Nome Cognome</b>
-                        </Grid.Col>
-                        <Grid.Col width={4}>
-                            <span className="float-right">
-                                <Button color="outline-primary">
-                                    <Icon name="log-out" />
-                                </Button>
-                            </span>
-                        </Grid.Col>
-                    </Grid.Row>
-                </Card.Alert>
-            </Form.Group> */}
-			<FormGroup className="mb-1">
-				<Input
-					type="text"
-					placeholder="Matricola"
-					name="studentID"
-					onChange={onChange}
-					onBlur={onBlur}
-					autoFocus={true}
-					value={values.studentID}
-					invalid={errors.studentID !== undefined}
-				/>
-				<FormFeedback>{errors.studentID}</FormFeedback>
-			</FormGroup>
+			
+            {userInfo ? (
+                <FormGroup className="mb-1">
+                    <AlreadyLoggedBox
+                        name={userInfo.name}
+                        section={userInfo.section}
+                    />
+                </FormGroup>
+            ) : (
+                <React.Fragment>
+                    <FormGroup className="mb-1">
+                        <Input
+                            type="text"
+                            placeholder="Matricola"
+                            name="studentID"
+                            onChange={onChange}
+                            onBlur={onBlur}
+                            autoFocus={true}
+                            value={values.studentID}
+                            invalid={errors.studentID !== undefined}
+                        />
+                        <FormFeedback>{errors.studentID}</FormFeedback>
+                    </FormGroup>
+                    <FormGroup className="mb-2">
+                        <CustomInput
+                            type="checkbox"
+                            id="remeberMe"
+                            label="Ricordami"
+                            name="remeberMe"
+                            value={false}
+                            checked={values.remeberMe}
+                            onChange={onChange}
+                        />
+                    </FormGroup>
+                </React.Fragment>
+            )}
 			<span className="text-center">
 				<FormGroup className="mb-1">
 					<CustomInput

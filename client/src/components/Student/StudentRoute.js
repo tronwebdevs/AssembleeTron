@@ -11,7 +11,7 @@ const StudentRoute = ({
     assembly,
     student,
     logout,
-	fetchAssemblyInfo,
+    fetchAssemblyInfo,
 	...rest
 }) => {
     const [error, setError] = useState(null);
@@ -30,8 +30,8 @@ const StudentRoute = ({
 
 	return (
 		<Route
-			{...rest}
-			render={props => <Component {...props} errorMessage={error} />}
+            {...rest}
+            render={props => <Component {...props} errorMessage={error} />}
 		/>
 	);
 };

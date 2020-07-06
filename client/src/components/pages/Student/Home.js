@@ -18,7 +18,7 @@ const Home = ({ student, assembly, errorMessage }) => {
 	if (student.profile.studentId === null) {
 		if (pendings.info === false) {
 			if (errorMessage) {
-				if (assembly.exists === true) {
+                if (assembly.exists === true) {
 					return <LoginCard title={info.title} text={errorMessage} />;
 				} else {
 					return <LoginCard title={errorMessage} />;

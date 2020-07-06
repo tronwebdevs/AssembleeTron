@@ -10,7 +10,8 @@ const LoginFormCard = ({ authStudent, info }) => (
 	<Formik
 		initialValues={{
 			studentID: '',
-			part: '1'
+            part: '1',
+            remeberMe: false
 		}}
 		validate={values => {
 			let errors = {};
@@ -24,7 +25,7 @@ const LoginFormCard = ({ authStudent, info }) => (
 			return errors;
 		}}
 		onSubmit={(values, { setSubmitting, setErrors }) =>
-			authStudent(+values.studentID, +values.part)
+			authStudent(+values.studentID, +values.part, values.remeberMe)
 				.then(() => setSubmitting(false))
 				.catch(({ message, target }) => {
 					setSubmitting(false);
@@ -41,15 +42,19 @@ const LoginFormCard = ({ authStudent, info }) => (
 			isSubmitting
 		}) => (
 			<LoginForm
-				onSubmit={handleSubmit}
-				onChange={handleChange}
-				onBlur={handleBlur}
-				values={values}
-				errors={errors}
-				touched={touched}
-				isSubmitting={isSubmitting}
+                onSubmit={handleSubmit}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                values={values}
+                errors={errors}
+                touched={touched}
+                isSubmitting={isSubmitting}
+                userInfo={false ? {
+                    name: 'Davide Testolin',
+                    section: '3IC'
+                } : null}
 				assemblyInfo={info}
-			/>
+            />
 		)}
 	/>
 );

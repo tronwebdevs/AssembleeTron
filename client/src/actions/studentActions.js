@@ -20,7 +20,7 @@ import axios from 'axios';
  * @param {number} part
  * @public
  */
-export const authStudent = (studentID, part) => dispatch => {
+export const authStudent = (studentID, part, remember) => dispatch => {
 
     dispatch({
         type: FETCH_STUDENT_PENDING,
@@ -41,8 +41,14 @@ export const authStudent = (studentID, part) => dispatch => {
             throw error;
         }
 
+        if (typeof remember !== 'boolean') {
+            let error = new Error('Parametro non valido');
+            error.target = 'remeberMe';
+            throw error;
+        }
+
         axios.get(`/api/students/${studentID}`, {
-            params: { part }
+            params: { part, remember }
         })
             .then(({ data }) => {
                 switch (data.code) {

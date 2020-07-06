@@ -9,8 +9,8 @@ const LabShow = ({ title, description, borderBottom }) => (
 		}
 	>
 		<Row>
-			<Col sm={5}>
-				<span className="font-weight-bold lab-row-student">
+			<Col sm={5} style={{ paddingBottom: window.innerWidth < 999 ? '.2rem' : 0 }}>
+                <span className="font-weight-bold lab-row-student">
 					{title}
 				</span>
 			</Col>
