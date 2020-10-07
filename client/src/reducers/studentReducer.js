@@ -20,7 +20,8 @@ const initialState = {
 		name: null,
 		surname: null,
 		section: null
-	},
+    },
+    verified: false,
 	subscribed: false,
 	labs: null,
 	labs_avabile: [],

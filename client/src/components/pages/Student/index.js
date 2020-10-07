@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import Home from './Home';
 import LabsSelect from './LabsSelect';
 import ShowSub from './ShowSub';
+import Verification from './Verification';
 
 const Wrapper = styled.div`
     .studentpage-enter {
@@ -43,6 +44,7 @@ const Student = ({ location }) => (
             >
                 <Switch location={location}>
                     <StudentRoute path="/" component={Home} exact />
+                    <StudentRoute path="/verifica" component={Verification} exact />
                     <StudentRoute path="/iscrizione" component={LabsSelect} exact />
                     <StudentRoute path="/conferma" component={ShowSub} exact />
                     <Route

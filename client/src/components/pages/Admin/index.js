@@ -20,11 +20,11 @@ const RouteContainer = posed.div({
 	enter: {
 		opacity: 1,
 		beforeChildren: true,
-		transition: { duration: 500 }
+		transition: { delay: 50, duration: 100 }
 	},
 	exit: {
-		opacity: 0,
-		transition: { duration: 500 }
+        opacity: 0,
+		transition: { duration: 100 }
 	}
 });
 

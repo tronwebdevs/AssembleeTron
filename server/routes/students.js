@@ -65,6 +65,7 @@ router.get('/sections', authUser, isAdmin, (req, res, next) =>
 router.get('/:studentID', (req, res, next) => {
     const studentId = +req.params.studentID || -1;
     const part = +req.query.part;
+    const remeber = (req.query.remeber === 'true');
     
     // Check if parameters are valid
     if (studentId !== -1 && (part === 1 || part === 0)) {

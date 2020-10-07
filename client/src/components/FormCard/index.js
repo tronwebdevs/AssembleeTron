@@ -55,7 +55,7 @@ const FormCard = ({
 );
 
 FormCard.propTypes = {
-	children: PropTypes.array,
+	children: PropTypes.any,
 	onSubmit: PropTypes.func,
 	action: PropTypes.string,
 	method: PropTypes.string,

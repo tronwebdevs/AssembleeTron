@@ -116,7 +116,7 @@ const LabsSelect = ({
 										</CardBody>
 									</Card>
 								</Col>
-								<Col xs="12">
+								<Col xs="12 mb-4">
 									<Button
 										outline
 										block
