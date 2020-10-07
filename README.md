@@ -2,7 +2,7 @@
   <img width="170" height="170" src="https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png">
 </p>
 
-# AssembleeTron V4
+# AssembleeTron V5
 AssembleeTron is a website build with the last technologies available for web development (React, Redux, ExpressJS, MongoDB) and it is meant to be a simple and flexible solution to the problem of subscription to the school assemblies.
 
 ### Installation
