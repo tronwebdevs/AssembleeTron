@@ -55,8 +55,3 @@ export const ADMIN_LOGOUT = 'ADMIN_LOGOUT';
 export const UPDATE_ADMIN_TOKEN = 'UPDATE_ADMIN_TOKEN';
 export const SUDOER_AUTHED = 'SUDOER_AUTHED';
 export const ADMIN_FETCH_ERROR = 'ADMIN_FETCH_ERROR';
-
-/**
- * PREFERENCE
- */
-export const SWITCH_THEME = 'SWITCH_THEME';
