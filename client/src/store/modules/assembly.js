@@ -20,7 +20,6 @@ import {
 } from '../types.js';
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import Vue from 'vue';
 
 const getDefaultState = () => ({
     exists: false,
@@ -38,15 +37,14 @@ const initialState = getDefaultState();
 
 const mutations = {};
 mutations[ASSEMBLY_FETCH_PENDING] = (state, payload) => {
-    Vue.set(state.pendings, payload, true);
+    state.pendings[payload] = true;
 };
 mutations[ASSEMBLY_FETCH_ERROR] = (state, { fetch, message }) => {
-    Vue.set(state.pendings, fetch, false);
+    state.pendings[fetch] = false;
     console.error(message);
 };
 mutations[ASSEMBLY_LOAD_COMPLETED] = (state, { info, labs, stats }) => {
-    // Vue.set(state, 'exists', true);
-    // Vue.set(state, 'info', info);
+    state.exists = true;
     state.info = info;
     state.labs = labs;
     state.stats = {
@@ -80,9 +78,9 @@ mutations[ASSEMBLY_DELETED] = state => {
     };
 };
 mutations[ASSEMBLY_SUBS_CLOSE] = (state, payload) => {
-    Vue.set(state.pendings, 'info', false);
-    Vue.set(state, 'exists', true);
-    Vue.set(state, 'info', payload);
+    state.pendings.info = false;
+    state.exists = true;
+    state.info = payload;
 };
 mutations[ASSEMBLY_SUBS_OPEN] = mutations[ASSEMBLY_SUBS_CLOSE];
 mutations[ASSEMBLY_NOT_AVABILE] = (state, message) => {
@@ -564,9 +562,7 @@ actions.fetchAssemblyGeneral = ({ commit, rootState }) => {
                             commit(
                                 'admin/' + UPDATE_ADMIN_TOKEN,
                                 headers.token,
-                                {
-                                    root: true
-                                }
+                                { root: true }
                             );
                         }
                     }
@@ -703,9 +699,6 @@ actions.generatePdf = ({ commit, rootState }) => {
 };
 
 const getters = {};
-getters.pendings = state => state.pendings;
-getters.info = state => state.info;
-getters.exists = state => state.exists;
 
 export default {
     namespaced: true,
