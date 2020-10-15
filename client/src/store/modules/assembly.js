@@ -20,6 +20,7 @@ import {
 } from '../types.js';
 import axios from 'axios';
 import FileSaver from 'file-saver';
+import Vue from 'vue';
 
 const getDefaultState = () => ({
     exists: false,
@@ -37,10 +38,10 @@ const initialState = getDefaultState();
 
 const mutations = {};
 mutations[ASSEMBLY_FETCH_PENDING] = (state, payload) => {
-    state.pendings[payload] = true;
+    Vue.set(state.pendings, payload, true);
 };
 mutations[ASSEMBLY_FETCH_ERROR] = (state, { fetch, message }) => {
-    state.pendings[fetch] = false;
+    Vue.set(state.pendings, fetch, false);
     console.error(message);
 };
 mutations[ASSEMBLY_LOAD_COMPLETED] = (state, { info, labs, stats }) => {
@@ -51,7 +52,7 @@ mutations[ASSEMBLY_LOAD_COMPLETED] = (state, { info, labs, stats }) => {
         ...stats,
         labs: (labs || []).length
     };
-    state.pendings.load = false;
+    Vue.set(state.pendings, 'load', false);
 };
 mutations[ASSEMBLY_FETCHED] = (state, payload) => {
     state.exists = payload.exists || state.exists;
@@ -61,7 +62,7 @@ mutations[ASSEMBLY_FETCHED] = (state, payload) => {
         students: payload.students || 0,
         subs: payload.subs || 0
     };
-    state.pendings.assembly = false;
+    Vue.set(state.pendings, 'assembly', false);
 };
 mutations[ASSEMBLY_DELETED] = state => {
     state.exists = false;
@@ -78,52 +79,52 @@ mutations[ASSEMBLY_DELETED] = state => {
     };
 };
 mutations[ASSEMBLY_SUBS_CLOSE] = (state, payload) => {
-    state.pendings.info = false;
     state.exists = true;
     state.info = payload;
+    Vue.set(state.pendings, 'info', false);
 };
 mutations[ASSEMBLY_SUBS_OPEN] = mutations[ASSEMBLY_SUBS_CLOSE];
 mutations[ASSEMBLY_NOT_AVABILE] = (state, message) => {
     state.exists = false;
     console.log(message);
-    state.pendings.info = false;
+    Vue.set(state.pendings, 'info', false);
 };
 mutations[INFO_CREATED] = (state, payload) => {
     state.exists = true;
     state.info = payload;
-    state.pendings.create_info = false;
+    Vue.set(state.pendings, 'create_info', false);
 };
 mutations[INFO_UPDATED] = (state, payload) => {
     state.exists = true;
     state.info = payload;
-    state.pendings.create_info = false;
+    Vue.set(state.pendings, 'create_info', false);
 };
 mutations[LABS_FETCHED] = (state, payload) => {
-    state.pendings.labs = false;
     state.labs = payload;
     state.stats.labs = payload.length;
+    Vue.set(state.pendings, 'labs', false);
 };
 mutations[LAB_CREATED] = (state, payload) => {
     state.labs = payload;
     state.stats.labs = payload.length;
-    state.pendings.create_lab = false;
+    Vue.set(state.pendings, 'create_lab', false);
 };
 mutations[LAB_UPDATED] = (state, payload) => {
     state.labs = payload;
-    state.pendings.update_lab = false;
+    Vue.set(state.pendings, 'update_lab', false);
 };
 mutations[LAB_DELETED] = (state, payload) => {
     state.labs = payload;
     state.stats.labs = payload.length;
-    state.pendings.delete_lab = false;
+    Vue.set(state.pendings, 'delete_lab', false);
 };
 mutations[STUDENTS_FETCHED] = (state, payload) => {
-    state.pendings.students = false;
     state.stats.students = payload.length;
     state.students = payload;
+    Vue.set(state.pendings, 'students', false);
 };
 mutations[ASSEMBLY_PDF_COMPLETED] = state => {
-    state.pendings.generate_pdf = false;
+    Vue.set(state.pendings, 'generate_pdf', false);
 };
 
 const actions = {};
@@ -699,6 +700,11 @@ actions.generatePdf = ({ commit, rootState }) => {
 };
 
 const getters = {};
+getters.exists = state => state.exists;
+getters.info = state => state.info;
+getters.labs = state => state.labs;
+getters.stats = state => state.stats;
+getters.pendings = state => state.pendings;
 
 export default {
     namespaced: true,

@@ -15,6 +15,7 @@ actions.switchTheme = ({ commit }) => {
 };
 
 const getters = {};
+getters.isDark = state => state.theme === 'dark';
 
 export default {
     namespaced: true,

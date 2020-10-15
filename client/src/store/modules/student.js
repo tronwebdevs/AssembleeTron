@@ -261,6 +261,12 @@ actions.subscribeLabs = ({ commit, state }, { studentID, labs }) => {
 actions.logout = ({ commit }) => commit(STUDENT_LOGOUT);
 
 const getters = {};
+getters.profile = state => state.profile;
+getters.verified = state => state.verified;
+getters.sunscribed = state => state.sunscribed;
+getters.labs = state => state.labs;
+getters.labs_available = state => state.labs_available;
+getters.pendings = state => state.pendings;
 
 export default {
     namespaced: true,

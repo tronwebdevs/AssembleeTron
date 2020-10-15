@@ -1,5 +1,6 @@
 <template>
-    <div class="home">
+    <div class="dashboard">
+        <h1>Dashboard</h1>
         <form @submit.prevent="findStd">
             <input type="number" placeholder="Student ID" v-model="searchID" />
             <input type="submit" value="Go" />
@@ -32,9 +33,8 @@ b.error {
 
 <script>
 import { mapState, mapActions } from 'vuex';
-
 export default {
-    name: 'Home',
+    name: 'Dashboard',
     data() {
         return {
             error: null,

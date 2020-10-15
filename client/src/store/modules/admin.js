@@ -102,6 +102,8 @@ actions.authSudoer = ({ commit }, password) => {
 actions.logout = ({ commit }) => commit(ADMIN_LOGOUT);
 
 const getters = {};
+getters.authed = state => state.authed;
+getters.pendings = state => state.pendings;
 
 export default {
     namespaced: true,

@@ -1,31 +1,45 @@
 <template>
     <div id="app">
-        <div id="nav">
-            <router-link to="/">Home</router-link>
-        </div>
-        <router-view />
+        <main :class="{ 'dark-theme': isDark }">
+            <router-view />
+        </main>
+        <Footer />
     </div>
 </template>
 
+<script>
+import { mapGetters } from 'vuex';
+import Footer from '@/components/Footer';
+
+export default {
+    name: 'App',
+    computed: {
+        ...mapGetters('preferences', ['isDark'])
+    },
+    components: {
+        Footer
+    }
+};
+</script>
+
 <style lang="scss">
+@import './scss/_variables.scss';
+body,
+html,
 #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
-#nav {
-    padding: 30px;
+main {
+    background-color: $bgPrimaryLight;
+    width: 100%;
+    height: calc(100% - 60.5px);
 
-    a {
-        font-weight: bold;
-        color: #2c3e50;
-
-        &.router-link-exact-active {
-            color: #42b983;
-        }
+    &.dark-theme {
+        background-color: $bgPrimaryDark;
     }
 }
 </style>
