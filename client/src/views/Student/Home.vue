@@ -1,16 +1,14 @@
 <template>
-    <div class="student-home">
-        <centred-div>
-            <FormCard
-                :loading="!notLoading"
-                :title="info.title"
-                :subtitle="date"
-                :centred="false"
-                text="Inserisci la tua matricola"
-            />
-            <StudentHelp v-if="info._id" />
-        </centred-div>
-    </div>
+    <centred-div>
+        <FormCard
+            :loading="!notLoading"
+            :title="info.title"
+            :subtitle="date"
+            :centred="false"
+            text="Inserisci la tua matricola"
+        />
+        <StudentHelp v-if="info._id" />
+    </centred-div>
 </template>
 
 <script>
