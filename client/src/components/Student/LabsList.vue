@@ -29,7 +29,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import LabListLine from '@/components/LabListLine';
+import LabListLine from '@/components/Student/LabListLine';
 
 export default {
     name: 'LabsList',

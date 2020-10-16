@@ -9,6 +9,7 @@ import StudentShowSub from '@/views/Student/ShowSub';
 import StudentLabsSelect from '@/views/Student/LabsSelect';
 
 import Admin from '@/views/Admin/';
+import AdminLogin from '@/views/Admin/Login';
 import AdminDashboard from '@/views/Admin/Dashboard';
 
 import NotFound from '@/views/NotFound';
@@ -23,7 +24,15 @@ const routes = [
             {
                 name: 'Dashboard',
                 path: '',
-                component: AdminDashboard
+                component: AdminDashboard,
+                meta: {
+                    requiresAdminAuth: true
+                }
+            },
+            {
+                name: 'Login',
+                path: 'login',
+                component: AdminLogin
             }
         ]
     },
@@ -41,7 +50,7 @@ const routes = [
                 path: 'verifica',
                 component: StudentVerification,
                 meta: {
-                    requiresAuth: true
+                    requiresStdAuth: true
                 }
             },
             {
@@ -49,7 +58,7 @@ const routes = [
                 path: 'iscrizione',
                 component: StudentLabsSelect,
                 meta: {
-                    requiresAuth: true
+                    requiresStdAuth: true
                 }
             },
             {
@@ -57,7 +66,7 @@ const routes = [
                 path: 'conferma',
                 component: StudentShowSub,
                 meta: {
-                    requiresAuth: true
+                    requiresStdAuth: true
                 }
             }
         ]
@@ -75,12 +84,20 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (store.getters['student/profile']._id === null) {
-            next('/');
-        }
+    if (
+        to.matched.some(record => record.meta.requiresStdAuth) &&
+        store.getters['student/profile']._id === null
+    ) {
+        next('/');
+    } else if (
+        to.matched.some(record => record.meta.requiresAdminAuth) &&
+        store.getters['admin/authed'] !== true
+    ) {
+        console.log(store.getters['admin/authed']);
+        next('/gestore/login');
+    } else {
+        next();
     }
-    next();
 });
 
 export default router;

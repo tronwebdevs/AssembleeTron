@@ -24,10 +24,10 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import StudentBadge from '@/components/StudentBadge';
-import InfoBox from '@/components/InfoBox';
-import LabsTable from '@/components/LabsTable';
-import NotPartCard from '@/components/NotPartCard';
+import StudentBadge from '@/components/Student/StudentBadge';
+import InfoBox from '@/components/Student/InfoBox';
+import LabsTable from '@/components/Student/LabsTable';
+import NotPartCard from '@/components/Student/NotPartCard';
 
 export default {
     name: 'ShowSub',

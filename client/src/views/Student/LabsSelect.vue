@@ -37,9 +37,9 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import LabsSelectCard from '@/components/LabsSelectCard';
-import StudentBadge from '@/components/StudentBadge';
-import LabsList from '@/components/LabsList';
+import LabsSelectCard from '@/components/Student/LabsSelectCard';
+import StudentBadge from '@/components/Student/StudentBadge';
+import LabsList from '@/components/Student/LabsList';
 
 export default {
     name: 'LabsSelect',

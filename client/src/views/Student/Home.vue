@@ -1,12 +1,14 @@
 <template>
     <centred-div>
-        <FormCard
+        <form-card
             :loading="!notLoading"
             :title="info.title"
             :subtitle="date"
             :centred="false"
             text="Inserisci la tua matricola"
-        />
+        >
+            <LoginForm v-if="exists" />
+        </form-card>
         <StudentHelp v-if="info._id" />
     </centred-div>
 </template>
@@ -15,13 +17,14 @@
 import { DateTime } from 'luxon';
 import { mapGetters } from 'vuex';
 import centreddiv from '@/components/centred-div';
-import FormCard from '@/components/FormCard';
-import StudentHelp from '@/components/StudentHelp';
+import formcard from '@/components/form-card';
+import LoginForm from '@/components/Student/LoginForm';
+import StudentHelp from '@/components/Student/StudentHelp';
 
 export default {
     name: 'Home',
     computed: {
-        ...mapGetters('assembly', ['info', 'pendings']),
+        ...mapGetters('assembly', ['info', 'pendings', 'exists']),
         notLoading() {
             return this.pendings.info === false;
         },
@@ -31,6 +34,11 @@ export default {
                 .toLocaleString();
         }
     },
-    components: { FormCard, StudentHelp, 'centred-div': centreddiv }
+    components: {
+        'form-card': formcard,
+        'centred-div': centreddiv,
+        StudentHelp,
+        LoginForm
+    }
 };
 </script>

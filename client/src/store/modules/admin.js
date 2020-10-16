@@ -6,9 +6,11 @@ import {
     ADMIN_FETCH_ERROR
 } from '../types';
 import axios from 'axios';
+import Vue from 'vue';
 
 const getDefaultState = () => ({
     authed: false,
+    sudoer: false,
     pendings: {},
     token: null
 });
@@ -16,25 +18,26 @@ const initialState = getDefaultState();
 
 const mutations = {};
 mutations[ADMIN_FETCH_PENDING] = (state, payload) => {
-    state.pendings[payload] = true;
+    Vue.set(state.pendings, payload, true);
 };
 mutations[ADMIN_AUTHED] = (state, data) => {
-    state.authed = true;
-    state.token = data.token;
-    state.pendings.auth = false;
+    Vue.set(state, 'authed', true);
+    Vue.set(state, 'token', data.token);
+    Vue.set(state.pendings, 'auth', false);
 };
 mutations[ADMIN_FETCH_ERROR] = (state, { message, fetch }) => {
-    state.pendings[fetch] = false;
+    Vue.set(state.pendings, fetch, false);
     console.error(message);
 };
 mutations[SUDOER_AUTHED] = (state, data) => {
-    state.authed = true;
-    state.token = data.token;
-    state.pendings.sudoer_auth = false;
+    Vue.set(state, 'token', data.token);
+    Vue.set(state, 'authed', true);
+    Vue.set(state, 'sudoer', true);
+    Vue.set(state.pendings, 'sudoer_auth', false);
 };
 mutations[ADMIN_LOGOUT] = state => {
     Object.assign(state, getDefaultState());
-    state.pendings.loggedout = false;
+    Vue.set(state.pendings, 'loggedout', false);
 };
 
 const actions = {};
@@ -46,27 +49,32 @@ const actions = {};
 actions.authAdmin = ({ commit }, password) => {
     commit(ADMIN_FETCH_PENDING, 'auth');
 
-    axios
-        .post('/api/admins/auth', { password })
-        .then(({ data }) => {
-            if (data.code === 1) {
-                commit(ADMIN_AUTHED, data);
-            } else {
-                throw new Error(
-                    data.message || 'Errore non riconosciuto (autenticazione)'
-                );
-            }
-        })
-        .catch(err => {
-            const { response } = err;
-            if (response && response.data && response.data.message) {
-                err.message = response.data.message;
-            }
-            commit(ADMIN_FETCH_ERROR, {
-                message: err.message,
-                fetch: 'auth'
+    return new Promise((resolve, reject) => {
+        axios
+            .post('/api/admins/auth', { password })
+            .then(({ data }) => {
+                if (data.code === 1) {
+                    commit(ADMIN_AUTHED, data);
+                    resolve(data);
+                } else {
+                    throw new Error(
+                        data.message ||
+                            'Errore non riconosciuto (autenticazione)'
+                    );
+                }
+            })
+            .catch(err => {
+                const { response } = err;
+                if (response && response.data && response.data.message) {
+                    err.message = response.data.message;
+                }
+                commit(ADMIN_FETCH_ERROR, {
+                    message: err.message,
+                    fetch: 'auth'
+                });
+                reject(err);
             });
-        });
+    });
 };
 
 actions.authSudoer = ({ commit }, password) => {
@@ -103,6 +111,7 @@ actions.logout = ({ commit }) => commit(ADMIN_LOGOUT);
 
 const getters = {};
 getters.authed = state => state.authed;
+getters.sudoer = state => state.sudoer;
 getters.pendings = state => state.pendings;
 
 export default {

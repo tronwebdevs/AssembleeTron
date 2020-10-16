@@ -1,5 +1,12 @@
 <template>
-    <b-card class="text-center" :title="title">
+    <b-card
+        class="text-center"
+        :title="title"
+        :header="errorMsg"
+        header-text-variant="white"
+        header-tag="header"
+        header-bg-variant="danger"
+    >
         <div v-if="loading" class="py-4">
             <b-spinner
                 label="Loading"
@@ -19,31 +26,21 @@
                 {{ text }}
             </b-card-text>
 
-            <div v-if="exists">
-                <StudentLoginForm />
-            </div>
+            <slot></slot>
         </div>
     </b-card>
 </template>
 
 <script>
-import StudentLoginForm from '@/components/StudentLoginForm';
-import { mapGetters } from 'vuex';
-
 export default {
-    name: 'FormCard',
-    computed: {
-        ...mapGetters('assembly', ['exists'])
-    },
+    name: 'form-card',
     props: {
         title: String,
         subtitle: String,
         text: String,
         centred: Boolean,
+        errorMsg: String,
         loading: Boolean
-    },
-    components: {
-        StudentLoginForm
     }
 };
 </script>

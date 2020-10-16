@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import LabsSelectForm from '@/components/LabsSelectForm.vue';
+import LabsSelectForm from '@/components/Student/LabsSelectForm';
 
 export default {
     name: 'LabsSelectCard',

@@ -14,7 +14,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import LabsTableRow from '@/components/LabsTableRow';
+import LabsTableRow from '@/components/Student/LabsTableRow';
 
 export default {
     name: 'LabsTable',
