@@ -1,11 +1,9 @@
 <template>
-    <b-col cols="12 mb-4">
-        <b-card class="text-center" bg-variant="primary" text-variant="white">
-            <h4 class="mb-0">
-                {{ studentInfo }}
-            </h4>
-        </b-card>
-    </b-col>
+    <b-card class="text-center" bg-variant="primary" text-variant="white">
+        <h4 class="mb-0">
+            {{ studentInfo }}
+        </h4>
+    </b-card>
 </template>
 
 <script>

@@ -40,3 +40,9 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+button {
+    font-size: 0.9rem;
+}
+</style>

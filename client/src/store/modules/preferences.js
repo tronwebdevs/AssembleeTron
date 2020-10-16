@@ -1,7 +1,7 @@
 import { SWITCH_THEME } from '../types';
 
 const initialState = {
-    theme: 'none'
+    theme: 'light'
 };
 
 const mutations = {};

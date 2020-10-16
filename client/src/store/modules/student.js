@@ -2,7 +2,6 @@ import {
     STUDENT_SUBS,
     STUDENT_IS_PART,
     STUDENT_NOT_PART,
-    STUDENT_WAS_PART,
     STUDENT_SUBED,
     STUDENT_FETCH_PENDING,
     STUDENT_LABS_FETCHED,
@@ -58,13 +57,12 @@ mutations[STUDENT_IS_PART] = (state, { student, labs }) => {
     state.subscribed = true;
     state.labs = labs;
 };
-mutations[STUDENT_NOT_PART] = (state, student) => {
+mutations[STUDENT_NOT_PART] = (state, { student }) => {
     state.profile = student;
     state.labs = [];
     state.subscribed = false;
     state.pendings.profile = false;
 };
-mutations[STUDENT_WAS_PART] = mutations[STUDENT_NOT_PART];
 mutations[STUDENT_SUBED] = (state, labs) => {
     state.subscribe = false;
     state.labs = labs;
@@ -118,7 +116,7 @@ actions.authStudent = ({ commit }, { studentID, part, remember }) => {
                         commit(STUDENT_NOT_PART, data);
                         break;
                     case 3:
-                        commit(STUDENT_WAS_PART, data);
+                        commit(STUDENT_NOT_PART, data);
                         break;
                     case 4:
                         commit(STUDENT_IS_PART, data);

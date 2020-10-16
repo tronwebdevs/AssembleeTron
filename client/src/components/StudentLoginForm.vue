@@ -69,6 +69,10 @@ export default {
                         case 1:
                             this.$router.push({ name: 'Iscrizione' });
                             break;
+                        case 3:
+                        case 4:
+                            this.$router.push({ name: 'Conferma' });
+                            break;
                         default:
                             console.log(code);
                             break;

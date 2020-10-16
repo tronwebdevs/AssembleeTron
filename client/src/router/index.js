@@ -11,6 +11,8 @@ import StudentLabsSelect from '@/views/Student/LabsSelect';
 import Admin from '@/views/Admin/';
 import AdminDashboard from '@/views/Admin/Dashboard';
 
+import NotFound from '@/views/NotFound';
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -59,6 +61,10 @@ const routes = [
                 }
             }
         ]
+    },
+    {
+        path: '*',
+        component: NotFound
     }
 ];
 

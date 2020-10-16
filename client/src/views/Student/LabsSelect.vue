@@ -13,12 +13,17 @@
                 <b-col cols="12" lg="4">
                     <div style="position:sticky,top:1.5rem">
                         <b-row>
-                            <StudentBadge :student="profile" />
+                            <b-col cols="12 mb-4">
+                                <StudentBadge :student="profile" />
+                            </b-col>
                             <b-col cols="12 mb-4">
                                 <LabsSelectCard />
                             </b-col>
                             <b-col cols="12" class="pb-4">
-                                <b-button block variant="outline-danger"
+                                <b-button
+                                    block
+                                    variant="outline-danger"
+                                    @click="redirect"
                                     >Esci</b-button
                                 >
                             </b-col>
@@ -31,7 +36,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import LabsSelectCard from '@/components/LabsSelectCard';
 import StudentBadge from '@/components/StudentBadge';
 import LabsList from '@/components/LabsList';
@@ -40,6 +45,13 @@ export default {
     name: 'LabsSelect',
     computed: {
         ...mapGetters('student', ['profile'])
+    },
+    methods: {
+        ...mapActions('student', ['logout']),
+        redirect() {
+            this.logout();
+            this.$router.push({ name: 'Home' });
+        }
     },
     components: {
         LabsSelectCard,
