@@ -1,5 +1,5 @@
-<p align="center">
-  <img width="170" height="170" src="./client/public/assembleetron.png">
+<p>
+  <img src="./client/public/assembleetron.png">
 </p>
 
 # AssembleeTron V5
