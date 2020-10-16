@@ -55,9 +55,5 @@ button.collapseSwitch {
     position: absolute;
     right: 10px;
     top: 5px;
-
-    &:focus {
-        box-shadow: none;
-    }
 }
 </style>

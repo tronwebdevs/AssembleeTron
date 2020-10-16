@@ -11,6 +11,10 @@ h1.page-title {
     font-size: 0.9rem;
 }
 
+button.btn-link:focus {
+    box-shadow: none !important;
+}
+
 body.dark-theme {
     main {
         background-color: $bgPrimaryDark !important;

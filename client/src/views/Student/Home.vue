@@ -10,6 +10,7 @@
                         :centred="false"
                         text="Inserisci la tua matricola"
                     />
+                    <StudentHelp />
                 </b-col>
             </b-row>
         </b-container>
@@ -18,8 +19,10 @@
 
 <script>
 import { DateTime } from 'luxon';
-import FormCard from '@/components/FormCard';
 import { mapGetters } from 'vuex';
+import FormCard from '@/components/FormCard';
+import StudentHelp from '@/components/StudentHelp';
+
 export default {
     name: 'Home',
     computed: {
@@ -33,7 +36,7 @@ export default {
                 .toLocaleString();
         }
     },
-    components: { FormCard }
+    components: { FormCard, StudentHelp }
 };
 </script>
 
