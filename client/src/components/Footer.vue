@@ -1,7 +1,7 @@
 <template>
-    <footer :class="{ 'dark-theme': isDark }">
+    <footer>
         <b-container class="text-center">
-            <tw-text-disabled>
+            <span class="text-muted footer-span">
                 Copyright © {{ date }}
                 <a href="https://www.tronweb.it"> TronWeb</a> | Made by Davide
                 Testolin |
@@ -13,13 +13,12 @@
                     <b-icon-moon v-if="isDark"></b-icon-moon>
                     <b-icon-brightness-high v-else></b-icon-brightness-high>
                 </span>
-            </tw-text-disabled>
+            </span>
         </b-container>
     </footer>
 </template>
 
 <script>
-import twtextdisabled from '@/components/tw-text-disabled';
 import { DateTime } from 'luxon';
 import { mapGetters, mapActions } from 'vuex';
 
@@ -35,22 +34,22 @@ export default {
     },
     methods: {
         ...mapActions('preferences', ['switchTheme'])
-    },
-    components: {
-        'tw-text-disabled': twtextdisabled
     }
 };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
+@import '~bootstrap';
+@import '~bootstrap-vue';
+
 footer {
     height: 60px;
     line-height: 60px;
     background-color: $bgSecondaryLight;
     font-size: 0.9rem;
 
-    &.dark-theme {
-        background-color: $bgSecondaryDark;
+    @include media-breakpoint-down(md) {
+        font-size: 0.75rem;
     }
 }
 

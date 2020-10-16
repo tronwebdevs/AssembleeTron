@@ -1,0 +1,157 @@
+h1.page-title {
+    font-size: 2rem;
+}
+
+.border-bottom {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.09) !important;
+}
+
+.lab-row-student span,
+.lab-row-student p {
+    font-size: 0.9rem;
+}
+
+body.dark-theme {
+    main {
+        background-color: $bgPrimaryDark !important;
+    }
+
+    span,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    b,
+    p,
+    .card-header {
+        color: $white !important;
+    }
+
+    .card {
+        background-color: $bgTirdaryDark !important;
+    }
+
+    footer {
+        background-color: $bgSecondaryDark;
+    }
+
+    footer span {
+        color: rgba($white, 0.3) !important;
+    }
+
+    span.footer-span a,
+    .form-group ::placeholder,
+    .input-group ::placeholder {
+        color: rgba($white, 0.2) !important;
+    }
+
+    .card .card-body span a,
+    .text-muted,
+    select.form-control {
+        color: rgba($white, 0.4) !important;
+    }
+
+    .input-group input,
+    .input-group input:focus,
+    .input-group input:disabled,
+    .form-group input,
+    .form-group input:focus,
+    .form-group input:disabled,
+    select,
+    select:disabled,
+    .custom-select,
+    .custom-select:disabled textarea,
+    textarea:disabled {
+        background-color: $bgPrimaryDark !important;
+    }
+
+    .input-group input,
+    .input-group input:focus,
+    .form-group input,
+    .form-group input:focus,
+    .form-group textarea,
+    .form-group textarea:focus select,
+    select:disabled,
+    .custom-select,
+    .custom-select:disabled {
+        color: rgba($white, 0.6) !important;
+        border-color: #202020 !important;
+    }
+
+    .input-group input:disabled,
+    .form-group input:disabled {
+        color: #888e9a !important;
+    }
+
+    button.selector-btn {
+        background-color: #333333;
+        color: $white;
+        border-color: $bgSecondaryDark !important;
+    }
+
+    .custom-control-label,
+    .modal-content .row div {
+        color: $white !important;
+    }
+
+    .alert-danger {
+        color: #fedadd !important;
+        background-color: rgba(130, 36, 44, 0.5) !important;
+        border-color: rgba(130, 36, 44, 0.2) !important;
+    }
+
+    nav.bg-white {
+        background-color: $bgSecondaryDark !important;
+    }
+
+    nav.navbar-light .navbar-nav .nav-link {
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    nav.navbar-light .navbar-nav .nav-link.active {
+        color: #467fcf !important;
+    }
+
+    .card-header {
+        background-color: rgba($bgPrimaryDark, 0.4);
+    }
+
+    .border-bottom {
+        border-bottom-color: rgba($white, 0.1) !important;
+    }
+
+    .info-sub-card button {
+        color: #9e9e9e !important;
+    }
+
+    .modal-content {
+        background-color: $bgTirdaryDark !important;
+    }
+
+    div.input-group-prepend span.input-group-text {
+        background-color: $bgPrimaryDark;
+    }
+
+    .custom-control-input:disabled ~ .custom-control-label::before {
+        background-color: rgba($bgPrimaryDark, 0.4) !important;
+    }
+
+    .custom-control-label::before {
+        border: none !important;
+        background-color: $bgPrimaryDark !important;
+    }
+
+    div.tw-modal {
+        box-shadow: 0 0 8px $bgPrimaryDark;
+    }
+
+    div.ct-toast {
+        background-color: $bgTirdaryDark;
+    }
+
+    div.ct-toast div.ct-text {
+        color: $white;
+    }
+}

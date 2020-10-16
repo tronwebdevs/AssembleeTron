@@ -127,7 +127,7 @@ actions.authStudent = ({ commit }, { studentID, part, remember }) => {
                         throw new Error('Errore non riconosciuto (student)');
                 }
                 commit(UPDATE_STUDENT_TOKEN, data.token);
-                resolve();
+                resolve(data.code);
             })
             .catch(err => {
                 if (err.response && err.response.data) {

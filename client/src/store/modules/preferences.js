@@ -10,7 +10,8 @@ mutations[SWITCH_THEME] = state => {
 };
 
 const actions = {};
-actions.switchTheme = ({ commit }) => {
+actions.switchTheme = ({ commit, state }) => {
+    document.body.className = state.theme === 'dark' ? '' : 'dark-theme';
     commit(SWITCH_THEME);
 };
 

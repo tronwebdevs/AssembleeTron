@@ -1,6 +1,6 @@
 <template>
-    <tw-card class="text-center" :title="title">
-        <div v-if="loading" class="py-12">
+    <b-card class="text-center" :title="title">
+        <div v-if="loading" class="py-4">
             <b-spinner
                 label="Loading"
                 variant="primary"
@@ -8,29 +8,28 @@
             ></b-spinner>
         </div>
         <div v-else>
-            <tw-textd-isabled class="d-block text-center mb-3 subtitle">
+            <span class="d-block text-center text-muted mb-3 subtitle">
                 {{ subtitle }}
-            </tw-textd-isabled>
+            </span>
             <b-card-text
                 :class="{ 'text-left': !centred }"
-                class="pb-0"
+                class="pb-0 mb-1"
                 v-if="text"
             >
                 {{ text }}
             </b-card-text>
 
-            <div class="px-4 pb-4" v-if="exists">
-                <!-- <StudentLoginForm /> -->
+            <div v-if="exists">
+                <StudentLoginForm />
             </div>
         </div>
-    </tw-card>
+    </b-card>
 </template>
 
 <script>
-import twcard from '@/components/tw-card.vue';
-import twtextdisabled from '@/components/tw-text-disabled';
-// import StudentLoginForm from '@/components/StudentLoginForm';
+import StudentLoginForm from '@/components/StudentLoginForm';
 import { mapGetters } from 'vuex';
+
 export default {
     name: 'FormCard',
     computed: {
@@ -44,9 +43,7 @@ export default {
         loading: Boolean
     },
     components: {
-        'tw-card': twcard,
-        'tw-textd-isabled': twtextdisabled
-        // StudentLoginForm
+        StudentLoginForm
     }
 };
 </script>

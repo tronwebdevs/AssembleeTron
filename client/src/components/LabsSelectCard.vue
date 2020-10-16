@@ -1,25 +1,30 @@
 <template>
-    <smart-card title="Scegli i laboratori">
-        <v-alert type="error">bo frq errore</v-alert>
-        <p class="px-4 my-0">
+    <b-card>
+        <template v-slot:header>Scegli i laboratori</template>
+        <b-alert variant="danger">bo frq errore</b-alert>
+        <p class="tip">
             <u
-                >Per i progetti da due ore seleziona la prima e la seconda ora o
-                la terza e la quarta ora.</u
+                >Per i progetti da due ore seleziona la prima e la seconda ora,
+                la terza e la quarta ora, ecc.</u
             >
         </p>
         <LabsSelectForm />
-    </smart-card>
+    </b-card>
 </template>
 
 <script>
-import smartcard from '@/components/smart-card.vue';
 import LabsSelectForm from '@/components/LabsSelectForm.vue';
 
 export default {
     name: 'LabsSelectCard',
     components: {
-        'smart-card': smartcard,
         LabsSelectForm
     }
 };
 </script>
+
+<style scoped>
+p.tip {
+    font-size: 0.9rem;
+}
+</style>

@@ -24,6 +24,7 @@ export default {
 
 <style lang="scss">
 @import './scss/_variables.scss';
+
 body,
 html,
 #app {
@@ -36,7 +37,7 @@ html,
 main {
     background-color: $bgPrimaryLight;
     width: 100%;
-    height: calc(100% - 60.5px);
+    min-height: calc(100% - 60.5px);
 
     &.dark-theme {
         background-color: $bgPrimaryDark;
