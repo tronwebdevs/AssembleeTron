@@ -11,6 +11,10 @@ import StudentLabsSelect from '@/views/Student/LabsSelect';
 import Admin from '@/views/Admin/';
 import AdminLogin from '@/views/Admin/Login';
 import AdminDashboard from '@/views/Admin/Dashboard';
+import AdminInfo from '@/views/Admin/Info';
+import AdminLabs from '@/views/Admin/Labs';
+import AdminStats from '@/views/Admin/Stats';
+import AdminExport from '@/views/Admin/Export';
 
 import NotFound from '@/views/NotFound';
 
@@ -22,7 +26,7 @@ const routes = [
         component: Admin,
         children: [
             {
-                name: 'Dashboard',
+                name: 'Admin/Dashboard',
                 path: '',
                 component: AdminDashboard,
                 meta: {
@@ -30,9 +34,41 @@ const routes = [
                 }
             },
             {
-                name: 'Login',
+                name: 'Admin/Login',
                 path: 'login',
                 component: AdminLogin
+            },
+            {
+                name: 'Admin/Info',
+                path: 'informazioni',
+                component: AdminInfo,
+                meta: {
+                    requiresAdminAuth: true
+                }
+            },
+            {
+                name: 'Admin/Labs',
+                path: 'laboratori',
+                component: AdminLabs,
+                meta: {
+                    requiresAdminAuth: true
+                }
+            },
+            {
+                name: 'Admin/Stats',
+                path: 'statistiche',
+                component: AdminStats,
+                meta: {
+                    requiresAdminAuth: true
+                }
+            },
+            {
+                name: 'Admin/Export',
+                path: 'esporta',
+                component: AdminExport,
+                meta: {
+                    requiresAdminAuth: true
+                }
             }
         ]
     },
@@ -93,7 +129,6 @@ router.beforeEach((to, from, next) => {
         to.matched.some(record => record.meta.requiresAdminAuth) &&
         store.getters['admin/authed'] !== true
     ) {
-        console.log(store.getters['admin/authed']);
         next('/gestore/login');
     } else {
         next();

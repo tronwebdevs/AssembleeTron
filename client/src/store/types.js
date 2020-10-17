@@ -28,18 +28,10 @@ export const ASSEMBLY_DELETED = 'ASSEMBLY_DELETED';
 export const ASSEMBLY_SUBS_CLOSE = 'ASSEMBLY_SUBS_CLOSE';
 export const ASSEMBLY_SUBS_OPEN = 'ASSEMBLY_SUBS_OPEN';
 export const ASSEMBLY_NOT_AVABILE = 'ASSEMBLY_NOT_AVABILE';
-// Create info
-export const INFO_CREATED = 'INFO_CREATED';
 // Update info
-export const INFO_UPDATED = 'INFO_UPDATED';
-// Fetch laboratories
-export const LABS_FETCHED = 'LABS_FETCHED';
-// Create laboratory
-export const LAB_CREATED = 'LAB_CREATED';
-// Update laboratory
-export const LAB_UPDATED = 'LAB_UPDATED';
-// Delete laboratory
-export const LAB_DELETED = 'LAB_DELETED';
+export const ASSEMBLY_INFO_UPDATED = 'ASSEMBLY_INFO_UPDATED';
+// Update labs
+export const ASSEMBLY_LABS_MUTATION = 'ASSEMBLY_LABS_MUTATION';
 // Fetch students
 export const STUDENTS_FETCHED = 'STUDENTS_FETCHED';
 // Generate pdf

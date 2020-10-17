@@ -1,14 +1,17 @@
 <template>
     <b-form @submit.prevent="handleSubmit" autocomplete="off" class="mt-2">
         <b-form-group>
-            <b-form-input
+            <b-input
                 v-model="password"
                 placeholder="Password"
-                autofocus
                 type="password"
                 :disabled="loading"
-                required
-            ></b-form-input>
+                autofocus
+                :state="error === null ? error : false"
+            ></b-input>
+            <b-form-invalid-feedback :state="error" class="text-left">
+                {{ error }}
+            </b-form-invalid-feedback>
         </b-form-group>
         <b-overlay
             :show="loading"
@@ -38,20 +41,35 @@ export default {
     data() {
         return {
             password: '',
+            error: null,
             loading: false
         };
     },
     methods: {
         ...mapActions('admin', ['authAdmin']),
+        validation() {
+            let valid = true;
+            if (this.password.length === 0) {
+                this.error = 'Password richiesta';
+                valid = false;
+            } else {
+                this.error = null;
+            }
+            return valid;
+        },
         handleSubmit() {
             this.loading = true;
+            if (!this.validation()) {
+                this.loading = false;
+                return;
+            }
+
             this.authAdmin(this.password)
-                .then(data => {
-                    if (data.code === 1) {
-                        this.$router.push({ name: 'Dashboard' });
-                    }
-                })
-                .catch(err => console.error(err));
+                .then(() => this.$router.push({ name: 'Admin/Dashboard' }))
+                .catch(err => {
+                    this.loading = false;
+                    this.error = err.message;
+                });
         }
     }
 };

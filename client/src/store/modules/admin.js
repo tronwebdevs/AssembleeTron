@@ -3,7 +3,8 @@ import {
     ADMIN_AUTHED,
     ADMIN_LOGOUT,
     SUDOER_AUTHED,
-    ADMIN_FETCH_ERROR
+    ADMIN_FETCH_ERROR,
+    UPDATE_ADMIN_TOKEN
 } from '../types';
 import axios from 'axios';
 import Vue from 'vue';
@@ -39,6 +40,9 @@ mutations[ADMIN_LOGOUT] = state => {
     Object.assign(state, getDefaultState());
     Vue.set(state.pendings, 'loggedout', false);
 };
+mutations[UPDATE_ADMIN_TOKEN] = (state, payload) => {
+    Vue.set(state, 'token', payload);
+};
 
 const actions = {};
 /**
@@ -55,7 +59,7 @@ actions.authAdmin = ({ commit }, password) => {
             .then(({ data }) => {
                 if (data.code === 1) {
                     commit(ADMIN_AUTHED, data);
-                    resolve(data);
+                    resolve();
                 } else {
                     throw new Error(
                         data.message ||

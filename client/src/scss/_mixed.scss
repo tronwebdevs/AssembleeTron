@@ -1,3 +1,7 @@
+* {
+    font-size: 0.97rem;
+}
+
 h1.page-title {
     font-size: 2rem;
 }
@@ -15,26 +19,25 @@ button.btn-link:focus {
     box-shadow: none !important;
 }
 
+.nav-link.active {
+    color: $light-blue !important;
+}
+
 body.dark-theme {
     main {
         background-color: $bgPrimaryDark !important;
     }
 
-    span,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    b,
-    p,
-    .card-header {
+    * {
         color: $white;
     }
 
     .card {
         background-color: $bgTirdaryDark !important;
+    }
+
+    span.navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
     }
 
     footer {
@@ -115,7 +118,7 @@ body.dark-theme {
     }
 
     nav.navbar-light .navbar-nav .nav-link.active {
-        color: #467fcf !important;
+        color: $light-blue !important;
     }
 
     .card-header {

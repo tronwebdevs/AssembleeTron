@@ -46,10 +46,13 @@ footer {
     height: 60px;
     line-height: 60px;
     background-color: $bgSecondaryLight;
-    font-size: 0.9rem;
 
-    @include media-breakpoint-down(md) {
-        font-size: 0.75rem;
+    span {
+        font-size: 0.9rem;
+
+        @include media-breakpoint-down(md) {
+            font-size: 0.75rem !important;
+        }
     }
 }
 

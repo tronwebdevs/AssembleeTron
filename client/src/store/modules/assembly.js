@@ -7,16 +7,12 @@ import {
     ASSEMBLY_SUBS_CLOSE,
     ASSEMBLY_SUBS_OPEN,
     ASSEMBLY_NOT_AVABILE,
-    INFO_CREATED,
-    INFO_UPDATED,
-    LABS_FETCHED,
-    LAB_CREATED,
-    LAB_UPDATED,
-    LAB_DELETED,
+    ASSEMBLY_INFO_UPDATED,
     STUDENTS_FETCHED,
     ASSEMBLY_PDF_COMPLETED,
     ADMIN_LOGOUT,
-    UPDATE_ADMIN_TOKEN
+    UPDATE_ADMIN_TOKEN,
+    ASSEMBLY_LABS_MUTATION
 } from '../types.js';
 import axios from 'axios';
 import FileSaver from 'file-saver';
@@ -55,13 +51,23 @@ mutations[ASSEMBLY_LOAD_COMPLETED] = (state, { info, labs, stats }) => {
     Vue.set(state.pendings, 'load', false);
 };
 mutations[ASSEMBLY_FETCHED] = (state, payload) => {
-    state.exists = payload.exists || state.exists;
-    state.info = payload.info || {};
-    state.stats = {
-        labs: payload.labs || 0,
-        students: payload.students || 0,
-        subs: payload.subs || 0
-    };
+    if (payload.exists) {
+        Vue.set(state, 'exists', payload.exists);
+    }
+    if (payload.info) {
+        Vue.set(state, 'info', payload.info);
+    } else {
+        Vue.set(state, 'info', {});
+    }
+    if (!isNaN(payload.labs)) {
+        Vue.set(state.stats, 'labs', payload.labs);
+    }
+    if (!isNaN(payload.students)) {
+        Vue.set(state.stats, 'students', payload.students);
+    }
+    if (!isNaN(payload.subs)) {
+        Vue.set(state.stats, 'subs', payload.subs);
+    }
     Vue.set(state.pendings, 'assembly', false);
 };
 mutations[ASSEMBLY_DELETED] = state => {
@@ -89,38 +95,19 @@ mutations[ASSEMBLY_NOT_AVABILE] = (state, message) => {
     console.log(message);
     Vue.set(state.pendings, 'info', false);
 };
-mutations[INFO_CREATED] = (state, payload) => {
-    state.exists = true;
-    state.info = payload;
+mutations[ASSEMBLY_INFO_UPDATED] = (state, payload) => {
+    Vue.set(state, 'exists', true);
+    Vue.set(state, 'info', payload);
     Vue.set(state.pendings, 'create_info', false);
 };
-mutations[INFO_UPDATED] = (state, payload) => {
-    state.exists = true;
-    state.info = payload;
-    Vue.set(state.pendings, 'create_info', false);
-};
-mutations[LABS_FETCHED] = (state, payload) => {
-    state.labs = payload;
-    state.stats.labs = payload.length;
-    Vue.set(state.pendings, 'labs', false);
-};
-mutations[LAB_CREATED] = (state, payload) => {
-    state.labs = payload;
-    state.stats.labs = payload.length;
-    Vue.set(state.pendings, 'create_lab', false);
-};
-mutations[LAB_UPDATED] = (state, payload) => {
-    state.labs = payload;
-    Vue.set(state.pendings, 'update_lab', false);
-};
-mutations[LAB_DELETED] = (state, payload) => {
-    state.labs = payload;
-    state.stats.labs = payload.length;
-    Vue.set(state.pendings, 'delete_lab', false);
+mutations[ASSEMBLY_LABS_MUTATION] = (state, { labs, fetch }) => {
+    Vue.set(state, 'labs', labs);
+    Vue.set(state.stats, 'labs', labs.length);
+    Vue.set(state.pendings, fetch, false);
 };
 mutations[STUDENTS_FETCHED] = (state, payload) => {
-    state.stats.students = payload.length;
-    state.students = payload;
+    Vue.set(state.stats, 'students', payload.length);
+    Vue.set(state, 'students', payload);
     Vue.set(state.pendings, 'students', false);
 };
 mutations[ASSEMBLY_PDF_COMPLETED] = state => {
@@ -220,7 +207,7 @@ actions.createAssemblyInfo = ({ commit, rootState }, info) => {
             )
             .then(({ data, headers }) => {
                 if (data.code === 1) {
-                    commit(INFO_CREATED, data.info);
+                    commit(ASSEMBLY_INFO_UPDATED, data.info);
                     commit('admin/' + UPDATE_ADMIN_TOKEN, headers.token, {
                         root: true
                     });
@@ -257,7 +244,7 @@ actions.updateAssemblyInfo = ({ commit, rootState }, info) => {
             )
             .then(({ data, headers }) => {
                 if (data.code === 1) {
-                    commit(INFO_UPDATED, data.info);
+                    commit(ASSEMBLY_INFO_UPDATED, data.info);
                     commit('admin/' + UPDATE_ADMIN_TOKEN, headers.token, {
                         root: true
                     });
@@ -368,7 +355,10 @@ actions.createAssemblyLab = ({ commit, rootState }, lab) => {
             )
             .then(({ data, headers }) => {
                 if (data.code === 1) {
-                    commit(LAB_CREATED, [...labs, data.lab]);
+                    commit(ASSEMBLY_LABS_MUTATION, {
+                        labs: [...labs, data.lab],
+                        fetch: 'create_lab'
+                    });
                     commit('admin/' + UPDATE_ADMIN_TOKEN, headers.token, {
                         root: true
                     });
@@ -409,15 +399,16 @@ actions.updateAssemblyLab = ({ commit, rootState }, lab) => {
             )
             .then(({ data, headers }) => {
                 if (data.code === 1) {
-                    commit(
-                        LAB_UPDATED,
-                        labs.map(lab => {
-                            if (lab._id === data.lab._id) {
-                                return data.lab;
-                            }
-                            return lab;
-                        })
-                    );
+                    let newLabs = labs.map(lab => {
+                        if (lab._id === data.lab._id) {
+                            return data.lab;
+                        }
+                        return lab;
+                    });
+                    commit(ASSEMBLY_LABS_MUTATION, {
+                        labs: newLabs,
+                        fetch: 'update_lab'
+                    });
                     commit('admin/' + UPDATE_ADMIN_TOKEN, headers.token, {
                         root: true
                     });
@@ -453,10 +444,11 @@ actions.deleteAssemblyLab = ({ commit, rootState }, labID) => {
             })
             .then(({ data, headers }) => {
                 if (data.code === 1) {
-                    commit(
-                        LAB_DELETED,
-                        labs.filter(lab => lab._id !== data.lab._id)
-                    );
+                    let newLabs = labs.filter(lab => lab._id !== data.lab._id);
+                    commit(ASSEMBLY_LABS_MUTATION, {
+                        labs: newLabs,
+                        fetch: 'delete_lab'
+                    });
                     commit('admin/' + UPDATE_ADMIN_TOKEN, headers.token, {
                         root: true
                     });
@@ -499,7 +491,10 @@ actions.excludeClassesFromLabs = ({ commit, rootState }, { h, sections }) => {
             )
             .then(({ data, headers }) => {
                 if (data.code === 1) {
-                    commit(LABS_FETCHED, data.labs);
+                    commit(ASSEMBLY_LABS_MUTATION, {
+                        labs: data.labs,
+                        fetch: 'labs'
+                    });
                     commit('admin/' + UPDATE_ADMIN_TOKEN, headers.token, {
                         root: true
                     });
@@ -594,7 +589,10 @@ actions.fetchAllLabs = ({ commit, rootState }) => {
         })
         .then(({ data, headers }) => {
             if (data.code === 1) {
-                commit(LABS_FETCHED, data.labList);
+                commit(ASSEMBLY_LABS_MUTATION, {
+                    labs: data.labList,
+                    fetch: 'labs'
+                });
                 commit('admin/' + UPDATE_ADMIN_TOKEN, headers.token, {
                     root: true
                 });

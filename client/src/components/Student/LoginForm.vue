@@ -1,15 +1,18 @@
 <template>
     <b-form @submit.prevent="handleSubmit" autocomplete="off">
         <b-form-group>
-            <b-form-input
+            <b-input
                 v-model="studentId"
                 placeholder="Matricola"
                 class="student-id-input"
                 autofocus
                 type="text"
                 :disabled="loading"
-                required
-            ></b-form-input>
+                :state="error === null ? error : false"
+            ></b-input>
+            <b-form-invalid-feedback :state="error" class="text-left">
+                {{ error }}
+            </b-form-invalid-feedback>
         </b-form-group>
         <b-form-group>
             <b-form-radio-group
@@ -51,14 +54,36 @@ export default {
         return {
             studentId: '',
             part: 1,
+            error: null,
             remember: false,
             loading: false
         };
     },
     methods: {
         ...mapActions('student', ['authStudent']),
+        validation() {
+            let valid = true;
+            if (this.studentId.length === 0) {
+                this.error = 'Matricola richiesta';
+                valid = false;
+            } else if (isNaN(this.studentId)) {
+                this.error = 'Questa non è una matricola';
+                valid = false;
+            } else if (this.part !== 0 && this.part !== 1) {
+                this.error = 'Selezione di partecipazione non valida';
+                valid = false;
+            } else {
+                this.error = null;
+            }
+            return valid;
+        },
         handleSubmit() {
             this.loading = true;
+            if (!this.validation()) {
+                this.loading = false;
+                return;
+            }
+
             this.authStudent({
                 studentID: +this.studentId,
                 part: this.part,
@@ -78,7 +103,10 @@ export default {
                             break;
                     }
                 })
-                .catch(err => console.error(err));
+                .catch(err => {
+                    this.loading = false;
+                    this.error = err.message;
+                });
         }
     }
 };
