@@ -16,7 +16,7 @@
                 </router-link>
             </template>
         </list-card>
-        <list-card title="Iscrizioni" :items="infoItems">
+        <list-card title="Iscrizioni" :items="subsInfo">
             <template v-slot:buttons>
                 <router-link
                     :to="{ name: 'Admin/Stats' }"
@@ -60,8 +60,10 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import listcard from '@/components/Admin/list-card';
+
+Settings.defaultLocale = 'it';
 
 export default {
     name: 'DashAssemblyRow',
@@ -71,22 +73,57 @@ export default {
             return [
                 {
                     title: 'Nome',
-                    text: this.info.title || 'Assemblea Senza Nome'
+                    content: this.info.title || 'Assemblea Senza Nome'
                 },
-                { title: 'Data', text: this.date, extra: this.daysLeft },
-                { title: 'Classi', text: this.info.sections.length }
+                { title: 'Data', content: this.date, extra: this.daysLeft },
+                { title: 'Classi', content: this.info.sections.length }
+            ];
+        },
+        subsInfo() {
+            return [
+                {
+                    title: 'Stato',
+                    content: this.status
+                },
+                {
+                    title: 'Apertura',
+                    content: this.open
+                },
+                {
+                    title: 'Chiusura',
+                    content: this.close
+                }
             ];
         },
         date() {
-            return DateTime.fromISO(this.info.date)
-                .setLocale('it')
-                .toLocaleString(DateTime.DATE_SHORT);
+            return DateTime.fromISO(this.info.date).toLocaleString(
+                DateTime.DATE_SHORT
+            );
+        },
+        status() {
+            return DateTime.fromISO(this.info.subscription.open)
+                .diff(DateTime.local())
+                .toObject().milliseconds < 0 &&
+                DateTime.fromISO(this.info.subscription.close)
+                    .diff(DateTime.local())
+                    .toObject().milliseconds > 0
+                ? '<span class="badge badge-success">Aperte</span>'
+                : '<span class="badge badge-danger">Chiuse</span>';
+        },
+        open() {
+            return DateTime.fromISO(this.info.subscription.open).toLocaleString(
+                DateTime.DATETIME_SHORT
+            );
+        },
+        close() {
+            return DateTime.fromISO(
+                this.info.subscription.close
+            ).toLocaleString(DateTime.DATETIME_SHORT);
         },
         daysLeft() {
             let days = Math.round(
                 DateTime.fromISO(this.info.date)
-                    .setLocale('it')
-                    .diff(DateTime.local().setLocale('it'), 'days')
+                    .diff(DateTime.local(), 'days')
                     .toObject().days
             );
             return '(' + days + ' giorni)';

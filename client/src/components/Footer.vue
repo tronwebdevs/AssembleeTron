@@ -29,7 +29,7 @@ export default {
         date() {
             return DateTime.local()
                 .setLocale('it')
-                .toFormat('kkkk');
+                .toFormat('yyyy');
         }
     },
     methods: {

@@ -7,12 +7,12 @@
             <ul class="list-unstyled">
                 <li v-for="(item, index) in items" :key="index">
                     <b-row class="align-items-center">
-                        <b-col :cols="item.colSize || '3'">
-                            {{ item.title }}
+                        <b-col :cols="item.colSize || '4'">
+                            {{ item.title }}:
                         </b-col>
                         <b-col
-                            >{{ item.text }}
-                            <small className="text-muted">
+                            ><span v-html="item.content"></span>
+                            <small class="text-muted">
                                 {{ item.extra }}
                             </small></b-col
                         >

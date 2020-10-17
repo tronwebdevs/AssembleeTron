@@ -2,6 +2,14 @@
     font-size: 0.97rem;
 }
 
+body {
+    font-family: 'Source Sans Pro', -apple-system, blinkmacsystemfont,
+        'Segoe UI', roboto, 'Helvetica Neue', arial, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    color: #1c2c41;
+    font-weight: 400;
+}
+
 h1.page-title {
     font-size: 2rem;
 }
@@ -13,6 +21,10 @@ h1.page-title {
 .lab-row-student span,
 .lab-row-student p {
     font-size: 0.9rem;
+}
+
+.card-header {
+    font-weight: bold;
 }
 
 button.btn-link:focus {
