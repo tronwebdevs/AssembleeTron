@@ -9,7 +9,7 @@
                 autofocus
                 :state="error === null ? error : false"
             ></b-input>
-            <b-form-invalid-feedback :state="error" class="text-left">
+            <b-form-invalid-feedback :state="error !== null" class="text-left">
                 {{ error }}
             </b-form-invalid-feedback>
         </b-form-group>

@@ -2,7 +2,7 @@
     <div class="text-center">
         <NavBar />
 
-        <div class="loading-wrapper" v-if="loading">
+        <div class="loading-wrapper" v-if="pageLoading">
             <b-spinner
                 variant="secondary"
                 label="Loading"
@@ -17,6 +17,14 @@
                             <h1 class="page-title">{{ title }}</h1>
                         </div>
                     </div>
+                    <b-alert
+                        :variant="message.type"
+                        fade
+                        dismissible
+                        @dismissed="clearMessage"
+                        :show="message.show"
+                        >{{ message.content }}</b-alert
+                    >
                     <slot></slot>
                 </b-container>
             </div>
@@ -31,7 +39,7 @@ import NavBar from '@/components/Admin/NavBar';
 export default {
     name: 'authed-wrapper',
     computed: {
-        ...mapGetters('assembly', ['pendings']),
+        ...mapGetters('assembly', ['pendings', 'message']),
         title() {
             let route = this.$route.path
                 .split('/')
@@ -42,17 +50,20 @@ export default {
             }
             return route.charAt(0).toUpperCase() + route.slice(1);
         },
-        loading() {
-            return this.pendings.assembly !== false;
+        pageLoading() {
+            return this.pendings.assembly !== false || this.loading;
         }
     },
     methods: {
-        ...mapActions('assembly', ['fetchAssemblyGeneral'])
+        ...mapActions('assembly', ['fetchAssemblyGeneral', 'clearMessage'])
     },
     mounted() {
         if (this.pendings.assembly === undefined) {
-            this.fetchAssemblyGeneral().catch(err => console.error(err));
+            this.fetchAssemblyGeneral();
         }
+    },
+    props: {
+        loading: Boolean
     },
     components: {
         NavBar

@@ -8,6 +8,7 @@
                 >
                     <b-button
                         variant="outline-primary"
+                        size="sm"
                         block
                         :href="href"
                         @click="navigate"
@@ -24,6 +25,7 @@
                 >
                     <b-button
                         variant="outline-info"
+                        size="sm"
                         block
                         :href="href"
                         @click="navigate"
@@ -47,6 +49,7 @@
                 >
                     <b-button
                         variant="outline-danger"
+                        size="sm"
                         block
                         :href="href"
                         @click="navigate"

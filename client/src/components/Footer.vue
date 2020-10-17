@@ -1,5 +1,5 @@
 <template>
-    <footer>
+    <footer class="border-top">
         <b-container class="text-center">
             <span class="text-muted footer-span">
                 Copyright © {{ date }}
