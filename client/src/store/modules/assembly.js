@@ -13,7 +13,8 @@ import {
     ADMIN_LOGOUT,
     UPDATE_ADMIN_TOKEN,
     ASSEMBLY_LABS_MUTATION,
-    CLEAR_ASSEMBLY_MESSAGE
+    CLEAR_ASSEMBLY_MESSAGE,
+    DISPLAY_ASSEMBLY_MESSAGE
 } from '../types.js';
 import axios from 'axios';
 import FileSaver from 'file-saver';
@@ -38,21 +39,29 @@ const getDefaultState = () => ({
 });
 const initialState = getDefaultState();
 
+const setDisplayMessage = (state, { content, type, show }) => {
+    Vue.set(state, 'message', {
+        type,
+        content,
+        show
+    });
+
+    if (show) {
+        setTimeout(() => setDisplayMessage(state, { show: false }), 3000);
+    }
+};
+
 const mutations = {};
 mutations[ASSEMBLY_FETCH_PENDING] = (state, payload) => {
     Vue.set(state.pendings, payload, true);
 };
 mutations[ASSEMBLY_FETCH_ERROR] = (state, { fetch, message }) => {
     Vue.set(state.pendings, fetch, false);
-    Vue.set(state, 'message', {
+    setDisplayMessage(state, {
         type: 'danger',
         content: message,
         show: true
     });
-    setTimeout(
-        () => Vue.set(state, 'message', getDefaultState().message),
-        3000
-    );
 };
 mutations[ASSEMBLY_LOAD_COMPLETED] = (state, { info, labs, stats }) => {
     state.exists = true;
@@ -106,27 +115,19 @@ mutations[ASSEMBLY_SUBS_CLOSE] = (state, payload) => {
 mutations[ASSEMBLY_SUBS_OPEN] = mutations[ASSEMBLY_SUBS_CLOSE];
 mutations[ASSEMBLY_NOT_AVABILE] = (state, message) => {
     Vue.set(state, 'exists', false);
-    Vue.set(state, 'message', {
+    setDisplayMessage(state, {
         type: 'danger',
         content: message,
         show: true
     });
-    setTimeout(
-        () => Vue.set(state, 'message', getDefaultState().message),
-        3000
-    );
     Vue.set(state.pendings, 'info', false);
 };
 mutations[ASSEMBLY_INFO_UPDATED] = (state, payload) => {
-    Vue.set(state, 'message', {
+    setDisplayMessage(state, {
         type: 'success',
         content: 'Informazioni aggiornate con successo',
         show: true
     });
-    setTimeout(
-        () => Vue.set(state, 'message', getDefaultState().message),
-        3000
-    );
     Vue.set(state, 'exists', true);
     Vue.set(state, 'info', payload);
     Vue.set(state.pendings, 'create_info', false);
@@ -143,9 +144,21 @@ mutations[STUDENTS_FETCHED] = (state, payload) => {
 };
 mutations[ASSEMBLY_PDF_COMPLETED] = state => {
     Vue.set(state.pendings, 'generate_pdf', false);
+    setDisplayMessage(state, {
+        type: 'success',
+        content: 'PDF genertato con successo',
+        show: true
+    });
 };
 mutations[CLEAR_ASSEMBLY_MESSAGE] = state => {
     Vue.set(state, 'message', getDefaultState().message);
+};
+mutations[DISPLAY_ASSEMBLY_MESSAGE] = (state, { content, type }) => {
+    setDisplayMessage(state, {
+        type,
+        content,
+        show: true
+    });
 };
 
 const actions = {};
@@ -722,7 +735,7 @@ actions.generatePdf = ({ commit, rootState }) => {
                 commit('admin/' + UPDATE_ADMIN_TOKEN, refreshedToken, {
                     root: true
                 });
-                resolve('Operazione completata con successo');
+                resolve();
             })
             .catch(err => {
                 handleError(err, commit, 'generate_pdf');

@@ -68,7 +68,8 @@ body.dark-theme {
 
     .card .card-body span a,
     .text-muted,
-    select.form-control {
+    select.form-control,
+    .v-toast {
         color: rgba($white, 0.4) !important;
     }
 
@@ -82,7 +83,8 @@ body.dark-theme {
     select:disabled,
     .custom-select,
     .custom-select:disabled textarea,
-    textarea:disabled {
+    textarea:disabled,
+    .v-toast {
         background-color: $bgPrimaryDark !important;
     }
 

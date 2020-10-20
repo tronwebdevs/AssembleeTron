@@ -17,14 +17,14 @@
                             <h1 class="page-title">{{ title }}</h1>
                         </div>
                     </div>
-                    <b-alert
+                    <!-- <b-alert
                         :variant="message.type"
                         fade
                         dismissible
                         @dismissed="clearMessage"
                         :show="message.show"
                         >{{ message.content }}</b-alert
-                    >
+                    > -->
                     <slot></slot>
                 </b-container>
             </div>
@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import NavBar from '@/components/Admin/NavBar';
 
@@ -56,6 +57,13 @@ export default {
     },
     methods: {
         ...mapActions('assembly', ['fetchAssemblyGeneral', 'clearMessage'])
+    },
+    watch: {
+        message({ content, type, show }) {
+            if (show) {
+                Vue.$toast.open({ message: content, type });
+            }
+        }
     },
     mounted() {
         if (this.pendings.assembly === undefined) {

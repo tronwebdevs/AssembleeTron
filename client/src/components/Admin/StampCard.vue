@@ -30,7 +30,6 @@ export default {
 
 <style scoped lang="scss">
 @import '~bootstrap';
-@import '~bootstrap-vue';
 
 .stamp {
     padding: $spacer * 0.5 $spacer * 0.75;

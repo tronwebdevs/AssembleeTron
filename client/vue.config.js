@@ -5,6 +5,7 @@ module.exports = {
                 data: `
                 @import "@/scss/_variables.scss";
                 @import "@/scss/_mixed.scss";
+                @import "@/scss/_toast-custom.scss";
                 `
             }
         }
