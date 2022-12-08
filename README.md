@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="170" height="170" src="https://www.tronweb.it/wp-content/uploads/2018/09/tw-logo.png">
+  <img width="170" height="170" src="https://dev.tronweb.it/tw-logo.png">
 </p>
 
 # AssembleeTron V4
