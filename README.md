@@ -15,4 +15,4 @@ $~ cp config.example.json config.json
 ```
 
 #### Licensing
-Copyright 2019 [TronWeb](https://www.tronweb.it)
+Copyright 2019-2022 [TronWeb](https://dev.tronweb.it)
